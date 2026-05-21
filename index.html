@@ -225,6 +225,36 @@
       color: var(--muted);
       letter-spacing: 0.04em;
     }
+    /* ── SPORT WIDGETS ── */
+    .sport-loading { font-size: 0.75rem; color: var(--muted); }
+    .sport-widget { display: flex; flex-direction: column; gap: 0.6rem; }
+    .sport-widget-row {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.75rem; gap: 0.5rem;
+    }
+    .sport-label {
+      font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 0.4rem;
+    }
+    .sport-standing {
+      display: flex; align-items: baseline; gap: 0.5rem;
+    }
+    .sport-standing .pos {
+      font-family: 'DM Serif Display', serif; font-size: 1.4rem; line-height: 1;
+    }
+    .sport-standing .record { font-size: 0.75rem; color: var(--muted); }
+    .sport-divider { border: none; border-top: 1px solid var(--border); margin: 0.75rem 0; }
+    .sport-game {
+      font-size: 0.75rem; display: flex; flex-direction: column; gap: 0.2rem;
+      padding: 0.5rem 0.65rem; background: var(--tag-bg); border-radius: 4px;
+    }
+    .sport-game .game-teams { font-weight: 500; color: var(--text); }
+    .sport-game .game-meta { color: var(--muted); font-size: 0.68rem; }
+    .sport-game .game-result { font-size: 0.68rem; }
+    .sport-game .win  { color: #3a7d44; }
+    .sport-game .loss { color: #b94040; }
+    .sport-game .draw { color: var(--muted); }
+    .sport-error { font-size: 0.75rem; color: var(--muted); font-style: italic; }
   </style>
 </head>
 <body>
@@ -238,7 +268,7 @@
     <a href="#" onclick="showPage('cubing')" id="nav-cubing">Cubing</a>
     <a href="#" onclick="showPage('sports')" id="nav-sports">Sports</a>
     <a href="#" onclick="showPage('books')" id="nav-books">Books</a>
-    <a href="#" onclick="showPage('resume')" id="nav-resume">Résumé</a>
+    <a href="#" onclick="showPage('resume')" id="nav-resume">Resume</a>
   </div>
 </nav>
 
@@ -249,7 +279,7 @@
     <div class="home-hero">
       <span class="eyebrow">Welcome</span>
       <h1 class="page-title">Ephram<br/>Grant's<br/>Homepage</h1>
-      <p>My personal website, updated regularly. Contains my interests and experience.</p>
+      <p>My personal website, updated regularly. Contains my interests and resume.</p>
     </div>
     <div class="home-grid">
       <a class="home-card" href="#" onclick="showPage('music')">
@@ -279,7 +309,7 @@
       </a>
       <a class="home-card" href="#" onclick="showPage('resume')">
         <div class="home-card-icon">→</div>
-        <h3>Résumé</h3>
+        <h3>Resume</h3>
         <p>Experience, education, and skills.</p>
       </a>
     </div>
@@ -530,18 +560,21 @@
       <hr />
       <h2>Teams I Follow</h2>
       <div class="item-grid" style="margin-top:1.5rem">
+
         <div class="item-card">
-          <h3>Team Name</h3>
-          <div class="meta">Sport · League</div>
-          <p>A note about how you became a fan, your favorite player, or a memorable season or game.</p>
-          <div class="tags"><span class="tag">sport</span><span class="tag">league</span></div>
+          <h3>Liverpool FC</h3>
+          <div class="meta">Soccer · Premier League</div>
+          <p>I've been a Liverpool fan for a while but I began consistently watching games and interacting with team media around 2019. My favorite current players are Ekitike, VVD, and Szoboszlai. You never walk alone.</p>
+          <div id="lfc-widget" style="margin-top:1.25rem;"><div class="sport-loading">Loading latest data…</div></div>
         </div>
+
         <div class="item-card">
-          <h3>Team Name</h3>
-          <div class="meta">Sport · League</div>
-          <p>Another team you follow. Add or remove cards to match how many you want to highlight.</p>
-          <div class="tags"><span class="tag">sport</span><span class="tag">league</span></div>
+          <h3>Philadelphia Eagles</h3>
+          <div class="meta">American Football · NFL</div>
+          <p>I've been an Eagles fan my entire life and I don't regret it. I dyed my hair green when the won the superbowl in 2018. Fly Eagles Fly.</p>
+          <div id="eagles-widget" style="margin-top:1.25rem;"><div class="sport-loading">Loading latest data…</div></div>
         </div>
+
       </div>
       <hr />
       <h2>Sports I Play</h2>
@@ -594,20 +627,20 @@
           <h3>The Hitchhikers Guide to the Galaxy</h3>
           <div class="meta">Douglas Adams · 1979</div>
           <p>Comedy Science Fiction novel following the last man from Earth following it's destruction to hame way for an intergalactic highway. Saved by his alien friend, a writer for the guidebook and encyclopedia from whence the name of the book is derived, they travel throughout the galaxy meeting many characters and going on many adventures.</p>
-          <blockquote>So long, and thanks for all the fish</blockquote>
+          <blockquote>So long, and thanks for all the fish.</blockquote>
         </div>
 
       </div>
       <hr />
       <h2>To-Read List</h2>
-      <p style="margin-top:0.5rem">Dungeon Crawler Carl - Matt Dinniman. Invincible Comic Book 3. Children of Dune - Frank Herbert. </p>
+      <p style="margin-top:0.5rem">Dungeon Crawler Carl - Matt Dinniman. Invincible Compendium Book 3. Children of Dune - Frank Herbert. </p>
     </div>
   </div>
 
   <!-- RESUME -->
   <div id="page-resume" class="page">
     <div class="container">
-      <span class="eyebrow">Résumé</span>
+      <span class="eyebrow">Resume</span>
       <div class="resume-header">
         <h1 class="page-title">Ephram<br/>Grant.</h1>
         <p>ephram.grant@icloud.com &nbsp;·&nbsp; Fort Mill, South Carolina &nbsp;·&nbsp; linkedin.com/in/yourhandle</p>
@@ -705,12 +738,182 @@
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
 
+  // ── SPORT WIDGET HELPERS ──
+
+  function fmtDate(dateStr) {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }
+
+  function renderWidget(containerId, standing, games) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+
+    const standingHTML = standing ? `
+      <div class="sport-label">Standing</div>
+      <div class="sport-standing">
+        <span class="pos">${standing.pos}</span>
+        <span class="record">${standing.record}</span>
+      </div>
+      <hr class="sport-divider" />` : '';
+
+    const gamesHTML = games.length ? `
+      <div class="sport-label">Recent & Upcoming</div>
+      <div class="sport-widget">
+        ${games.map(g => `
+          <div class="sport-game">
+            <div class="game-teams">${g.teams}</div>
+            <div class="game-meta">${g.date}${g.venue ? ' · ' + g.venue : ''}</div>
+            ${g.result ? `<div class="game-result ${g.resultClass}">${g.result}</div>` : ''}
+          </div>`).join('')}
+      </div>` : '';
+
+    el.innerHTML = `<div class="sport-widget">${standingHTML}${gamesHTML}</div>`;
+  }
+
+  function renderError(containerId, msg) {
+    const el = document.getElementById(containerId);
+    if (el) el.innerHTML = `<div class="sport-error">${msg}</div>`;
+  }
+
+  // ── LIVERPOOL (ESPN Premier League: eng.1, team id 379) ──
+  async function loadLiverpool() {
+    try {
+      const TEAM_ID = '364';
+
+      // Standings
+      let standing = null;
+      try {
+        const sRes = await fetch('https://site.api.espn.com/apis/v2/sports/soccer/eng.1/standings');
+        const sData = await sRes.json();
+        const entries = sData?.children?.[0]?.standings?.entries || [];
+        const entry = entries.find(e => e.team?.id === TEAM_ID);
+        if (entry) {
+          const pos = entry.stats?.find(s => s.name === 'rank')?.value ?? '–';
+          const pts = entry.stats?.find(s => s.name === 'points')?.value ?? '–';
+          const w   = entry.stats?.find(s => s.name === 'wins')?.value ?? '–';
+          const d   = entry.stats?.find(s => s.name === 'ties')?.value ?? '–';
+          const l   = entry.stats?.find(s => s.name === 'losses')?.value ?? '–';
+          standing = { pos: `${pos}${ordinal(pos)}`, record: `${pts} pts · ${w}W ${d}D ${l}L` };
+        }
+      } catch(e) {}
+
+      // Events
+      const eRes = await fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/teams/${TEAM_ID}/schedule`);
+      const eData = await eRes.json();
+      const events = eData?.events || [];
+      const now = Date.now();
+
+      // Last 2 completed + next 1 upcoming
+      const completed = events.filter(e => e.competitions?.[0]?.status?.type?.completed).slice(-2);
+      const upcoming  = events.filter(e => !e.competitions?.[0]?.status?.type?.completed && new Date(e.date) > now).slice(0, 1);
+      const shown = [...completed, ...upcoming];
+
+      const games = shown.map(e => {
+        const comp = e.competitions[0];
+        const home = comp.competitors.find(c => c.homeAway === 'home');
+        const away = comp.competitors.find(c => c.homeAway === 'away');
+        const teams = `${away.team.shortDisplayName} @ ${home.team.shortDisplayName}`;
+        const isLFC_home = home.team.id === TEAM_ID;
+        const myTeam  = isLFC_home ? home : away;
+        const oppTeam = isLFC_home ? away : home;
+        let result = null, resultClass = '';
+        if (comp.status?.type?.completed) {
+          const myScore  = parseInt(myTeam.score);
+          const oppScore = parseInt(oppTeam.score);
+          const label = myScore > oppScore ? 'W' : myScore < oppScore ? 'L' : 'D';
+          resultClass = label === 'W' ? 'win' : label === 'L' ? 'loss' : 'draw';
+          result = `${label} ${myScore}–${oppScore}`;
+        }
+        return { teams, date: fmtDate(e.date), venue: home.team.shortDisplayName, result, resultClass };
+      });
+
+      renderWidget('lfc-widget', standing, games);
+    } catch(err) {
+      renderError('lfc-widget', 'Could not load Liverpool data.');
+    }
+  }
+
+  // ── EAGLES (ESPN NFL: nfl, team id 21) ──
+  async function loadEagles() {
+    try {
+      const TEAM_ID = '21';
+
+      // Standings
+      let standing = null;
+      try {
+        const sRes = await fetch('https://site.api.espn.com/apis/v2/sports/football/nfl/standings');
+        const sData = await sRes.json();
+        let entry = null;
+        for (const conf of sData?.children || []) {
+          for (const div of conf?.children || []) {
+            const found = div?.standings?.entries?.find(e => e.team?.id === TEAM_ID);
+            if (found) { entry = found; break; }
+          }
+          if (entry) break;
+        }
+        if (entry) {
+          const pos = entry.stats?.find(s => s.name === 'playoffSeed')?.value
+                   ?? entry.stats?.find(s => s.name === 'rank')?.value ?? '–';
+          const w = entry.stats?.find(s => s.name === 'wins')?.value ?? '–';
+          const l = entry.stats?.find(s => s.name === 'losses')?.value ?? '–';
+          const t = entry.stats?.find(s => s.name === 'ties')?.value;
+          const record = t && t > 0 ? `${w}-${l}-${t}` : `${w}-${l}`;
+          const pct = entry.stats?.find(s => s.name === 'winPercent')?.displayValue ?? '';
+          standing = { pos: `${pos}${ordinal(pos)}`, record: `${record}${pct ? ' · ' + pct : ''}` };
+        }
+      } catch(e) {}
+
+      // Events
+      const eRes = await fetch(`https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/${TEAM_ID}/schedule`);
+      const eData = await eRes.json();
+      const events = eData?.events || [];
+      const now = Date.now();
+
+      const completed = events.filter(e => e.competitions?.[0]?.status?.type?.completed).slice(-2);
+      const upcoming  = events.filter(e => !e.competitions?.[0]?.status?.type?.completed && new Date(e.date) > now).slice(0, 1);
+      const shown = [...completed, ...upcoming];
+
+      const games = shown.map(e => {
+        const comp = e.competitions[0];
+        const home = comp.competitors.find(c => c.homeAway === 'home');
+        const away = comp.competitors.find(c => c.homeAway === 'away');
+        const teams = `${away.team.shortDisplayName} @ ${home.team.shortDisplayName}`;
+        const isHome = home.team.id === TEAM_ID;
+        const myTeam  = isHome ? home : away;
+        const oppTeam = isHome ? away : home;
+        let result = null, resultClass = '';
+        if (comp.status?.type?.completed) {
+          const myScore  = parseInt(myTeam.score);
+          const oppScore = parseInt(oppTeam.score);
+          const label = myScore > oppScore ? 'W' : myScore < oppScore ? 'L' : 'T';
+          resultClass = label === 'W' ? 'win' : label === 'L' ? 'loss' : 'draw';
+          result = `${label} ${myScore}–${oppScore}`;
+        }
+        return { teams, date: fmtDate(e.date), venue: null, result, resultClass };
+      });
+
+      renderWidget('eagles-widget', standing, games);
+    } catch(err) {
+      renderError('eagles-widget', 'Could not load Eagles data.');
+    }
+  }
+
+  function ordinal(n) {
+    const v = parseInt(n);
+    if (isNaN(v)) return '';
+    const s = ['th','st','nd','rd'], x = v % 100;
+    return (s[(x-20)%10] || s[x] || s[0]);
+  }
+
+  // Load when sports page is opened
   function showPage(id) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
     document.getElementById('page-' + id).classList.add('active');
     document.getElementById('nav-' + id).classList.add('active');
     window.scrollTo(0, 0);
+    if (id === 'sports') { loadLiverpool(); loadEagles(); }
     return false;
   }
 
