@@ -179,6 +179,24 @@
     }
     .item-card .meta { font-size: 0.72rem; color: var(--muted); margin-bottom: 0.75rem; }
     .item-card p { font-size: 0.85rem; }
+    .cover-img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+      background: var(--tag-bg);
+      display: block;
+    }
+    .cover-img-sq {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+      background: var(--tag-bg);
+      display: block;
+    }
     .item-card blockquote {
       margin-top: 1rem;
       padding: 0.6rem 1rem;
@@ -300,12 +318,12 @@
       <a class="home-card" href="#" onclick="showPage('sports')">
         <div class="home-card-icon">◎</div>
         <h3>Sports</h3>
-        <p>Teams I follow, sports I play, and highlights.</p>
+        <p>Teams I follow.</p>
       </a>
       <a class="home-card" href="#" onclick="showPage('books')">
         <div class="home-card-icon">∷</div>
         <h3>Books</h3>
-        <p>What I'm reading, favorites, and reviews.</p>
+        <p>My favorites and To-Read List.</p>
       </a>
       <a class="home-card" href="#" onclick="showPage('resume')">
         <div class="home-card-icon">→</div>
@@ -327,6 +345,7 @@
       <h2>Favorite Artists</h2>
       <div class="item-grid" style="margin-top:1.5rem">
         <div class="item-card">
+  <img src="radiohead-cover.jpg" alt="Radiohead" class="cover-img-sq">
   <h3>Radiohead</h3>
   <div class="meta">Alt Rock · Active since 1993</div>
   <p>My favorite sonsg are How to Disappear Completely and Man of War. Discography ranked:</p>
@@ -371,12 +390,14 @@
   <div class="tags"><span class="tag">Experimental</span><span class="tag">Melancholic</span></div>
 </div>
         <div class="item-card">
+          <img src="willy-rodriguez-cover.jpg" alt="Willy Rodriguez" class="cover-img-sq">
           <h3>Willy Rodgriguez</h3>
           <div class="meta">Noise Pop · Active since 2021</div>
           <p>Critically underrated. Composed of anonymous duo Gabe and Alex. They have since disbanded, but Alex has continued making music under the moniker Drug Bug (The new album Hell for a Basement is great). Wetdream is a top 5 album and Revisited is a top 5 song.</p>
           <div class="tags"><span class="tag">Wall of Sound</span><span class="tag">Underground</span><span class="tag">Emotional</span></div>
         </div>
         <div class="item-card">
+          <img src="have-a-nice-life-cover.jpg" alt="Have a Nice Life" class="cover-img-sq">
           <h3>Have a Nice Life</h3>
           <div class="meta">Dark Shoegaze · Active since 2000</div>
           <p>Highly experimental and dark sound. Primarily known for their 2008 album deathconciousness which ranks in my top 5. They served as an entry point into shoegaze music for me.</p>
@@ -389,8 +410,25 @@
       <hr />
       <h2>What I Have Listened to in the Past Week</h2>
       <div class="item-grid" style="margin-top:1.5rem">
-
+	
+	<div class="item-card">
+          <img src="experimental-rap-cover.jpg" alt="EXPERIMENTAL RAP" class="cover-img-sq">
+          <div style="display:flex; justify-content:space-between; align-items:baseline; gap:1rem;">
+            <h3 style="margin-bottom:0.15rem;">EXPERIMENTAL RAP</h3>
+            <div style="display:flex; gap:0.2rem; flex-shrink:0;" aria-label="Rating">
+              <span style="font-size:0.8rem; color:var(--text);">★</span>
+              <span style="font-size:0.8rem; color:var(--text);">★</span>
+              <span style="font-size:0.8rem; color:var(--text);">★</span>
+              <span style="font-size:0.8rem; color:var(--border);">★</span>
+              <span style="font-size:0.8rem; color:var(--border);">★</span>
+            </div>
+          </div>
+          <div class="meta">JPEGMAFIA · Hardcore Hip Hop</div>
+          <p>Honestly not as experimental as I would have liked for an album titled this. While not terrible, I feel like this is a step down from the last few albums. I really enjoyed I lay down my life for you, Scaring the hoes, and offline, so this release is one of my most dissapointing listens so far this year. </p>
+        </div>
+	
         <div class="item-card">
+          <img src="somewhere-along-the-highway-cover.jpg" alt="Somewhere Along The Highway" class="cover-img-sq">
           <div style="display:flex; justify-content:space-between; align-items:baseline; gap:1rem;">
             <h3 style="margin-bottom:0.15rem;">Somewhere Along The Highway</h3>
             <div style="display:flex; gap:0.2rem; flex-shrink:0;" aria-label="Rating">
@@ -406,6 +444,7 @@
         </div>
 
         <div class="item-card">
+          <img src="boris-no-cover.jpg" alt="No - Boris" class="cover-img-sq">
           <div style="display:flex; justify-content:space-between; align-items:baseline; gap:1rem;">
             <h3 style="margin-bottom:0.15rem;">No</h3>
             <div style="display:flex; gap:0.2rem; flex-shrink:0;" aria-label="Rating">
@@ -421,6 +460,7 @@
         </div>
 
         <div class="item-card">
+          <img src="plantasia-cover.jpg" alt="Mother Earth's Plantasia" class="cover-img-sq">
           <div style="display:flex; justify-content:space-between; align-items:baseline; gap:1rem;">
             <h3 style="margin-bottom:0.15rem;">Mother Earth's Plantasia</h3>
             <div style="display:flex; gap:0.2rem; flex-shrink:0;" aria-label="Rating">
@@ -436,6 +476,7 @@
         </div>
 
         <div class="item-card">
+          <img src="undergrowth-cover.jpg" alt="Undergrowth" class="cover-img-sq">
           <div style="display:flex; justify-content:space-between; align-items:baseline; gap:1rem;">
             <h3 style="margin-bottom:0.15rem;">Undergrowth</h3>
             <div style="display:flex; gap:0.2rem; flex-shrink:0;" aria-label="Rating">
@@ -451,6 +492,7 @@
         </div>
 
         <div class="item-card">
+          <img src="soda-stereo-cover.jpg" alt="Soda Stereo" class="cover-img-sq">
           <div style="display:flex; justify-content:space-between; align-items:baseline; gap:1rem;">
             <h3 style="margin-bottom:0.15rem;">Soda Stereo</h3>
             <div style="display:flex; gap:0.2rem; flex-shrink:0;" aria-label="Rating">
@@ -481,18 +523,21 @@
       <h2>All-Time Favorites</h2>
       <div class="item-grid" style="margin-top:1.5rem">
         <div class="item-card">
+          <img src="portal2-cover.jpg" alt="Portal 2" class="cover-img">
           <h3>Portal 2</h3>
           <div class="meta">PC · 2011 · Valve</div>
           <p>My favorite game in both of its primary genres. I beat this while in a call with friends and it is one of my favorite gaming experiences</p>
           <div class="tags"><span class="tag">Puzzle</span><span class="tag">Platformer</span><span class="tag">Single-Player</span></div>
         </div>
         <div class="item-card">
+          <img src="elden-ring-cover.jpg" alt="Elden Ring" class="cover-img">
           <h3>Elden Ring</h3>
           <div class="meta">PC · 2022 · FromSoftware</div>
           <p>Beating this game is so rewarding, the large number of amazing bossfights and interesting lore make this game unmatched. I've rebeaten it 4 times.</p>
           <div class="tags"><span class="tag">Soulsborne</span><span class="tag">Action RPG</span><span class="tag">Challenging</span></div>
         </div>
         <div class="item-card">
+          <img src="terraria-cover.jpg" alt="Terraria" class="cover-img">
           <h3>Terraria</h3>
           <div class="meta">PC · 2011 · Re-Logic</div>
           <p>The ultimate survival sandbox game (Sorry MC). Amazing bosses, loads of items, unique classes, and fantastic mod support have given me thousands of hours of fun.</p>
@@ -555,7 +600,7 @@
       <span class="eyebrow">Hobby</span>
       <h1 class="page-title">Sports.</h1>
       <div class="hobby-intro">
-        <p>Add a line or two about your relationship with sports — whether you play, watch, or both, and what draws you to it.</p>
+        <p>I love to watch most sports, but I primarily focus on the two forms of Football. I played Soccer for most of my life growing up and was terrible at every other sport I tried.</p>
       </div>
       <hr />
       <h2>Teams I Follow</h2>
@@ -564,34 +609,19 @@
         <div class="item-card">
           <h3>Liverpool FC</h3>
           <div class="meta">Soccer · Premier League</div>
-          <p>I've been a Liverpool fan for a while but I began consistently watching games and interacting with team media around 2019. My favorite current players are Ekitike, VVD, and Szoboszlai. You never walk alone.</p>
+          <p>I've been a Liverpool fan for a while but I began consistently watching games and interacting with team media around 2019. My favorite current players are Ekitike, VVD, and Szoboszlai.</p>
+	  <blockquote>You Never Walk Alone.</blockquote> 
           <div id="lfc-widget" style="margin-top:1.25rem;"><div class="sport-loading">Loading latest data…</div></div>
         </div>
 
         <div class="item-card">
           <h3>Philadelphia Eagles</h3>
           <div class="meta">American Football · NFL</div>
-          <p>I've been an Eagles fan my entire life and I don't regret it. I dyed my hair green when the won the superbowl in 2018. Fly Eagles Fly.</p>
+          <p>I've been an Eagles fan my entire life and I don't regret it. I dyed my hair green when the won the superbowl in 2018.</p>
+	  <blockquote>Fly, Eagles Fly</blockquote>  
           <div id="eagles-widget" style="margin-top:1.25rem;"><div class="sport-loading">Loading latest data…</div></div>
         </div>
-
-      </div>
-      <hr />
-      <h2>Sports I Play</h2>
-      <div class="item-grid" style="margin-top:1.5rem">
-        <div class="item-card">
-          <h3>Sport Name</h3>
-          <div class="meta">How long · Casual / Competitive</div>
-          <p>A short note about your experience with this sport — how you got into it, your level, or what you enjoy about it.</p>
-          <div class="tags"><span class="tag">tag</span></div>
-        </div>
-        <div class="item-card">
-          <h3>Sport Name</h3>
-          <div class="meta">How long · Casual / Competitive</div>
-          <p>Another sport. If you don't play any, remove this section and replace it with something like "Moments I Won't Forget" instead.</p>
-          <div class="tags"><span class="tag">tag</span></div>
-        </div>
-      </div>
+	</div>
     </div>
   </div>
 
@@ -607,23 +637,27 @@
       <h2>All-Time Favorites</h2>
       <div class="item-grid" style="margin-top:1.5rem">
         <div class="item-card">
+          <img src="good-omens-cover.jpg" alt="Good Omens" class="cover-img">
           <h3>Good Omens: The Nice and Accurate Prophecies of Agnes Nutter, Witch</h3>
           <div class="meta">Neil Gaiman and Terry Pratchett · 1990</div>
           <p>Hillarious religious comedy surrounding an angel and demon working to prevent the apocolypse. Constant humour that lands everytime for me.</p>
           <blockquote>If you stop tellin people it's all sorted out after they're dead, they might try sorting it all out while they're alive.</blockquote>        </div>
         <div class="item-card">
+          <img src="skulduggery-cover.jpg" alt="Skulduggery Pleasant" class="cover-img">
           <h3>Skulduggery Pleasant</h3>
           <div class="meta">Derek Landy · 2007 - Present</div>
           <p>My favorite book series. Contemporary fantasy set primarily in Ireland that follows the title Character Skulduggery Pleasant, a wisecracking, skeleton detective and his partner Valkyrie Cain as they fight supernatural and worldthreatening battles. There's currently 18 main series books spanning 3 phases and a number of spinoffs. The first phase (books 1-9) is the best.</p>
           <blockquote>He's dead. She's deadly. The bad guys don't stand a chance.</blockquote>
         </div>
         <div class="item-card">
+          <img src="enders-shadow-cover.jpg" alt="Ender's Shadow" class="cover-img">
           <h3>Ender's Shadow</h3>
           <div class="meta">Orson Scott Card · 1999</div>
           <p>Science Fiction novel surrounding a temporarily unified Earth sending the smartest children to a space station school to teach them to become commanders to defend Earth following numerous attacks from "The Formics" a buglike alien race. Ender's shadow is a parallel novel to Ender's Game, and follows Bean, a small, hyper-intellegent child as he goes from a homeless child to working with Ender, the main character of Ender's Game. Shadow is also the precurersor to a series following Earth's politcal state following *spoilers*.</p>
           <blockquote>We are, when the cause is sufficient, insane.</blockquote>
         </div>
 <div class="item-card">
+          <img src="hitchhikers-guide-cover.jpg" alt="The Hitchhiker's Guide to the Galaxy" class="cover-img">
           <h3>The Hitchhikers Guide to the Galaxy</h3>
           <div class="meta">Douglas Adams · 1979</div>
           <p>Comedy Science Fiction novel following the last man from Earth following it's destruction to hame way for an intergalactic highway. Saved by his alien friend, a writer for the guidebook and encyclopedia from whence the name of the book is derived, they travel throughout the galaxy meeting many characters and going on many adventures.</p>
