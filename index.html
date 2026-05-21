@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ephram Grant's Site</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f9f8f5;
+      --surface: #ffffff;
+      --border: #e8e5de;
+      --text: #1a1916;
+      --muted: #7a7870;
+      --accent: #1a1916;
+      --tag-bg: #efeee9;
+      --nav-h: 64px;
+      font-size: 16px;
+    }
+
+    body {
+      font-family: 'DM Mono', monospace;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: var(--nav-h);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2.5rem;
+    }
+    .nav-logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.25rem;
+      letter-spacing: -0.01em;
+      color: var(--text);
+      text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 0.25rem; }
+    .nav-links a {
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 0.4rem 0.75rem;
+      border-radius: 4px;
+      transition: color 0.15s, background 0.15s;
+    }
+    .nav-links a:hover { color: var(--text); background: var(--tag-bg); }
+    .nav-links a.active { color: var(--text); }
+
+    /* ── LAYOUT ── */
+    main { padding-top: var(--nav-h); }
+    .page { display: none; min-height: calc(100vh - var(--nav-h)); }
+    .page.active { display: block; }
+
+    .container { max-width: 760px; margin: 0 auto; padding: 4rem 2rem 6rem; }
+    .wide { max-width: 1000px; margin: 0 auto; padding: 4rem 2rem 6rem; }
+
+    /* ── TYPOGRAPHY ── */
+    .serif { font-family: 'DM Serif Display', serif; }
+    h1.page-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+    }
+    h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.5rem;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.75rem;
+    }
+    .eyebrow {
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1rem;
+      display: block;
+    }
+    p { line-height: 1.75; color: var(--muted); font-size: 0.9rem; }
+    p + p { margin-top: 1rem; }
+
+    /* ── DIVIDER ── */
+    hr { border: none; border-top: 1px solid var(--border); margin: 3rem 0; }
+
+    /* ── TAGS ── */
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 1rem; }
+    .tag {
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+      background: var(--tag-bg);
+      color: var(--muted);
+      padding: 0.3rem 0.65rem;
+      border-radius: 3px;
+    }
+
+    /* ── HOME ── */
+    .home-hero {
+      padding: 6rem 2rem 0;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+    .home-hero p { font-size: 1rem; max-width: 480px; margin-top: 1.5rem; }
+    .home-grid {
+      max-width: 760px;
+      margin: 4rem auto 0;
+      padding: 0 2rem 6rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--border);
+    }
+    .home-card {
+      background: var(--surface);
+      padding: 1.75rem;
+      cursor: pointer;
+      transition: background 0.15s;
+      text-decoration: none;
+      display: block;
+    }
+    .home-card:hover { background: var(--tag-bg); }
+    .home-card-icon { font-size: 1.25rem; margin-bottom: 1rem; }
+    .home-card h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1rem;
+      margin-bottom: 0.4rem;
+    }
+    .home-card p { font-size: 0.78rem; }
+
+    /* ── RESUME ── */
+    .resume-header { margin-bottom: 3rem; }
+    .resume-section { margin-bottom: 2.5rem; }
+    .resume-item { margin-bottom: 1.75rem; }
+    .resume-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1rem;
+      margin-bottom: 0.3rem;
+    }
+    .resume-item-header h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1rem;
+      letter-spacing: 0;
+    }
+    .resume-date { font-size: 0.72rem; color: var(--muted); white-space: nowrap; }
+    .resume-org { font-size: 0.78rem; color: var(--muted); margin-bottom: 0.5rem; }
+    .resume-desc { font-size: 0.82rem; line-height: 1.7; color: var(--muted); }
+    .resume-skills { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+
+    /* ── HOBBY CARDS ── */
+    .hobby-intro { margin-bottom: 3rem; }
+    .item-grid { display: flex; flex-direction: column; gap: 2rem; }
+    .item-card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.75rem;
+      background: var(--surface);
+    }
+    .item-card h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.15rem;
+      margin-bottom: 0.4rem;
+    }
+    .item-card .meta { font-size: 0.72rem; color: var(--muted); margin-bottom: 0.75rem; }
+    .item-card p { font-size: 0.85rem; }
+
+    /* ── CUBING STATS ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 1px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--border);
+      margin: 2rem 0;
+    }
+    .stat-cell {
+      background: var(--surface);
+      padding: 1.25rem 1rem;
+      text-align: center;
+    }
+    .stat-cell .val {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.75rem;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+    .stat-cell .lbl { font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#" onclick="showPage('home')">EG</a>
+  <div class="nav-links">
+    <a href="#" onclick="showPage('home')" id="nav-home" class="active">Home</a>
+    <a href="#" onclick="showPage('music')" id="nav-music">Music</a>
+    <a href="#" onclick="showPage('gaming')" id="nav-gaming">Gaming</a>
+    <a href="#" onclick="showPage('cubing')" id="nav-cubing">Cubing</a>
+    <a href="#" onclick="showPage('sports')" id="nav-sports">Sports</a>
+    <a href="#" onclick="showPage('books')" id="nav-books">Books</a>
+    <a href="#" onclick="showPage('resume')" id="nav-resume">Résumé</a>
+  </div>
+</nav>
+
+<main>
+
+  <!-- HOME -->
+  <div id="page-home" class="page active">
+    <div class="home-hero">
+      <span class="eyebrow">Welcome</span>
+      <h1 class="page-title">Ephram<br/>Grant's<br/>Homepage</h1>
+      <p>My personal website, updated regularly. Contains my interests and experience.</p>
+    </div>
+    <div class="home-grid">
+      <a class="home-card" href="#" onclick="showPage('music')">
+        <div class="home-card-icon">♩</div>
+        <h3>Music</h3>
+        <p>Artists, playlists & what I'm listening to.</p>
+      </a>
+      <a class="home-card" href="#" onclick="showPage('gaming')">
+        <div class="home-card-icon">◈</div>
+        <h3>Gaming</h3>
+        <p>Favorites, currently playing, and wishlist.</p>
+      </a>
+      <a class="home-card" href="#" onclick="showPage('cubing')">
+        <div class="home-card-icon">⬡</div>
+        <h3>Cubing</h3>
+        <p>Solves, times, and puzzle collection.</p>
+      </a>
+      <a class="home-card" href="#" onclick="showPage('sports')">
+        <div class="home-card-icon">◎</div>
+        <h3>Sports</h3>
+        <p>Teams I follow, sports I play, and highlights.</p>
+      </a>
+      <a class="home-card" href="#" onclick="showPage('books')">
+        <div class="home-card-icon">∷</div>
+        <h3>Books</h3>
+        <p>What I'm reading, favorites, and reviews.</p>
+      </a>
+      <a class="home-card" href="#" onclick="showPage('resume')">
+        <div class="home-card-icon">→</div>
+        <h3>Résumé</h3>
+        <p>Experience, education, and skills.</p>
+      </a>
+    </div>
+  </div>
+
+  <!-- MUSIC -->
+  <div id="page-music" class="page">
+    <div class="container">
+      <span class="eyebrow">Hobby</span>
+      <h1 class="page-title">Music.</h1>
+      <div class="hobby-intro">
+        <p>I've been listening to an album a day for the past ~8 months. I primarily listen to Alternative Rock and Metal, but I recently have been branching out into other genres.</p>
+      </div>
+      <hr />
+      <h2>Favorite Artists</h2>
+      <div class="item-grid" style="margin-top:1.5rem">
+        <div class="item-card">
+  <h3>Radiohead</h3>
+  <div class="meta">Alt Rock · Active since 1993</div>
+  <p>My favorite sonsg are How to Disappear Completely and Man of War. Discography ranked:</p>
+  <ol style="margin-top: 1rem; padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 0.4rem;">
+    <li style="display: flex; gap: 0.75rem; font-size: 0.82rem; align-items: baseline;">
+      <span style="color: var(--muted); font-size: 0.68rem; min-width: 1rem;">1</span>
+      <span>OK Computer</span>
+    </li>
+    <li style="display: flex; gap: 0.75rem; font-size: 0.82rem; align-items: baseline;">
+      <span style="color: var(--muted); font-size: 0.68rem; min-width: 1rem;">2</span>
+      <span>In Rainbows</span>
+    </li>
+    <li style="display: flex; gap: 0.75rem; font-size: 0.82rem; align-items: baseline;">
+      <span style="color: var(--muted); font-size: 0.68rem; min-width: 1rem;">3</span>
+      <span>Kid A</span>
+    </li>
+    <li style="display: flex; gap: 0.75rem; font-size: 0.82rem; align-items: baseline;">
+      <span style="color: var(--muted); font-size: 0.68rem; min-width: 1rem;">4</span>
+      <span>A Moon Shaped Pool</span>
+    </li>
+<li style="display: flex; gap: 0.75rem; font-size: 0.82rem; align-items: baseline;">
+      <span style="color: var(--muted); font-size: 0.68rem; min-width: 1rem;">5</span>
+      <span>Hail to the Thief</span>
+    </li>
+    <li style="display: flex; gap: 0.75rem; font-size: 0.82rem; align-items: baseline;">
+      <span style="color: var(--muted); font-size: 0.68rem; min-width: 1rem;">6</span>
+      <span>The Bends</span>
+    </li>
+<li style="display: flex; gap: 0.75rem; font-size: 0.82rem; align-items: baseline;">
+      <span style="color: var(--muted); font-size: 0.68rem; min-width: 1rem;">1</span>
+      <span>Amnesiac</span>
+    </li>
+    <li style="display: flex; gap: 0.75rem; font-size: 0.82rem; align-items: baseline;">
+      <span style="color: var(--muted); font-size: 0.68rem; min-width: 1rem;">2</span>
+      <span>The King of Limbs</span>
+    </li>
+<li style="display: flex; gap: 0.75rem; font-size: 0.82rem; align-items: baseline;">
+      <span style="color: var(--muted); font-size: 0.68rem; min-width: 1rem;">9</span>
+      <span>Pablo Honey</span>
+    </li>
+  </ol>
+  <div class="tags"><span class="tag">Experimental</span><span class="tag">Melancholic</span></div>
+</div>
+        <div class="item-card">
+          <h3>Willy Rodgriguez</h3>
+          <div class="meta">Noise Pop · Active since 2021</div>
+          <p>Critically underrated. Composed of anonymous duo Gabe and Alex. They have since disbanded, but Alex has continued making music under the moniker Drug Bug (The new album Hell for a Basement is great). Wetdream is a top 5 album and Revisited is a top 5 song.</p>
+          <div class="tags"><span class="tag">Wall of Sound</span><span class="tag">Underground</span><span class="tag">Emotional</span></div>
+        </div>
+        <div class="item-card">
+          <h3>Have a Nice Life</h3>
+          <div class="meta">Dark Shoegaze · Active since 2000</div>
+          <p>Highly experimental and dark sound. Primarily known for their 2008 album deathconciousness which ranks in my top 5. They served as an entry point into shoegaze music for me.</p>
+          <div class="tags"><span class="tag">Post-industrial doomgaze</span><span class="tag">Post-Punk</span></div>
+        </div>
+      </div>
+      <hr />
+      <h2>Relevant Links</h2>
+      <p style="margin-top:0.5rem">Add Spotify and rate your music links here at some point</p>
+      <hr />
+      <h2>What I Have Listened to in the Past Week</h2>
+      <div class="item-grid" style="margin-top:1.5rem">
+
+        <div class="item-card">
+          <div style="display:flex; justify-content:space-between; align-items:baseline; gap:1rem;">
+            <h3 style="margin-bottom:0.15rem;">Somewhere Along The Highway</h3>
+            <div style="display:flex; gap:0.2rem; flex-shrink:0;" aria-label="Rating">
+              <span style="font-size:0.8rem; color:var(--text);">★</span>
+              <span style="font-size:0.8rem; color:var(--text);">★</span>
+              <span style="font-size:0.8rem; color:var(--text);">★</span>
+              <span style="font-size:0.8rem; color:var(--text);">★</span>
+              <span style="font-size:0.8rem; color:var(--text);">★</span>
+            </div>
+          </div>
+          <div class="meta">Cult of Luna · Post-Metal</div>
+          <p>Very long songs with great ambience and guitar riffs. Just an all-around fantastic album.</p>
+        </div>
+
+        <div class="item-card">
+          <div style="display:flex; justify-content:space-between; align-items:baseline; gap:1rem;">
+            <h3 style="margin-bottom:0.15rem;">No</h3>
+            <div style="display:flex; gap:0.2rem; flex-shrink:0;" aria-label="Rating">
+              <span style="font-size:0.8rem; color:var(--text);">★</span>
+              <span style="font-size:0.8rem; color:var(--text);">★</span>
+              <span style="font-size:0.8rem; color:var(--text);">★</span>
+              <span style="font-size:0.8rem; color:var(--text);">★</span>
+              <span style="font-size:0.8rem; color:var(--border);">★</span>
+            </div>
+          </div>
+          <div class="meta">Boris · Hardcore Punk</div>
+          <p>Fun japanese hardcore album. Overall album quality was a little inconsistent but the highs were very high</p>
+        </div>
+
+        <div class="item-card">
+          <div style="display:flex; justify-content:space-between; align-items:baseline; gap:1rem;">
+            <h3 style="margin-bottom:0.15rem;">Mother Earth's Plantasia</h3>
+            <div style="display:flex; gap:0.2rem; flex-shrink:0;" aria-label="Rating">
+              <span style="font-size:0.8rem; color:var(--text);">★</span>
+              <span style="font-size:0.8rem; color:var(--text);">★</span>
+              <span style="font-size:0.8rem; color:var(--text);">★</span>
+              <span style="font-size:0.8rem; color:var(--text);">★</span>
+              <span style="font-size:0.8rem; color:var(--border);">★</span>
+            </div>
+          </div>
+          <div class="meta">Mort Garson · Electronic</div>
+          <p>Unique album predicated on the idea that  the songs were made for plants to listen to. It has a unique story where the songs were illegaly uploaded to YouTube and caused a cult following. Extremely happy and enjoyable album.</p>
+        </div>
+
+        <div class="item-card">
+          <div style="display:flex; justify-content:space-between; align-items:baseline; gap:1rem;">
+            <h3 style="margin-bottom:0.15rem;">Undergrowth</h3>
+            <div style="display:flex; gap:0.2rem; flex-shrink:0;" aria-label="Rating">
+              <span style="font-size:0.8rem; color:var(--text);">★</span>
+              <span style="font-size:0.8rem; color:var(--text);">★</span>
+              <span style="font-size:0.8rem; color:var(--text);">★</span>
+              <span style="font-size:0.8rem; color:var(--border);">★</span>
+              <span style="font-size:0.8rem; color:var(--border);">★</span>
+            </div>
+          </div>
+          <div class="meta">Dusty · Emo Rap </div>
+          <p>Unique Emo Rap and industrial rock blend. I really enjoyed some production and lyrical choices on some songs (LET GO, LOVE LORN, NOBODY). My overall enjoyment was dragged down due to the entire album having an odd autotune voice. It works on some songs, but it makes some very annoying.</p>
+        </div>
+
+        <div class="item-card">
+          <div style="display:flex; justify-content:space-between; align-items:baseline; gap:1rem;">
+            <h3 style="margin-bottom:0.15rem;">Soda Stereo</h3>
+            <div style="display:flex; gap:0.2rem; flex-shrink:0;" aria-label="Rating">
+              <span style="font-size:0.8rem; color:var(--text);">★</span>
+              <span style="font-size:0.8rem; color:var(--text);">★</span>
+              <span style="font-size:0.8rem; color:var(--text);">★</span>
+              <span style="font-size:0.8rem; color:var(--text);">★</span>
+              <span style="font-size:0.8rem; color:var(--border);">★</span>
+            </div>
+          </div>
+          <div class="meta">Soda Stereo · Pop Rock</div>
+          <p>Fun, relatively short spanish rock album. </p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- GAMING -->
+  <div id="page-gaming" class="page">
+    <div class="container">
+      <span class="eyebrow">Hobby</span>
+      <h1 class="page-title">Gaming.</h1>
+      <div class="hobby-intro">
+        <p>I have been playing videogames for the majority of my life and it is one of my most consistent past times. I primarily play on PC and Nintendo Consoles. I try to have a blend of singleplayer and multiplayer games.</p>
+      </div>
+      <hr />
+      <h2>All-Time Favorites</h2>
+      <div class="item-grid" style="margin-top:1.5rem">
+        <div class="item-card">
+          <h3>Portal 2</h3>
+          <div class="meta">PC · 2011 · Valve</div>
+          <p>My favorite game in both of its primary genres. I beat this while in a call with friends and it is one of my favorite gaming experiences</p>
+          <div class="tags"><span class="tag">Puzzle</span><span class="tag">Platformer</span><span class="tag">Single-Player</span></div>
+        </div>
+        <div class="item-card">
+          <h3>Elden Ring</h3>
+          <div class="meta">PC · 2022 · FromSoftware</div>
+          <p>Beating this game is so rewarding, the large number of amazing bossfights and interesting lore make this game unmatched. I've rebeaten it 4 times.</p>
+          <div class="tags"><span class="tag">Soulsborne</span><span class="tag">Action RPG</span><span class="tag">Challenging</span></div>
+        </div>
+        <div class="item-card">
+          <h3>Terraria</h3>
+          <div class="meta">PC · 2011 · Re-Logic</div>
+          <p>The ultimate survival sandbox game (Sorry MC). Amazing bosses, loads of items, unique classes, and fantastic mod support have given me thousands of hours of fun.</p>
+          <div class="tags"><span class="tag">Indie</span><span class="tag">Sandbox</span><span class="tag">2D Survival</span></div>
+        </div>
+      </div>
+      <hr />
+      <h2>Currently Playing</h2>
+      <p style="margin-top:0.5rem">I'm working through the Dark Souls Trilogy and I just picked up Yoshi and the Mysterious Book.</p>
+    </div>
+    </div>
+
+  </div>
+
+  <!-- CUBING -->
+  <div id="page-cubing" class="page">
+    <div class="container">
+      <span class="eyebrow">Hobby</span>
+      <h1 class="page-title">Cubing.</h1>
+      <div class="hobby-intro">
+        <p>I've been solving twisty puzzles for over 10 years, although I've never entered a competition. I love developing algorithms and solving new puzzles.</p>
+      </div>
+      <div class="stats-row">
+        <div class="stat-cell"><span class="val">17:89</span><span class="lbl">3×3 PB</span></div>
+        <div class="stat-cell"><span class="val">3:90</span><span class="lbl">2x2 PB</span></div>
+        <div class="stat-cell"><span class="val">IDK</span><span class="lbl">Pyraminx PB</span></div>
+        <div class="stat-cell"><span class="val">Too Many</span><span class="lbl">Puzzles owned</span></div>
+      </div>
+      <hr />
+      <h2>My Collection</h2>
+      <div class="item-grid" style="margin-top:1.5rem">
+        <div class="item-card">
+          <h3>Puzzle Name (e.g. 3×3)</h3>
+          <div class="meta">Main / Daily driver</div>
+          <p>A line or two about this puzzle — what you like about it, your setup (lube, tension), and your current PB.</p>
+          <div class="tags"><span class="tag">WCA event</span><span class="tag">main</span></div>
+        </div>
+        <div class="item-card">
+          <h3>Puzzle Name (e.g. Pyraminx)</h3>
+          <div class="meta">Fun / Occasional</div>
+          <p>Another puzzle from your collection. Great place to mention anything unusual or a puzzle you're learning.</p>
+          <div class="tags"><span class="tag">WCA event</span></div>
+        </div>
+        <div class="item-card">
+          <h3>Puzzle Name</h3>
+          <div class="meta">Display / Shelf</div>
+          <p>A display piece, a novelty, or a puzzle you're still working on. Add or remove cards to match your collection.</p>
+          <div class="tags"><span class="tag">novelty</span></div>
+        </div>
+      </div>
+      <hr />
+      <h2>Method & Goals</h2>
+      <p style="margin-top:0.5rem">I use CFOP to solve. I'm currently working on memorizing more OLL algorithims. I also recently have tried blindfold solving. I haven't sucessfully completed a blindfold solve, but I've gotten very close!</p>
+    </div>
+  </div>
+
+  <!-- SPORTS -->
+  <div id="page-sports" class="page">
+    <div class="container">
+      <span class="eyebrow">Hobby</span>
+      <h1 class="page-title">Sports.</h1>
+      <div class="hobby-intro">
+        <p>Add a line or two about your relationship with sports — whether you play, watch, or both, and what draws you to it.</p>
+      </div>
+      <hr />
+      <h2>Teams I Follow</h2>
+      <div class="item-grid" style="margin-top:1.5rem">
+        <div class="item-card">
+          <h3>Team Name</h3>
+          <div class="meta">Sport · League</div>
+          <p>A note about how you became a fan, your favorite player, or a memorable season or game.</p>
+          <div class="tags"><span class="tag">sport</span><span class="tag">league</span></div>
+        </div>
+        <div class="item-card">
+          <h3>Team Name</h3>
+          <div class="meta">Sport · League</div>
+          <p>Another team you follow. Add or remove cards to match how many you want to highlight.</p>
+          <div class="tags"><span class="tag">sport</span><span class="tag">league</span></div>
+        </div>
+      </div>
+      <hr />
+      <h2>Sports I Play</h2>
+      <div class="item-grid" style="margin-top:1.5rem">
+        <div class="item-card">
+          <h3>Sport Name</h3>
+          <div class="meta">How long · Casual / Competitive</div>
+          <p>A short note about your experience with this sport — how you got into it, your level, or what you enjoy about it.</p>
+          <div class="tags"><span class="tag">tag</span></div>
+        </div>
+        <div class="item-card">
+          <h3>Sport Name</h3>
+          <div class="meta">How long · Casual / Competitive</div>
+          <p>Another sport. If you don't play any, remove this section and replace it with something like "Moments I Won't Forget" instead.</p>
+          <div class="tags"><span class="tag">tag</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOOKS -->
+  <div id="page-books" class="page">
+    <div class="container">
+      <span class="eyebrow">Hobby</span>
+      <h1 class="page-title">Books.</h1>
+      <div class="hobby-intro">
+        <p>Add a line or two about your reading habits — how much you read, what genres pull you in, or what reading means to you.</p>
+      </div>
+      <hr />
+      <h2>All-Time Favorites</h2>
+      <div class="item-grid" style="margin-top:1.5rem">
+        <div class="item-card">
+          <h3>Book Title</h3>
+          <div class="meta">Author · Year published</div>
+          <p>Why this book stuck with you — a theme, a line, a character, or just how it made you feel. Keep it personal.</p>
+          <div class="tags"><span class="tag">genre</span><span class="tag">tag</span></div>
+        </div>
+        <div class="item-card">
+          <h3>Book Title</h3>
+          <div class="meta">Author · Year published</div>
+          <p>Another favorite. These are great for showing off taste — don't be shy about niche picks.</p>
+          <div class="tags"><span class="tag">genre</span><span class="tag">tag</span></div>
+        </div>
+        <div class="item-card">
+          <h3>Book Title</h3>
+          <div class="meta">Author · Year published</div>
+          <p>A third. Add or remove cards to taste — three to five tends to feel right without being overwhelming.</p>
+          <div class="tags"><span class="tag">genre</span><span class="tag">tag</span></div>
+        </div>
+      </div>
+      <hr />
+      <h2>Currently Reading</h2>
+      <p style="margin-top:0.5rem">What's on your nightstand right now? Drop in the title, author, and a sentence on why you picked it up.</p>
+    </div>
+  </div>
+
+  <!-- RESUME -->
+  <div id="page-resume" class="page">
+    <div class="container">
+      <span class="eyebrow">Résumé</span>
+      <div class="resume-header">
+        <h1 class="page-title">Ephram<br/>Grant.</h1>
+        <p>ephram.grant@icloud.com &nbsp;·&nbsp; Fort Mill, South Carolina &nbsp;·&nbsp; linkedin.com/in/yourhandle</p>
+      </div>
+
+      <div class="resume-section">
+        <span class="eyebrow">Experience</span>
+        <div class="resume-item">
+          <div class="resume-item-header">
+            <h3>Job Title</h3>
+            <span class="resume-date">Month Year – Present</span>
+          </div>
+          <div class="resume-org">Company Name · Location</div>
+          <div class="resume-desc">One to three sentences describing your role, key responsibilities, and the impact you had. Focus on outcomes over tasks — numbers and specifics land well.</div>
+        </div>
+        <div class="resume-item">
+          <div class="resume-item-header">
+            <h3>Shift Leader</h3>
+            <span class="resume-date">September 2022 – May 2025</span>
+          </div>
+          <div class="resume-org">Topical Smoothie Cafe · Tega Cay, SC</div>
+          <div class="resume-desc">Served as a primary source of contact with customer complaints. Doled out tasks to 2-5 other employees on shift. Directed closing of store 2-4 times a week. Prepared Food and Smoothies at customer request.</div>
+        </div>
+        <div class="resume-item">
+          <div class="resume-item-header">
+            <h3>Kitchen Staff</h3>
+            <span class="resume-date">May 2025 – August 2025</span>
+          </div>
+          <div class="resume-org">Pizza Hut · Fort Mill, SC</div>
+          <div class="resume-desc">Transitionary job prior to entering college</div>
+        </div>
+      </div>
+
+      <hr />
+
+      <div class="resume-section">
+        <span class="eyebrow">Education</span>
+        <div class="resume-item">
+          <div class="resume-item-header">
+            <h3>Mathematics and Computer Science</h3>
+            <span class="resume-date">2025 – 2029</span>
+          </div>
+          <div class="resume-org">Boston University · Boston, MA</div>
+          <div class="resume-desc">Multiple leadership roles in various student orgs. Dean's Scholar. 3.8 GPA.</div>
+        </div>
+      </div>
+
+      <hr />
+
+      <div class="resume-section">
+        <span class="eyebrow">Skills</span>
+        <div class="resume-skills">
+          <span class="tag">Skill One</span>
+          <span class="tag">Skill Two</span>
+          <span class="tag">Skill Three</span>
+          <span class="tag">Skill Four</span>
+          <span class="tag">Skill Five</span>
+          <span class="tag">Skill Six</span>
+          <span class="tag">Skill Seven</span>
+          <span class="tag">Skill Eight</span>
+        </div>
+      </div>
+
+      <hr />
+
+      <div class="resume-section">
+        <span class="eyebrow">Projects</span>
+        <div class="resume-item">
+          <div class="resume-item-header">
+            <h3>Project Name</h3>
+            <span class="resume-date">Year</span>
+          </div>
+          <div class="resume-desc">A sentence or two describing the project, what you built, and the tech or skills involved. Link it if it's public.</div>
+          <div class="tags" style="margin-top:0.6rem"><span class="tag">tool</span><span class="tag">language</span></div>
+        </div>
+        <div class="resume-item">
+          <div class="resume-item-header">
+            <h3>Project Name</h3>
+            <span class="resume-date">Year</span>
+          </div>
+          <div class="resume-desc">Another project. Add or remove as needed.</div>
+          <div class="tags" style="margin-top:0.6rem"><span class="tag">tool</span><span class="tag">framework</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <span>Ephram Grant</span>
+  <span>Built with HTML · <span id="year"></span></span>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+    document.getElementById('page-' + id).classList.add('active');
+    document.getElementById('nav-' + id).classList.add('active');
+    window.scrollTo(0, 0);
+    return false;
+  }
+
+  document.querySelectorAll('a[onclick]').forEach(a => {
+    a.addEventListener('click', e => e.preventDefault());
+  });
+</script>
+</body>
+</html>
