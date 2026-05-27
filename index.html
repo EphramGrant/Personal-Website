@@ -273,6 +273,39 @@
     .sport-game .loss { color: #b94040; }
     .sport-game .draw { color: var(--muted); }
     .sport-error { font-size: 0.75rem; color: var(--muted); font-style: italic; }
+    /* ── ALBUM TABLE ── */
+    #album-table tr:hover td { background: var(--tag-bg); }
+    #album-table td {
+      padding: 0.6rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      color: var(--text);
+    }
+    #album-table td.notes-cell { color: var(--muted); font-size: 0.78rem; line-height: 1.5; }
+    .del-btn {
+      background: none; border: none; cursor: pointer;
+      color: var(--border); font-size: 0.9rem; padding: 0; line-height: 1;
+      transition: color 0.15s;
+    }
+    .del-btn:hover { color: #b94040; }
+    .star-display { display:flex; gap:0.15rem; }
+    .star-display span { font-size: 0.8rem; }
+    .tbl-th {
+      padding: 0.6rem 0.75rem;
+      font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted); font-weight: 400; user-select: none;
+    }
+    .tbl-th.sortable { cursor: pointer; }
+    .tbl-th.sortable:hover { color: var(--text); }
+    .tbl-th.sort-asc::after  { content: ' ↑'; }
+    .tbl-th.sort-desc::after { content: ' ↓'; }
+    .pg-btn {
+      padding: 0.3rem 0.6rem; border: 1px solid var(--border); border-radius: 3px;
+      background: var(--surface); color: var(--muted); font-family: inherit;
+      font-size: 0.72rem; cursor: pointer; transition: background 0.15s;
+    }
+    .pg-btn:hover { background: var(--tag-bg); color: var(--text); }
+    .pg-btn.active { background: var(--text); color: var(--bg); border-color: var(--text); }
   </style>
 </head>
 <body>
@@ -409,157 +442,47 @@
       <h2>Relevant Links</h2>
       <p style="margin-top:0.5rem">Add Spotify and rate your music links here at some point</p>
       <hr />
-      <h2>What I Have Listened to in the Past Week</h2>
-      <div class="item-grid" style="margin-top:1.5rem">
+      <h2>What I Have Listened to Recently</h2>
 
-	 <div class="item-card">
-          <div style="display:flex; justify-content:space-between; align-items:baseline; gap:1rem;">
-            <h3 style="margin-bottom:0.15rem;">Paper Airplanes, Paper Hearts</h3>
-            <div style="display:flex; gap:0.2rem; flex-shrink:0;" aria-label="Rating">
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-            </div>
-          </div>
-          <div class="meta">Everyone Asked About You · Midwest Emo</div>
-          <p>Spectacular instrumentation throughout. Vocally unqiue that lands for me in a way a majority of midwest emo or slacker rock does not. My favorite song was the closing track to disk 1, "Handsome, Beautiful".</p>
-        </div>	
+      <div id="album-log" style="margin-top:1.5rem;">
 
-	 <div class="item-card">
-          <div style="display:flex; justify-content:space-between; align-items:baseline; gap:1rem;">
-            <h3 style="margin-bottom:0.15rem;">The Mountain</h3>
-            <div style="display:flex; gap:0.2rem; flex-shrink:0;" aria-label="Rating">
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-              <span style="font-size:0.8rem; color:var(--border);">★</span>
-              <span style="font-size:0.8rem; color:var(--border);">★</span>
-            </div>
-          </div>
-          <div class="meta">Gorillaz · Synth Pop</div>
-          <p>Very unique albums. I like parts but the album is generally a mess which is too long with songs that don't blend into each other perfectly. If some of the bloat was cut out this could be a very solid album. My favorite songs were The Happy Dictator, The God of Lying, and The Shadowy Light</p>
-        </div>	
-
-	 <div class="item-card">
-          <div style="display:flex; justify-content:space-between; align-items:baseline; gap:1rem;">
-            <h3 style="margin-bottom:0.15rem;">Goldstar</h3>
-            <div style="display:flex; gap:0.2rem; flex-shrink:0;" aria-label="Rating">
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-              <span style="font-size:0.8rem; color:var(--border);">★</span>
-            </div>
-          </div>
-          <div class="meta">Imperial Triumphant · Avant-garde Metal</div>
-          <p>Solid metal album, also the second thing in a row ive listened to with a song called New York</p>
-        </div>	
-
-	 <div class="item-card">
-          <div style="display:flex; justify-content:space-between; align-items:baseline; gap:1rem;">
-            <h3 style="margin-bottom:0.15rem;">Isolation</h3>
-            <div style="display:flex; gap:0.2rem; flex-shrink:0;" aria-label="Rating">
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-              <span style="font-size:0.8rem; color:var(--border);">★</span>
-            </div>
-          </div>
-          <div class="meta">flyingfish · Shoegaze</div>
-          <p>Fun short shoegaze EP, quick but worth listen</p>
+        <!-- Controls -->
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem; align-items:center;">
+          <input id="tbl-search" oninput="tblRender()" placeholder="Search albums, artists…"
+            style="flex:1; min-width:160px; padding:0.45rem 0.65rem; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:0.78rem; background:var(--surface); color:var(--text); outline:none;" />
+          <select id="tbl-genre" onchange="tblRender()"
+            style="padding:0.45rem 0.65rem; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:0.78rem; background:var(--surface); color:var(--text); outline:none; cursor:pointer;">
+            <option value="">All genres</option>
+          </select>
+          <select id="tbl-rating" onchange="tblRender()"
+            style="padding:0.45rem 0.65rem; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:0.78rem; background:var(--surface); color:var(--text); outline:none; cursor:pointer;">
+            <option value="">All ratings</option>
+            <option value="5">★★★★★</option>
+            <option value="4">★★★★+</option>
+            <option value="3">★★★+</option>
+          </select>
         </div>
 
-	<div class="item-card">
-          <div style="display:flex; justify-content:space-between; align-items:baseline; gap:1rem;">
-            <h3 style="margin-bottom:0.15rem;">EXPERIMENTAL RAP</h3>
-            <div style="display:flex; gap:0.2rem; flex-shrink:0;" aria-label="Rating">
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-              <span style="font-size:0.8rem; color:var(--border);">★</span>
-              <span style="font-size:0.8rem; color:var(--border);">★</span>
-            </div>
-          </div>
-          <div class="meta">JPEGMAFIA · Hardcore Hip Hop</div>
-          <p>Honestly not as experimental as I would have liked for an album titled this. While not terrible, I feel like this is a step down from the last few albums. I really enjoyed I lay down my life for you, Scaring the hoes, and offline, so this release is one of my most dissapointing listens so far this year. </p>
-        </div>
-	
-        <div class="item-card">
-          <div style="display:flex; justify-content:space-between; align-items:baseline; gap:1rem;">
-            <h3 style="margin-bottom:0.15rem;">Somewhere Along The Highway</h3>
-            <div style="display:flex; gap:0.2rem; flex-shrink:0;" aria-label="Rating">
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-            </div>
-          </div>
-          <div class="meta">Cult of Luna · Post-Metal</div>
-          <p>Very long songs with great ambience and guitar riffs. Just an all-around fantastic album.</p>
+        <!-- Table -->
+        <div style="overflow-x:auto;">
+          <table id="album-table" style="width:100%; border-collapse:collapse; font-size:0.82rem;">
+            <thead>
+              <tr style="border-bottom:2px solid var(--border); text-align:left;">
+                <th class="tbl-th sortable" data-col="album"  onclick="tblSort('album')"  style="width:22%;">Album</th>
+                <th class="tbl-th sortable" data-col="artist" onclick="tblSort('artist')" style="width:16%;">Artist</th>
+                <th class="tbl-th sortable" data-col="genre"  onclick="tblSort('genre')"  style="width:14%;">Genre</th>
+                <th class="tbl-th sortable" data-col="rating" onclick="tblSort('rating')" style="width:10%;">Rating</th>
+                <th class="tbl-th" style="">Notes</th>
+              </tr>
+            </thead>
+            <tbody id="album-tbody"></tbody>
+          </table>
         </div>
 
-        <div class="item-card">
-          <div style="display:flex; justify-content:space-between; align-items:baseline; gap:1rem;">
-            <h3 style="margin-bottom:0.15rem;">No</h3>
-            <div style="display:flex; gap:0.2rem; flex-shrink:0;" aria-label="Rating">
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-              <span style="font-size:0.8rem; color:var(--border);">★</span>
-            </div>
-          </div>
-          <div class="meta">Boris · Hardcore Punk</div>
-          <p>Fun japanese hardcore album. Overall album quality was a little inconsistent but the highs were very high</p>
-        </div>
-
-        <div class="item-card">
-          <div style="display:flex; justify-content:space-between; align-items:baseline; gap:1rem;">
-            <h3 style="margin-bottom:0.15rem;">Mother Earth's Plantasia</h3>
-            <div style="display:flex; gap:0.2rem; flex-shrink:0;" aria-label="Rating">
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-              <span style="font-size:0.8rem; color:var(--border);">★</span>
-            </div>
-          </div>
-          <div class="meta">Mort Garson · Electronic</div>
-          <p>Unique album predicated on the idea that  the songs were made for plants to listen to. It has a unique story where the songs were illegaly uploaded to YouTube and caused a cult following. Extremely happy and enjoyable album.</p>
-        </div>
-
-        <div class="item-card">
-          <div style="display:flex; justify-content:space-between; align-items:baseline; gap:1rem;">
-            <h3 style="margin-bottom:0.15rem;">Undergrowth</h3>
-            <div style="display:flex; gap:0.2rem; flex-shrink:0;" aria-label="Rating">
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-              <span style="font-size:0.8rem; color:var(--border);">★</span>
-              <span style="font-size:0.8rem; color:var(--border);">★</span>
-            </div>
-          </div>
-          <div class="meta">Dusty · Emo Rap </div>
-          <p>Unique Emo Rap and industrial rock blend. I really enjoyed some production and lyrical choices on some songs (LET GO, LOVE LORN, NOBODY). My overall enjoyment was dragged down due to the entire album having an odd autotune voice. It works on some songs, but it makes some very annoying.</p>
-        </div>
-
-        <div class="item-card">
-          <div style="display:flex; justify-content:space-between; align-items:baseline; gap:1rem;">
-            <h3 style="margin-bottom:0.15rem;">Soda Stereo</h3>
-            <div style="display:flex; gap:0.2rem; flex-shrink:0;" aria-label="Rating">
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-              <span style="font-size:0.8rem; color:var(--text);">★</span>
-              <span style="font-size:0.8rem; color:var(--border);">★</span>
-            </div>
-          </div>
-          <div class="meta">Soda Stereo · Pop Rock</div>
-          <p>Fun, relatively short spanish rock album. </p>
+        <!-- Pagination -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1rem; font-size:0.75rem; color:var(--muted);">
+          <span id="tbl-info"></span>
+          <div style="display:flex; gap:0.35rem;" id="tbl-pages"></div>
         </div>
 
       </div>
@@ -995,7 +918,7 @@
     return (s[(x-20)%10] || s[x] || s[0]);
   }
 
-  // Load when sports page is opened
+  // ── SHOW PAGE ──
   function showPage(id) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
@@ -1003,12 +926,122 @@
     document.getElementById('nav-' + id).classList.add('active');
     window.scrollTo(0, 0);
     if (id === 'sports') { loadLiverpool(); loadEagles(); }
+    if (id === 'music')  { tblRender(); }
     return false;
   }
 
   document.querySelectorAll('a[onclick]').forEach(a => {
     a.addEventListener('click', e => e.preventDefault());
   });
+
+  // Init album table if music page is active on load
+  if (document.getElementById('page-music')?.classList.contains('active')) {
+    tblRender();
+  }
+  // ── ALBUM LOG ──
+  const ALBUMS = [
+    { album: "How to: Friend, Love, Freefall", artist: "Rainbow Kitten Surprise", genre: "Indie Pop",         rating: 3, notes: 'Overall pretty hit or miss. A lot of the songs were forgettable but "Holy War" and "When It Lands" were my favorites.' },
+    { album: "Paper Airplanes, Paper Hearts",  artist: "Everyone Asked About You", genre: "Midwest Emo",       rating: 5, notes: 'Spectacular instrumentation throughout. Vocally unique in a way midwest emo rarely is. Favorite: "Handsome, Beautiful".' },
+    { album: "The Mountain",                   artist: "Gorillaz",                 genre: "Synth Pop",         rating: 3, notes: "Generally a mess, too long, songs don't blend. Favorites: The Happy Dictator, The God of Lying, The Shadowy Light." },
+    { album: "Goldstar",                       artist: "Imperial Triumphant",      genre: "Avant-garde Metal", rating: 4, notes: "Solid metal album. Also the second thing in a row I've listened to with a song called New York." },
+    { album: "Isolation",                      artist: "flyingfish",               genre: "Shoegaze",          rating: 4, notes: "Fun short shoegaze EP, quick but worth a listen." },
+    { album: "EXPERIMENTAL RAP",               artist: "JPEGMAFIA",                genre: "Hardcore Hip Hop",  rating: 3, notes: "Not as experimental as the title implies. Disappointing step down from Scaring the Hoes and Offline." },
+    { album: "Somewhere Along The Highway",    artist: "Cult of Luna",             genre: "Post-Metal",        rating: 5, notes: "Very long songs with great ambience and guitar riffs. Just an all-around fantastic album." },
+    { album: "No",                             artist: "Boris",                    genre: "Hardcore Punk",     rating: 4, notes: "Fun Japanese hardcore album. Inconsistent overall but the highs were very high." },
+    { album: "Mother Earth's Plantasia",       artist: "Mort Garson",              genre: "Electronic",        rating: 4, notes: "Made for plants. Illegal YouTube upload built a cult following. Extremely happy and enjoyable." },
+    { album: "Undergrowth",                    artist: "Dusty",                    genre: "Emo Rap",           rating: 3, notes: "Emo Rap and industrial rock blend. Highlights: LET GO, LOVE LORN, NOBODY. Autotune drags it down." },
+    { album: "Soda Stereo",                    artist: "Soda Stereo",              genre: "Pop Rock",          rating: 4, notes: "Fun, relatively short Spanish rock album." },
+  ];
+
+  const TBL = { sortCol: null, sortDir: 1, page: 1, perPage: 5 };
+
+  function starsHTML(rating) {
+    return Array.from({length:5}, (_,i) =>
+      `<span style="color:${i < rating ? 'var(--text)' : 'var(--border)'}">★</span>`
+    ).join('');
+  }
+
+  function tblFiltered() {
+    const q      = (document.getElementById('tbl-search')?.value  || '').toLowerCase();
+    const genre  =  document.getElementById('tbl-genre')?.value   || '';
+    const minRat = parseInt(document.getElementById('tbl-rating')?.value || '0') || 0;
+    return ALBUMS.filter(a =>
+      (!q      || a.album.toLowerCase().includes(q) || a.artist.toLowerCase().includes(q) || a.notes.toLowerCase().includes(q)) &&
+      (!genre  || a.genre === genre) &&
+      (a.rating >= minRat)
+    );
+  }
+
+  function tblSort(col) {
+    if (TBL.sortCol === col) TBL.sortDir *= -1;
+    else { TBL.sortCol = col; TBL.sortDir = 1; }
+    TBL.page = 1;
+    tblRender();
+  }
+
+  function tblRender() {
+    const tbody = document.getElementById('album-tbody');
+    if (!tbody) return;
+
+    // Update genre dropdown with unique genres
+    const genSel = document.getElementById('tbl-genre');
+    if (genSel && genSel.options.length === 1) {
+      [...new Set(ALBUMS.map(a => a.genre))].sort().forEach(g => {
+        const o = document.createElement('option'); o.value = g; o.textContent = g;
+        genSel.appendChild(o);
+      });
+    }
+
+    let rows = tblFiltered();
+
+    // Sort
+    if (TBL.sortCol) {
+      rows = [...rows].sort((a, b) => {
+        const av = a[TBL.sortCol], bv = b[TBL.sortCol];
+        return typeof av === 'number' ? (av - bv) * TBL.sortDir
+          : av.localeCompare(bv) * TBL.sortDir;
+      });
+    }
+
+    // Update header indicators
+    document.querySelectorAll('.tbl-th.sortable').forEach(th => {
+      th.classList.remove('sort-asc','sort-desc');
+      if (th.dataset.col === TBL.sortCol)
+        th.classList.add(TBL.sortDir === 1 ? 'sort-asc' : 'sort-desc');
+    });
+
+    // Pagination
+    const total = rows.length;
+    const pages = Math.max(1, Math.ceil(total / TBL.perPage));
+    TBL.page = Math.min(TBL.page, pages);
+    const start = (TBL.page - 1) * TBL.perPage;
+    const slice = rows.slice(start, start + TBL.perPage);
+
+    // Rows
+    tbody.innerHTML = slice.length ? slice.map(a => `
+      <tr>
+        <td style="font-weight:500;">${a.album}</td>
+        <td style="color:var(--muted);">${a.artist}</td>
+        <td style="color:var(--muted);">${a.genre}</td>
+        <td><div class="star-display">${starsHTML(a.rating)}</div></td>
+        <td class="notes-cell">${a.notes}</td>
+      </tr>`).join('')
+    : `<tr><td colspan="5" style="padding:1.5rem 0.75rem; color:var(--muted); font-size:0.82rem;">No albums match.</td></tr>`;
+
+    // Info
+    const info = document.getElementById('tbl-info');
+    if (info) info.textContent = total ? `${start+1}–${Math.min(start+TBL.perPage, total)} of ${total}` : '';
+
+    // Page buttons
+    const pgEl = document.getElementById('tbl-pages');
+    if (pgEl) {
+      pgEl.innerHTML = Array.from({length: pages}, (_, i) => `
+        <button class="pg-btn${i+1 === TBL.page ? ' active' : ''}" onclick="tblGoPage(${i+1})">${i+1}</button>
+      `).join('');
+    }
+  }
+
+  function tblGoPage(n) { TBL.page = n; tblRender(); }
 </script>
 </body>
 </html>
