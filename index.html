@@ -940,17 +940,17 @@
   }
   // ── ALBUM LOG ──
   const ALBUMS = [
-    { album: "How to: Friend, Love, Freefall", artist: "Rainbow Kitten Surprise", genre: "Indie Pop",         rating: 3, notes: 'Overall pretty hit or miss. A lot of the songs were forgettable but "Holy War" and "When It Lands" were my favorites.' },
-    { album: "Paper Airplanes, Paper Hearts",  artist: "Everyone Asked About You", genre: "Midwest Emo",       rating: 5, notes: 'Spectacular instrumentation throughout. Vocally unique in a way midwest emo rarely is. Favorite: "Handsome, Beautiful".' },
-    { album: "The Mountain",                   artist: "Gorillaz",                 genre: "Synth Pop",         rating: 3, notes: "Generally a mess, too long, songs don't blend. Favorites: The Happy Dictator, The God of Lying, The Shadowy Light." },
-    { album: "Goldstar",                       artist: "Imperial Triumphant",      genre: "Avant-garde Metal", rating: 4, notes: "Solid metal album. Also the second thing in a row I've listened to with a song called New York." },
-    { album: "Isolation",                      artist: "flyingfish",               genre: "Shoegaze",          rating: 4, notes: "Fun short shoegaze EP, quick but worth a listen." },
-    { album: "EXPERIMENTAL RAP",               artist: "JPEGMAFIA",                genre: "Hardcore Hip Hop",  rating: 3, notes: "Not as experimental as the title implies. Disappointing step down from Scaring the Hoes and Offline." },
-    { album: "Somewhere Along The Highway",    artist: "Cult of Luna",             genre: "Post-Metal",        rating: 5, notes: "Very long songs with great ambience and guitar riffs. Just an all-around fantastic album." },
-    { album: "No",                             artist: "Boris",                    genre: "Hardcore Punk",     rating: 4, notes: "Fun Japanese hardcore album. Inconsistent overall but the highs were very high." },
-    { album: "Mother Earth's Plantasia",       artist: "Mort Garson",              genre: "Electronic",        rating: 4, notes: "Made for plants. Illegal YouTube upload built a cult following. Extremely happy and enjoyable." },
-    { album: "Undergrowth",                    artist: "Dusty",                    genre: "Emo Rap",           rating: 3, notes: "Emo Rap and industrial rock blend. Highlights: LET GO, LOVE LORN, NOBODY. Autotune drags it down." },
-    { album: "Soda Stereo",                    artist: "Soda Stereo",              genre: "Pop Rock",          rating: 4, notes: "Fun, relatively short Spanish rock album." },
+    { album: "How to: Friend, Love, Freefall", artist: "Rainbow Kitten Surprise", genre: ["Indie Pop", "Folk Pop"],              rating: 3, notes: 'Overall pretty hit or miss. A lot of the songs were forgettable but "Holy War" and "When It Lands" were my favorites.' },
+    { album: "Paper Airplanes, Paper Hearts",  artist: "Everyone Asked About You", genre: ["Midwest Emo", "Emo"],                 rating: 5, notes: 'Spectacular instrumentation throughout. Vocally unique in a way midwest emo rarely is. Favorite: "Handsome, Beautiful".' },
+    { album: "The Mountain",                   artist: "Gorillaz",                 genre: ["Synth Pop", "Alternative"],           rating: 3, notes: "Generally a mess, too long, songs don't blend. Favorites: The Happy Dictator, The God of Lying, The Shadowy Light." },
+    { album: "Goldstar",                       artist: "Imperial Triumphant",      genre: ["Avant-garde Metal", "Jazz Metal"],    rating: 4, notes: "Solid metal album. Also the second thing in a row I've listened to with a song called New York." },
+    { album: "Isolation",                      artist: "flyingfish",               genre: ["Shoegaze", "Dream Pop"],              rating: 4, notes: "Fun short shoegaze EP, quick but worth a listen." },
+    { album: "EXPERIMENTAL RAP",               artist: "JPEGMAFIA",                genre: ["Hardcore Hip Hop", "Experimental"],   rating: 3, notes: "Not as experimental as the title implies. Disappointing step down from Scaring the Hoes and Offline." },
+    { album: "Somewhere Along The Highway",    artist: "Cult of Luna",             genre: ["Post-Metal", "Post-Rock"],            rating: 5, notes: "Very long songs with great ambience and guitar riffs. Just an all-around fantastic album." },
+    { album: "No",                             artist: "Boris",                    genre: ["Hardcore Punk", "Noise Rock"],        rating: 4, notes: "Fun Japanese hardcore album. Inconsistent overall but the highs were very high." },
+    { album: "Mother Earth's Plantasia",       artist: "Mort Garson",              genre: ["Electronic", "Ambient"],              rating: 4, notes: "Made for plants. Illegal YouTube upload built a cult following. Extremely happy and enjoyable." },
+    { album: "Undergrowth",                    artist: "Dusty",                    genre: ["Emo Rap", "Industrial Rock"],         rating: 3, notes: "Emo Rap and industrial rock blend. Highlights: LET GO, LOVE LORN, NOBODY. Autotune drags it down." },
+    { album: "Soda Stereo",                    artist: "Soda Stereo",              genre: ["Pop Rock"],                           rating: 4, notes: "Fun, relatively short Spanish rock album." },
   ];
 
   const TBL = { sortCol: null, sortDir: 1, page: 1, perPage: 5 };
@@ -967,7 +967,7 @@
     const minRat = parseInt(document.getElementById('tbl-rating')?.value || '0') || 0;
     return ALBUMS.filter(a =>
       (!q      || a.album.toLowerCase().includes(q) || a.artist.toLowerCase().includes(q) || a.notes.toLowerCase().includes(q)) &&
-      (!genre  || a.genre === genre) &&
+      (!genre  || a.genre.includes(genre)) &&
       (a.rating >= minRat)
     );
   }
@@ -983,10 +983,10 @@
     const tbody = document.getElementById('album-tbody');
     if (!tbody) return;
 
-    // Update genre dropdown with unique genres
+    // Update genre dropdown with unique genres (flattened from arrays)
     const genSel = document.getElementById('tbl-genre');
     if (genSel && genSel.options.length === 1) {
-      [...new Set(ALBUMS.map(a => a.genre))].sort().forEach(g => {
+      [...new Set(ALBUMS.flatMap(a => a.genre))].sort().forEach(g => {
         const o = document.createElement('option'); o.value = g; o.textContent = g;
         genSel.appendChild(o);
       });
@@ -997,7 +997,8 @@
     // Sort
     if (TBL.sortCol) {
       rows = [...rows].sort((a, b) => {
-        const av = a[TBL.sortCol], bv = b[TBL.sortCol];
+        const av = TBL.sortCol === 'genre' ? a.genre.join(', ') : a[TBL.sortCol];
+        const bv = TBL.sortCol === 'genre' ? b.genre.join(', ') : b[TBL.sortCol];
         return typeof av === 'number' ? (av - bv) * TBL.sortDir
           : av.localeCompare(bv) * TBL.sortDir;
       });
@@ -1022,7 +1023,7 @@
       <tr>
         <td style="font-weight:500;">${a.album}</td>
         <td style="color:var(--muted);">${a.artist}</td>
-        <td style="color:var(--muted);">${a.genre}</td>
+        <td style="color:var(--muted);">${a.genre.map(g => `<span class="tag" style="display:inline-block;margin:0.1rem 0.15rem 0.1rem 0;">${g}</span>`).join('')}</td>
         <td><div class="star-display">${starsHTML(a.rating)}</div></td>
         <td class="notes-cell">${a.notes}</td>
       </tr>`).join('')
