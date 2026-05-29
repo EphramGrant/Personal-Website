@@ -926,7 +926,7 @@
     document.getElementById('nav-' + id).classList.add('active');
     window.scrollTo(0, 0);
     if (id === 'sports') { loadLiverpool(); loadEagles(); }
-    if (id === 'music')  { tblRender(); }
+    if (id === 'music')  { loadAlbumsFromSheet(); }
     return false;
   }
 
@@ -936,22 +936,38 @@
 
   // Init album table if music page is active on load
   if (document.getElementById('page-music')?.classList.contains('active')) {
-    tblRender();
+    loadAlbumsFromSheet();
   }
   // ── ALBUM LOG ──
-  const ALBUMS = [
-    { album: "How to: Friend, Love, Freefall", artist: "Rainbow Kitten Surprise", genre: ["Indie Pop", "Folk Pop"],              rating: 3, notes: 'Overall pretty hit or miss. A lot of the songs were forgettable but "Holy War" and "When It Lands" were my favorites.' },
-    { album: "Paper Airplanes, Paper Hearts",  artist: "Everyone Asked About You", genre: ["Midwest Emo", "Emo"],                 rating: 5, notes: 'Spectacular instrumentation throughout. Vocally unique in a way midwest emo rarely is. Favorite: "Handsome, Beautiful".' },
-    { album: "The Mountain",                   artist: "Gorillaz",                 genre: ["Synth Pop", "Alternative"],           rating: 3, notes: "Generally a mess, too long, songs don't blend. Favorites: The Happy Dictator, The God of Lying, The Shadowy Light." },
-    { album: "Goldstar",                       artist: "Imperial Triumphant",      genre: ["Avant-garde Metal", "Jazz Metal"],    rating: 4, notes: "Solid metal album. Also the second thing in a row I've listened to with a song called New York." },
-    { album: "Isolation",                      artist: "flyingfish",               genre: ["Shoegaze", "Dream Pop"],              rating: 4, notes: "Fun short shoegaze EP, quick but worth a listen." },
-    { album: "EXPERIMENTAL RAP",               artist: "JPEGMAFIA",                genre: ["Hardcore Hip Hop", "Experimental"],   rating: 3, notes: "Not as experimental as the title implies. Disappointing step down from Scaring the Hoes and Offline." },
-    { album: "Somewhere Along The Highway",    artist: "Cult of Luna",             genre: ["Post-Metal", "Post-Rock"],            rating: 5, notes: "Very long songs with great ambience and guitar riffs. Just an all-around fantastic album." },
-    { album: "No",                             artist: "Boris",                    genre: ["Hardcore Punk", "Noise Rock"],        rating: 4, notes: "Fun Japanese hardcore album. Inconsistent overall but the highs were very high." },
-    { album: "Mother Earth's Plantasia",       artist: "Mort Garson",              genre: ["Electronic", "Ambient"],              rating: 4, notes: "Made for plants. Illegal YouTube upload built a cult following. Extremely happy and enjoyable." },
-    { album: "Undergrowth",                    artist: "Dusty",                    genre: ["Emo Rap", "Industrial Rock"],         rating: 3, notes: "Emo Rap and industrial rock blend. Highlights: LET GO, LOVE LORN, NOBODY. Autotune drags it down." },
-    { album: "Soda Stereo",                    artist: "Soda Stereo",              genre: ["Pop Rock"],                           rating: 4, notes: "Fun, relatively short Spanish rock album." },
-  ];
+  const SHEET_ID = '11tQgwgRmfh3sPyfNVqc1Vq18s-u8IMNsHkNzQLkN0ZY';
+  const API_KEY  = 'AIzaSyAryTNdXGOOtRaT5Stv62nBpP5NmEZCC68';
+
+  let ALBUMS = [];
+
+  async function loadAlbumsFromSheet() {
+    const range = 'Sheet1!A2:E';
+    const url   = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${range}?key=${API_KEY}`;
+    const tbody = document.getElementById('album-tbody');
+
+    if (tbody) tbody.innerHTML = `<tr><td colspan="5" style="padding:1.5rem 0.75rem; color:var(--muted); font-size:0.82rem;">Loading…</td></tr>`;
+
+    try {
+      const res  = await fetch(url);
+      const data = await res.json();
+      if (data.error) throw new Error(data.error.message);
+      ALBUMS = (data.values || []).map(row => ({
+        album:  row[0] || '',
+        artist: row[1] || '',
+        genre:  (row[2] || '').split(',').map(g => g.trim()).filter(Boolean),
+        rating: parseInt(row[3]) || 0,
+        notes:  row[4] || '',
+      }));
+      tblRender();
+    } catch (err) {
+      if (tbody) tbody.innerHTML = `<tr><td colspan="5" style="padding:1.5rem 0.75rem; color:var(--muted); font-size:0.82rem;">Could not load albums — check your API key and sheet permissions.</td></tr>`;
+      console.error('Sheet load error:', err);
+    }
+  }
 
   const TBL = { sortCol: null, sortDir: 1, page: 1, perPage: 5 };
 
