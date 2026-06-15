@@ -1032,12 +1032,18 @@
   async function fetchCoverArt(album, artist) {
     try {
       const query = encodeURIComponent(`release:"${album}" AND artist:"${artist}"`);
-      const mbRes = await fetch(`https://musicbrainz.org/ws/2/release/?query=${query}&limit=5&fmt=json`, {
+      const mbRes = await fetch(`https://musicbrainz.org/ws/2/release/?query=${query}&limit=10&fmt=json`, {
         headers: { 'User-Agent': 'PersonalWebsite/1.0' }
       });
       const mbData = await mbRes.json();
       const releases = mbData?.releases || [];
-      for (const release of releases) {
+
+      // Prioritise: digital media official releases first, then any official, then anything
+      const digital  = releases.filter(r => r.status === 'Official' && r.media?.some(m => m.format === 'Digital Media'));
+      const official = releases.filter(r => r.status === 'Official' && !digital.includes(r));
+      const ordered  = [...digital, ...official, ...releases.filter(r => !digital.includes(r) && !official.includes(r))];
+
+      for (const release of ordered) {
         try {
           const coverRes = await fetch(`https://coverartarchive.org/release/${release.id}/front`, { method: 'HEAD' });
           if (coverRes.ok || coverRes.status === 307) {
