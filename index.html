@@ -306,6 +306,45 @@
     }
     .pg-btn:hover { background: var(--tag-bg); color: var(--text); }
     .pg-btn.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+    /* ── ALBUM OF THE DAY ── */
+    .aotd-card {
+      display: flex;
+      gap: 1.5rem;
+      align-items: flex-start;
+    }
+    .aotd-cover {
+      width: 140px;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 4px;
+      flex-shrink: 0;
+      background: var(--tag-bg);
+    }
+    .aotd-cover-placeholder {
+      width: 140px;
+      height: 140px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      background: var(--tag-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      color: var(--border);
+    }
+    .aotd-info { display: flex; flex-direction: column; gap: 0.4rem; justify-content: center; }
+    .aotd-info h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.25rem;
+      letter-spacing: -0.01em;
+      margin: 0;
+    }
+    .aotd-info .meta { font-size: 0.75rem; color: var(--muted); }
+    .aotd-info p { font-size: 0.82rem; line-height: 1.65; margin-top: 0.25rem; }
+    @media (max-width: 500px) {
+      .aotd-card { flex-direction: column; }
+      .aotd-cover, .aotd-cover-placeholder { width: 100%; height: 180px; }
+    }
   </style>
 </head>
 <body>
@@ -374,6 +413,13 @@
       <h1 class="page-title">Music.</h1>
       <div class="hobby-intro">
         <p>I've been listening to an album a day for the past ~8 months. I primarily listen to Alternative Rock and Metal, but I recently have been branching out into other genres.</p>
+      </div>
+      <hr />
+
+      <!-- ALBUM OF THE DAY -->
+      <h2>Album of the Day</h2>
+      <div id="aotd-widget" style="margin-top:1.25rem;">
+        <div style="color:var(--muted); font-size:0.82rem;">Loading…</div>
       </div>
       <hr />
       <h2>Favorite Artists</h2>
@@ -952,9 +998,110 @@
         notes:  row[4] || '',
       }));
       tblRender();
+      renderAlbumOfTheDay();
+      scheduleMidnightRefresh();
     } catch (err) {
       if (tbody) tbody.innerHTML = `<tr><td colspan="5" style="padding:1.5rem 0.75rem; color:var(--muted); font-size:0.82rem;">Could not load albums — check your API key and sheet permissions.</td></tr>`;
       console.error('Sheet load error:', err);
+    }
+  }
+
+  // ── ALBUM OF THE DAY ──
+  function getDailyIndex(max) {
+    // Use today's date in EST as a seed
+    const now    = new Date();
+    const est    = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+    const seed   = est.getFullYear() * 10000 + (est.getMonth() + 1) * 100 + est.getDate();
+    return seed % max;
+  }
+
+  function scheduleMidnightRefresh() {
+    // Calculate ms until next midnight EST
+    const now = new Date();
+    const est = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+    const nextMidnight = new Date(est);
+    nextMidnight.setHours(24, 0, 0, 0);
+    const msUntilMidnight = nextMidnight - est;
+
+    setTimeout(() => {
+      renderAlbumOfTheDay();
+      scheduleMidnightRefresh(); // schedule the next day too
+    }, msUntilMidnight);
+  }
+
+  async function fetchCoverArt(album, artist) {
+    try {
+      const query = encodeURIComponent(`release:"${album}" AND artist:"${artist}"`);
+      const mbRes = await fetch(`https://musicbrainz.org/ws/2/release/?query=${query}&limit=5&fmt=json`, {
+        headers: { 'User-Agent': 'PersonalWebsite/1.0' }
+      });
+      const mbData = await mbRes.json();
+      const releases = mbData?.releases || [];
+      for (const release of releases) {
+        try {
+          const coverRes = await fetch(`https://coverartarchive.org/release/${release.id}/front`, { method: 'HEAD' });
+          if (coverRes.ok || coverRes.status === 307) {
+            return `https://coverartarchive.org/release/${release.id}/front`;
+          }
+        } catch {}
+      }
+    } catch {}
+    return null;
+  }
+
+  async function renderAlbumOfTheDay() {
+    const el = document.getElementById('aotd-widget');
+    if (!el) return;
+
+    const eligible = ALBUMS.filter(a => a.rating >= 3 && a.rating <= 5);
+    if (!eligible.length) {
+      el.innerHTML = `<div style="color:var(--muted); font-size:0.82rem;">No eligible albums yet.</div>`;
+      return;
+    }
+
+    const pick = eligible[getDailyIndex(eligible.length)];
+
+    // Show text immediately while cover loads
+    el.innerHTML = `
+      <div class="aotd-card">
+        <div class="aotd-cover-placeholder" id="aotd-cover-wrap">♩</div>
+        <div class="aotd-info">
+          <h3>${pick.album}</h3>
+          <div class="meta">${pick.artist} · ${pick.genre.join(', ')} · ${'★'.repeat(pick.rating)}${'★'.repeat(5 - pick.rating).replace(/★/g, '<span style="color:var(--border)">★</span>')}</div>
+          <p>${pick.notes}</p>
+          <div style="margin-top:0.5rem; font-size:0.68rem; letter-spacing:0.06em; color:var(--muted);">
+            Next album in <span id="aotd-countdown" style="font-variant-numeric:tabular-nums;">--:--:--</span>
+          </div>
+        </div>
+      </div>`;
+
+    // Start countdown ticker
+    if (window._aotdCountdownInterval) clearInterval(window._aotdCountdownInterval);
+    function tickCountdown() {
+      const span = document.getElementById('aotd-countdown');
+      if (!span) { clearInterval(window._aotdCountdownInterval); return; }
+      const now = new Date();
+      const est = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+      const midnight = new Date(est); midnight.setHours(24, 0, 0, 0);
+      const diff = midnight - est;
+      const h = String(Math.floor(diff / 3600000)).padStart(2, '0');
+      const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+      const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+      span.textContent = `${h}:${m}:${s}`;
+    }
+    tickCountdown();
+    window._aotdCountdownInterval = setInterval(tickCountdown, 1000);
+
+    // Fetch cover art async
+    const coverUrl = await fetchCoverArt(pick.album, pick.artist);
+    const wrap = document.getElementById('aotd-cover-wrap');
+    if (wrap && coverUrl) {
+      const img = document.createElement('img');
+      img.src = coverUrl;
+      img.alt = pick.album;
+      img.className = 'aotd-cover';
+      img.onerror = () => {}; // keep placeholder if image fails
+      wrap.replaceWith(img);
     }
   }
 
