@@ -500,11 +500,15 @@
           <select id="tbl-rating" onchange="tblRender()"
             style="padding:0.45rem 0.65rem; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:0.78rem; background:var(--surface); color:var(--text); outline:none; cursor:pointer;">
             <option value="">All ratings</option>
-            <option value="e5">★★★★★</option>
-            <option value="e4">★★★★</option>
-            <option value="e3">★★★</option>
-            <option value="e2">★★</option>
-            <option value="e1">★</option>
+            <option value="e5">★★★★★ (5)</option>
+            <option value="e4.5">★★★★½ (4.5)</option>
+            <option value="e4">★★★★ (4)</option>
+            <option value="e3.5">★★★½ (3.5)</option>
+            <option value="e3">★★★ (3)</option>
+            <option value="e2.5">★★½ (2.5)</option>
+            <option value="e2">★★ (2)</option>
+            <option value="e1.5">★½ (1.5)</option>
+            <option value="e1">★ (1)</option>
           </select>
         </div>
 
@@ -995,7 +999,7 @@
         album:  row[1] || '',
         artist: row[2] || '',
         genre:  (row[3] || '').split(',').map(g => g.trim()).filter(Boolean),
-        rating: parseInt(row[4]) || 0,
+        rating: parseFloat(row[4]) || 0,
         notes:  row[5] || '',
       }));
       tblRender();
@@ -1114,17 +1118,28 @@
   const TBL = { sortCol: null, sortDir: 1, page: 1, perPage: 5 };
 
   function starsHTML(rating) {
-    return Array.from({length:5}, (_,i) =>
-      `<span style="color:${i < rating ? 'var(--text)' : 'var(--border)'}">★</span>`
-    ).join('');
+    return Array.from({length: 5}, (_, i) => {
+      const fill = Math.min(1, Math.max(0, rating - i));
+      const pct  = fill >= 1 ? '100%' : fill >= 0.5 ? '50%' : '0%';
+      const id   = `sg_${i}_${Math.random().toString(36).slice(2,6)}`;
+      return `<svg width="13" height="13" viewBox="0 0 24 24" style="display:inline-block; vertical-align:middle; margin-right:1px;">
+        <defs>
+          <linearGradient id="${id}">
+            <stop offset="${pct}" stop-color="var(--text)"/>
+            <stop offset="${pct}" stop-color="var(--border)"/>
+          </linearGradient>
+        </defs>
+        <path fill="url(#${id})" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+      </svg>`;
+    }).join('');
   }
 
   function tblFiltered() {
     const q       = (document.getElementById('tbl-search')?.value || '').toLowerCase();
     const genre   =  document.getElementById('tbl-genre')?.value  || '';
     const ratVal  =  document.getElementById('tbl-rating')?.value || '';
-    const exact   = ratVal.startsWith('e') ? parseInt(ratVal.slice(1)) : null;
-    const minRat  = ratVal.startsWith('m') ? parseInt(ratVal.slice(1)) : 0;
+    const exact   = ratVal.startsWith('e') ? parseFloat(ratVal.slice(1)) : null;
+    const minRat  = ratVal.startsWith('m') ? parseFloat(ratVal.slice(1)) : 0;
     return ALBUMS.filter(a =>
       (!q      || a.album.toLowerCase().includes(q) || a.artist.toLowerCase().includes(q) || a.notes.toLowerCase().includes(q)) &&
       (!genre  || a.genre.includes(genre)) &&
