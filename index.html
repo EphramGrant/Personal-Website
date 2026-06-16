@@ -1014,8 +1014,7 @@
     const seed     = est.getFullYear() * 10000 + (est.getMonth() + 1) * 100 + est.getDate();
     const sorted   = [...pool].sort((a, b) => a.id - b.id);
     const targetId = (seed % 1000) + 1;
-    // Find album with that ID, or nearest one above, or wrap to first
-    return sorted.find(a => a.id >= targetId) || sorted[0];
+    return sorted.find(a => a.id >= targetId) || sorted[seed % sorted.length];
   }
 
   function scheduleMidnightRefresh() {
