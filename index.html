@@ -1009,12 +1009,10 @@
 
   // ── ALBUM OF THE DAY ──
   function getDailyPick(pool) {
-    const now      = new Date();
-    const est      = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
-    const seed     = est.getFullYear() * 10000 + (est.getMonth() + 1) * 100 + est.getDate();
-    const sorted   = [...pool].sort((a, b) => a.id - b.id);
-    const targetId = (seed % 1000) + 1;
-    return sorted.find(a => a.id >= targetId) || sorted[seed % sorted.length];
+    const now  = new Date();
+    const est  = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+    const seed = est.getFullYear() * 10000 + (est.getMonth() + 1) * 100 + est.getDate();
+    return pool[seed % pool.length];
   }
 
   function scheduleMidnightRefresh() {
