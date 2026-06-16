@@ -980,7 +980,7 @@
   let ALBUMS = [];
 
   async function loadAlbumsFromSheet() {
-    const range = 'Sheet1!A2:E';
+    const range = 'Sheet1!A2:F';
     const url   = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${range}?key=${API_KEY}`;
     const tbody = document.getElementById('album-tbody');
 
@@ -991,11 +991,12 @@
       const data = await res.json();
       if (data.error) throw new Error(data.error.message);
       ALBUMS = (data.values || []).reverse().map(row => ({
-        album:  row[0] || '',
-        artist: row[1] || '',
-        genre:  (row[2] || '').split(',').map(g => g.trim()).filter(Boolean),
-        rating: parseInt(row[3]) || 0,
-        notes:  row[4] || '',
+        id:     parseInt(row[0]) || 0,
+        album:  row[1] || '',
+        artist: row[2] || '',
+        genre:  (row[3] || '').split(',').map(g => g.trim()).filter(Boolean),
+        rating: parseInt(row[4]) || 0,
+        notes:  row[5] || '',
       }));
       tblRender();
       renderAlbumOfTheDay();
@@ -1007,12 +1008,13 @@
   }
 
   // ── ALBUM OF THE DAY ──
-  function getDailyIndex(max) {
-    // Use today's date in EST as a seed
+  function getDailyPick(pool) {
+    // Sort by fixed ID so adding new albums never shifts existing picks
+    const sorted = [...pool].sort((a, b) => a.id - b.id);
     const now    = new Date();
     const est    = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
     const seed   = est.getFullYear() * 10000 + (est.getMonth() + 1) * 100 + est.getDate();
-    return seed % max;
+    return sorted[seed % sorted.length];
   }
 
   function scheduleMidnightRefresh() {
@@ -1065,7 +1067,7 @@
       return;
     }
 
-    const pick = eligible[getDailyIndex(eligible.length)];
+    const pick = getDailyPick(eligible);
 
     // Show text immediately while cover loads
     el.innerHTML = `
