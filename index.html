@@ -1014,7 +1014,7 @@
     const now    = new Date();
     const est    = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
     const seed   = est.getFullYear() * 10000 + (est.getMonth() + 1) * 100 + est.getDate();
-    return sorted[seed % sorted.length];
+    return sorted[seed % 1000];
   }
 
   function scheduleMidnightRefresh() {
