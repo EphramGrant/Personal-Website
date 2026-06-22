@@ -1034,34 +1034,48 @@
   }
 
   async function fetchCoverArt(album, artist) {
-    try {
-      // Extract romanized name from brackets e.g. "高中正義 [Masayoshi Takanaka]" → "Masayoshi Takanaka"
-      const bracketMatch = artist.match(/\[([^\]]+)\]/);
-      const searchArtist = bracketMatch ? bracketMatch[1].trim() : artist;
-      const bracketAlbum = album.match(/\[([^\]]+)\]/);
-      const searchAlbum  = bracketAlbum ? bracketAlbum[1].trim() : album;
+    // Extract romanized names from brackets e.g. "高中正義 [Masayoshi Takanaka]" → "Masayoshi Takanaka"
+    const bracketArtist = artist.match(/\[([^\]]+)\]/)?.[1]?.trim();
+    const bracketAlbum  = album.match(/\[([^\]]+)\]/)?.[1]?.trim();
+    const plainArtist   = artist.replace(/\s*\[[^\]]+\]/, '').trim();
+    const plainAlbum    = album.replace(/\s*\[[^\]]+\]/, '').trim();
 
-      const query = encodeURIComponent(`release:"${searchAlbum}" AND artist:"${searchArtist}"`);
-      const mbRes = await fetch(`https://musicbrainz.org/ws/2/release/?query=${query}&limit=10&fmt=json`, {
-        headers: { 'User-Agent': 'PersonalWebsite/1.0' }
-      });
-      const mbData = await mbRes.json();
-      const releases = mbData?.releases || [];
+    // Build search attempts: romanized first, then original, then cross-combinations
+    const attempts = [];
+    if (bracketArtist || bracketAlbum) {
+      attempts.push({ a: bracketArtist || plainArtist, b: bracketAlbum || plainAlbum }); // romanized
+      attempts.push({ a: plainArtist,                  b: plainAlbum });                  // original
+      attempts.push({ a: bracketArtist || plainArtist, b: plainAlbum });                  // romanized artist, original album
+      attempts.push({ a: plainArtist,                  b: bracketAlbum || plainAlbum });  // original artist, romanized album
+    } else {
+      attempts.push({ a: plainArtist, b: plainAlbum });
+    }
 
-      // Prioritise: digital media official releases first, then any official, then anything
-      const digital  = releases.filter(r => r.status === 'Official' && r.media?.some(m => m.format === 'Digital Media'));
-      const official = releases.filter(r => r.status === 'Official' && !digital.includes(r));
-      const ordered  = [...digital, ...official, ...releases.filter(r => !digital.includes(r) && !official.includes(r))];
+    for (const { a, b } of attempts) {
+      try {
+        const query   = encodeURIComponent(`release:"${b}" AND artist:"${a}"`);
+        const mbRes   = await fetch(`https://musicbrainz.org/ws/2/release/?query=${query}&limit=10&fmt=json`, {
+          headers: { 'User-Agent': 'PersonalWebsite/1.0' }
+        });
+        const mbData  = await mbRes.json();
+        const releases = mbData?.releases || [];
+        if (!releases.length) continue;
 
-      for (const release of ordered) {
-        try {
-          const coverRes = await fetch(`https://coverartarchive.org/release/${release.id}/front`, { method: 'HEAD' });
-          if (coverRes.ok || coverRes.status === 307) {
-            return `https://coverartarchive.org/release/${release.id}/front`;
-          }
-        } catch {}
-      }
-    } catch {}
+        // Prioritise digital official releases, then any official, then anything
+        const digital  = releases.filter(r => r.status === 'Official' && r.media?.some(m => m.format === 'Digital Media'));
+        const official = releases.filter(r => r.status === 'Official' && !digital.includes(r));
+        const ordered  = [...digital, ...official, ...releases.filter(r => !digital.includes(r) && !official.includes(r))];
+
+        for (const release of ordered) {
+          try {
+            const coverRes = await fetch(`https://coverartarchive.org/release/${release.id}/front`, { method: 'HEAD' });
+            if (coverRes.ok || coverRes.status === 307) {
+              return `https://coverartarchive.org/release/${release.id}/front`;
+            }
+          } catch {}
+        }
+      } catch {}
+    }
     return null;
   }
 
