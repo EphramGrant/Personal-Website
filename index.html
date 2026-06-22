@@ -509,7 +509,6 @@
             <option value="e2">★★</option>
             <option value="e1.5">★⯨</option>
             <option value="e1">★</option>
-			<option value="e0.5">⯨</option>
           </select>
         </div>
 
@@ -1036,7 +1035,13 @@
 
   async function fetchCoverArt(album, artist) {
     try {
-      const query = encodeURIComponent(`release:"${album}" AND artist:"${artist}"`);
+      // Extract romanized name from brackets e.g. "高中正義 [Masayoshi Takanaka]" → "Masayoshi Takanaka"
+      const bracketMatch = artist.match(/\[([^\]]+)\]/);
+      const searchArtist = bracketMatch ? bracketMatch[1].trim() : artist;
+      const bracketAlbum = album.match(/\[([^\]]+)\]/);
+      const searchAlbum  = bracketAlbum ? bracketAlbum[1].trim() : album;
+
+      const query = encodeURIComponent(`release:"${searchAlbum}" AND artist:"${searchArtist}"`);
       const mbRes = await fetch(`https://musicbrainz.org/ws/2/release/?query=${query}&limit=10&fmt=json`, {
         headers: { 'User-Agent': 'PersonalWebsite/1.0' }
       });
