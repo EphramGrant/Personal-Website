@@ -1033,50 +1033,91 @@
     }, msUntilMidnight);
   }
 
+  const _coverCache = {};
+
+  function withTimeout(promise, ms) {
+    return Promise.race([
+      promise,
+      new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))
+    ]);
+  }
+
+  async function searchMB(artist, album) {
+    try {
+      const query    = encodeURIComponent(`release:"${album}" AND artist:"${artist}"`);
+      const res      = await fetch(`https://musicbrainz.org/ws/2/release/?query=${query}&limit=10&fmt=json`, {
+        headers: { 'User-Agent': 'PersonalWebsite/1.0' }
+      });
+      const data     = await res.json();
+      const releases = data?.releases || [];
+      if (!releases.length) return null;
+
+      // Sort: digital official first, then other official, then rest
+      const digital  = releases.filter(r => r.status === 'Official' && r.media?.some(m => m.format === 'Digital Media'));
+      const official = releases.filter(r => r.status === 'Official' && !digital.includes(r));
+      const ordered  = [...digital, ...official, ...releases.filter(r => !digital.includes(r) && !official.includes(r))];
+
+      // Return URLs directly — no HEAD checks, let the img tag handle failures
+      return ordered.map(r => `https://coverartarchive.org/release/${r.id}/front`);
+    } catch {}
+    return null;
+  }
+
   async function fetchCoverArt(album, artist) {
-    // Extract romanized names from brackets e.g. "高中正義 [Masayoshi Takanaka]" → "Masayoshi Takanaka"
+    const cacheKey = `${artist}::${album}`;
+    if (_coverCache[cacheKey] !== undefined) return _coverCache[cacheKey];
+
+    // Check sessionStorage
+    try {
+      const cached = sessionStorage.getItem(`cover::${cacheKey}`);
+      if (cached) { _coverCache[cacheKey] = cached; return cached; }
+    } catch {}
+
     const bracketArtist = artist.match(/\[([^\]]+)\]/)?.[1]?.trim();
     const bracketAlbum  = album.match(/\[([^\]]+)\]/)?.[1]?.trim();
     const plainArtist   = artist.replace(/\s*\[[^\]]+\]/, '').trim();
     const plainAlbum    = album.replace(/\s*\[[^\]]+\]/, '').trim();
 
-    // Build search attempts: romanized first, then original, then cross-combinations
-    const attempts = [];
-    if (bracketArtist || bracketAlbum) {
-      attempts.push({ a: bracketArtist || plainArtist, b: bracketAlbum || plainAlbum }); // romanized
-      attempts.push({ a: plainArtist,                  b: plainAlbum });                  // original
-      attempts.push({ a: bracketArtist || plainArtist, b: plainAlbum });                  // romanized artist, original album
-      attempts.push({ a: plainArtist,                  b: bracketAlbum || plainAlbum });  // original artist, romanized album
-    } else {
-      attempts.push({ a: plainArtist, b: plainAlbum });
-    }
+    try {
+      let urlLists;
+      if (bracketArtist || bracketAlbum) {
+        const romArtist = bracketArtist || plainArtist;
+        const romAlbum  = bracketAlbum  || plainAlbum;
+        urlLists = await withTimeout(Promise.all([
+          searchMB(romArtist,   romAlbum),
+          searchMB(plainArtist, plainAlbum),
+          searchMB(romArtist,   plainAlbum),
+          searchMB(plainArtist, romAlbum),
+        ]), 5000);
+      } else {
+        urlLists = await withTimeout(Promise.all([searchMB(plainArtist, plainAlbum)]), 5000);
+      }
 
-    for (const { a, b } of attempts) {
-      try {
-        const query   = encodeURIComponent(`release:"${b}" AND artist:"${a}"`);
-        const mbRes   = await fetch(`https://musicbrainz.org/ws/2/release/?query=${query}&limit=10&fmt=json`, {
-          headers: { 'User-Agent': 'PersonalWebsite/1.0' }
+      // Flatten all candidate URLs in priority order
+      const candidates = urlLists.flat().filter(Boolean);
+      if (!candidates.length) { _coverCache[cacheKey] = null; return null; }
+
+      // Try loading each image directly — first to succeed wins
+      const result = await withTimeout(new Promise(resolve => {
+        let resolved = false;
+        let failed   = 0;
+        candidates.forEach(url => {
+          const img = new Image();
+          img.onload = () => { if (!resolved) { resolved = true; resolve(url); } };
+          img.onerror = () => { failed++; if (failed === candidates.length && !resolved) resolve(null); };
+          img.src = url;
         });
-        const mbData  = await mbRes.json();
-        const releases = mbData?.releases || [];
-        if (!releases.length) continue;
+      }), 4000);
 
-        // Prioritise digital official releases, then any official, then anything
-        const digital  = releases.filter(r => r.status === 'Official' && r.media?.some(m => m.format === 'Digital Media'));
-        const official = releases.filter(r => r.status === 'Official' && !digital.includes(r));
-        const ordered  = [...digital, ...official, ...releases.filter(r => !digital.includes(r) && !official.includes(r))];
+      // Cache result
+      _coverCache[cacheKey] = result;
+      try { if (result) sessionStorage.setItem(`cover::${cacheKey}`, result); } catch {}
+      return result;
 
-        for (const release of ordered) {
-          try {
-            const coverRes = await fetch(`https://coverartarchive.org/release/${release.id}/front`, { method: 'HEAD' });
-            if (coverRes.ok || coverRes.status === 307) {
-              return `https://coverartarchive.org/release/${release.id}/front`;
-            }
-          } catch {}
-        }
-      } catch {}
+    } catch {
+      _coverCache[cacheKey] = null;
+      return null;
     }
-    return null;
   }
 
   async function renderAlbumOfTheDay() {
@@ -1122,7 +1163,7 @@
     tickCountdown();
     window._aotdCountdownInterval = setInterval(tickCountdown, 1000);
 
-    // Fetch cover art async
+    // Fetch cover art — no HEAD checks, image loads directly
     const coverUrl = await fetchCoverArt(pick.album, pick.artist);
     const wrap = document.getElementById('aotd-cover-wrap');
     if (wrap && coverUrl) {
@@ -1130,7 +1171,7 @@
       img.src = coverUrl;
       img.alt = pick.album;
       img.className = 'aotd-cover';
-      img.onerror = () => {}; // keep placeholder if image fails
+      img.onerror = () => {};
       wrap.replaceWith(img);
     }
   }
