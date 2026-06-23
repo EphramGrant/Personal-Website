@@ -1349,7 +1349,28 @@
     const topGenres = Object.entries(genreCounts)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 10);
-    const maxCount = topGenres[0]?.[1] || 1;
+
+    // Rating distribution (0.5 increments)
+    const ratings = [0.5,1,1.5,2,2.5,3,3.5,4,4.5,5];
+    const ratingCounts = {};
+    ratings.forEach(r => ratingCounts[r] = 0);
+    ALBUMS.forEach(a => {
+      const r = Math.round(a.rating * 2) / 2;
+      if (ratingCounts[r] !== undefined) ratingCounts[r]++;
+    });
+    const maxRatingCount = Math.max(...Object.values(ratingCounts)) || 1;
+
+    // Artist counts and average ratings
+    const artistCounts = {};
+    const artistRatings = {};
+    ALBUMS.forEach(a => {
+      artistCounts[a.artist]  = (artistCounts[a.artist]  || 0) + 1;
+      artistRatings[a.artist] = (artistRatings[a.artist] || 0) + a.rating;
+    });
+    const topArtists = Object.entries(artistCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10);
+    const maxArtistCount = topArtists[0]?.[1] || 1;
 
     el.innerHTML = `
       <div class="stats-block">
@@ -1363,6 +1384,24 @@
             </div>
           </div>
         </div>
+
+        <div>
+          <span class="eyebrow">Rating Distribution</span>
+          <div style="margin-top:0.75rem; display:flex; align-items:flex-end; gap:0.35rem; height:80px;">
+            ${ratings.map(r => {
+              const count = ratingCounts[r] || 0;
+              const pct   = Math.round((count / maxRatingCount) * 100);
+              const label = r % 1 === 0 ? `${r}` : `${r}`;
+              return `
+                <div style="display:flex; flex-direction:column; align-items:center; gap:0.25rem; flex:1;">
+                  <div style="font-size:0.6rem; color:var(--muted);">${count || ''}</div>
+                  <div style="width:100%; background:var(--text); border-radius:2px 2px 0 0; height:${Math.max(pct, count > 0 ? 4 : 0)}%; min-height:${count > 0 ? '3px' : '0'};"></div>
+                  <div style="font-size:0.6rem; color:var(--muted); white-space:nowrap;">${label}</div>
+                </div>`;
+            }).join('')}
+          </div>
+        </div>
+
         <div>
           <span class="eyebrow">Top Genres</span>
           <div class="genre-bar-list">
@@ -1381,6 +1420,26 @@
             }).join('')}
           </div>
         </div>
+
+        <div>
+          <span class="eyebrow">Top Artists</span>
+          <div class="genre-bar-list">
+            ${topArtists.map(([artist, count], i) => {
+              const avgRating = (artistRatings[artist] / count).toFixed(2);
+              return `
+              <div class="genre-bar-row">
+                <div class="genre-bar-label">
+                  <span>${i + 1}. ${artist}</span>
+                  <span>${count} album${count !== 1 ? 's' : ''} · avg ${avgRating}</span>
+                </div>
+                <div class="genre-bar-track">
+                  <div class="genre-bar-fill" style="width:${Math.round((count / maxArtistCount) * 100)}%"></div>
+                </div>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>
+
       </div>`;
   }
 
