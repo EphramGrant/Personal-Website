@@ -1165,7 +1165,7 @@
         <div class="aotd-cover-placeholder" id="aotd-cover-wrap">♩</div>
         <div class="aotd-info">
           <h3>${pick.album}</h3>
-          <div class="meta">${pick.artist} · ${pick.genre.join(', ')} · ${'★'.repeat(pick.rating)}${'★'.repeat(5 - pick.rating).replace(/★/g, '<span style="color:var(--border)">★</span>')}</div>
+          <div class="meta">${pick.artist} · ${pick.genre.join(', ')} · ${starsHTML(pick.rating)}</div>
           <p>${pick.notes}</p>
           <div style="margin-top:0.5rem; font-size:0.68rem; letter-spacing:0.06em; color:var(--muted);">
             Next album in <span id="aotd-countdown" style="font-variant-numeric:tabular-nums;">--:--:--</span>
@@ -1210,7 +1210,7 @@
     return Array.from({length: 5}, (_, i) => {
       const fill = Math.min(1, Math.max(0, rating - i));
       const pct  = fill >= 1 ? '100%' : fill >= 0.5 ? '50%' : '0%';
-      const id   = `sg_${i}_${Math.random().toString(36).slice(2,6)}`;
+      const id   = `sg_${_starCount++}`;
       return `<svg width="13" height="13" viewBox="0 0 24 24" style="display:inline-block; vertical-align:middle; margin-right:1px;">
         <defs>
           <linearGradient id="${id}">
