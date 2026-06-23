@@ -1339,10 +1339,12 @@
     // Average rating
     const avg = (ALBUMS.reduce((sum, a) => sum + a.rating, 0) / ALBUMS.length).toFixed(2);
 
-    // Genre counts
+    // Genre counts and average ratings
     const genreCounts = {};
+    const genreRatings = {};
     ALBUMS.forEach(a => a.genre.forEach(g => {
-      genreCounts[g] = (genreCounts[g] || 0) + 1;
+      genreCounts[g]  = (genreCounts[g]  || 0) + 1;
+      genreRatings[g] = (genreRatings[g] || 0) + a.rating;
     }));
     const topGenres = Object.entries(genreCounts)
       .sort((a, b) => b[1] - a[1])
@@ -1364,16 +1366,19 @@
         <div>
           <span class="eyebrow">Top Genres</span>
           <div class="genre-bar-list">
-            ${topGenres.map(([genre, count], i) => `
+            ${topGenres.map(([genre, count], i) => {
+              const avgRating = (genreRatings[genre] / count).toFixed(2);
+              return `
               <div class="genre-bar-row">
                 <div class="genre-bar-label">
                   <span>${i + 1}. ${genre}</span>
-                  <span>${count} album${count !== 1 ? 's' : ''}</span>
+                  <span>${Math.round((count / ALBUMS.length) * 100)}% (${count} album${count !== 1 ? 's' : ''}) · avg ${avgRating}</span>
                 </div>
                 <div class="genre-bar-track">
                   <div class="genre-bar-fill" style="width:${Math.round((count / maxCount) * 100)}%"></div>
                 </div>
-              </div>`).join('')}
+              </div>`;
+            }).join('')}
           </div>
         </div>
       </div>`;
