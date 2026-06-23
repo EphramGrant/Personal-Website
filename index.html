@@ -345,6 +345,30 @@
       .aotd-card { flex-direction: column; }
       .aotd-cover, .aotd-cover-placeholder { width: 100%; height: 180px; }
     }
+    /* ── LISTENING STATS ── */
+    .stats-block { display: flex; flex-direction: column; gap: 2rem; }
+    .stat-avg {
+      display: flex; align-items: baseline; gap: 0.75rem;
+    }
+    .stat-avg .big {
+      font-family: 'DM Serif Display', serif;
+      font-size: 3rem; line-height: 1; letter-spacing: -0.02em;
+    }
+    .stat-avg .sub { font-size: 0.78rem; color: var(--muted); }
+    .genre-bar-list { display: flex; flex-direction: column; gap: 0.65rem; margin-top: 0.5rem; }
+    .genre-bar-row { display: flex; flex-direction: column; gap: 0.2rem; }
+    .genre-bar-label {
+      display: flex; justify-content: space-between;
+      font-size: 0.75rem; color: var(--muted);
+    }
+    .genre-bar-label span:first-child { color: var(--text); }
+    .genre-bar-track {
+      height: 4px; background: var(--border); border-radius: 2px; overflow: hidden;
+    }
+    .genre-bar-fill {
+      height: 100%; background: var(--text); border-radius: 2px;
+      transition: width 0.4s ease;
+    }
   </style>
 </head>
 <body>
@@ -509,8 +533,7 @@
             <option value="e2">★★</option>
             <option value="e1.5">★⯨</option>
             <option value="e1">★</option>
-	    <option value="e0.5">⯨</option>
-          </select>
+            <option value="e0.5">⯨</option>
         </div>
 
         <!-- Table -->
@@ -535,6 +558,12 @@
           <div style="display:flex; gap:0.35rem; align-items:center;" id="tbl-pages"></div>
         </div>
 
+      </div>
+
+      <hr />
+      <h2>Listening Stats</h2>
+      <div id="album-stats" style="margin-top:1.5rem;">
+        <div style="color:var(--muted); font-size:0.82rem;">Loading…</div>
       </div>
     </div>
   </div>
@@ -1004,6 +1033,7 @@
         notes:  row[5] || '',
       }));
       tblRender();
+      renderStats();
       renderAlbumOfTheDay();
       scheduleMidnightRefresh();
     } catch (err) {
@@ -1302,6 +1332,53 @@
         pgEl.innerHTML = prev + btns + next + jump;
       }
     }
+  }
+
+  function renderStats() {
+    const el = document.getElementById('album-stats');
+    if (!el || !ALBUMS.length) return;
+
+    // Average rating
+    const avg = (ALBUMS.reduce((sum, a) => sum + a.rating, 0) / ALBUMS.length).toFixed(2);
+
+    // Genre counts
+    const genreCounts = {};
+    ALBUMS.forEach(a => a.genre.forEach(g => {
+      genreCounts[g] = (genreCounts[g] || 0) + 1;
+    }));
+    const topGenres = Object.entries(genreCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10);
+    const maxCount = topGenres[0]?.[1] || 1;
+
+    el.innerHTML = `
+      <div class="stats-block">
+        <div>
+          <span class="eyebrow">Average Rating</span>
+          <div class="stat-avg">
+            <span class="big">${avg}</span>
+            <div style="display:flex; flex-direction:column; gap:0.2rem;">
+              <div>${starsHTML(parseFloat(avg))}</div>
+              <span class="sub">across ${ALBUMS.length} album${ALBUMS.length !== 1 ? 's' : ''}</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <span class="eyebrow">Top Genres</span>
+          <div class="genre-bar-list">
+            ${topGenres.map(([genre, count], i) => `
+              <div class="genre-bar-row">
+                <div class="genre-bar-label">
+                  <span>${i + 1}. ${genre}</span>
+                  <span>${count} album${count !== 1 ? 's' : ''}</span>
+                </div>
+                <div class="genre-bar-track">
+                  <div class="genre-bar-fill" style="width:${Math.round((count / maxCount) * 100)}%"></div>
+                </div>
+              </div>`).join('')}
+          </div>
+        </div>
+      </div>`;
   }
 
   function tblGoPage(n) { TBL.page = n; tblRender(); }
