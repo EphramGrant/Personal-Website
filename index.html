@@ -1387,16 +1387,15 @@
 
         <div>
           <span class="eyebrow">Rating Distribution</span>
-          <div style="margin-top:0.75rem; display:flex; align-items:flex-end; gap:0.35rem; height:80px;">
+          <div style="margin-top:0.75rem; display:flex; align-items:flex-end; gap:0.35rem;">
             ${ratings.map(r => {
               const count = ratingCounts[r] || 0;
               const pct   = Math.round((count / maxRatingCount) * 100);
-              const label = r % 1 === 0 ? `${r}` : `${r}`;
               return `
                 <div style="display:flex; flex-direction:column; align-items:center; gap:0.25rem; flex:1;">
-                  <div style="font-size:0.6rem; color:var(--muted);">${count || ''}</div>
-                  <div style="width:100%; background:var(--text); border-radius:2px 2px 0 0; height:${Math.max(pct, count > 0 ? 4 : 0)}%; min-height:${count > 0 ? '3px' : '0'};"></div>
-                  <div style="font-size:0.6rem; color:var(--muted); white-space:nowrap;">${label}</div>
+                  <div style="font-size:0.6rem; color:var(--muted); min-height:1rem; display:flex; align-items:flex-end;">${count || ''}</div>
+                  <div style="width:100%; background:var(--text); border-radius:2px 2px 0 0; height:${pct}px; min-height:${count > 0 ? '3px' : '0'};"></div>
+                  <div style="font-size:0.6rem; color:var(--muted); white-space:nowrap;">${r}</div>
                 </div>`;
             }).join('')}
           </div>
