@@ -1205,6 +1205,7 @@
 
   const TBL = { sortCol: null, sortDir: 1, page: 1, perPage: 5 };
 
+  let _starCount = 0;
   function starsHTML(rating) {
     return Array.from({length: 5}, (_, i) => {
       const fill = Math.min(1, Math.max(0, rating - i));
