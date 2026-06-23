@@ -1003,10 +1003,6 @@
     a.addEventListener('click', e => e.preventDefault());
   });
 
-  // Init album table if music page is active on load
-  if (document.getElementById('page-music')?.classList.contains('active')) {
-    loadAlbumsFromSheet();
-  }
   // ── ALBUM LOG ──
   const SHEET_ID = '11tQgwgRmfh3sPyfNVqc1Vq18s-u8IMNsHkNzQLkN0ZY';
   const API_KEY  = 'AIzaSyAryTNdXGOOtRaT5Stv62nBpP5NmEZCC68';
@@ -1382,6 +1378,11 @@
   }
 
   function tblGoPage(n) { TBL.page = n; tblRender(); }
+
+  // Init album table if music page is active on load
+  if (document.getElementById('page-music')?.classList.contains('active')) {
+    loadAlbumsFromSheet();
+  }
 </script>
 </body>
 </html>
