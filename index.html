@@ -299,6 +299,15 @@
     .tbl-th.sortable:hover { color: var(--text); }
     .tbl-th.sort-asc::after  { content: ' ↑'; }
     .tbl-th.sort-desc::after { content: ' ↓'; }
+    @media (max-width: 600px) {
+      .tbl-th-notes { display: none; }
+      .tbl-td-notes { display: none; }
+      .tbl-th, #album-table td { padding: 0.5rem 0.4rem; font-size: 0.75rem; }
+      .tbl-th { min-height: 2.5rem; vertical-align: middle; }
+      #tbl-search { font-size: 1rem; }
+      #tbl-genre, #tbl-rating { font-size: 1rem; width: 100%; }
+      .tbl-controls { flex-direction: column; }
+    }
     .pg-btn {
       padding: 0.3rem 0.6rem; border: 1px solid var(--border); border-radius: 3px;
       background: var(--surface); color: var(--muted); font-family: inherit;
@@ -514,15 +523,15 @@
       <div id="album-log" style="margin-top:1.5rem;">
 
         <!-- Controls -->
-        <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem; align-items:center;">
+        <div class="tbl-controls" style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem; align-items:center;">
           <input id="tbl-search" oninput="tblRender()" placeholder="Search albums, artists…"
-            style="flex:1; min-width:160px; padding:0.45rem 0.65rem; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:0.78rem; background:var(--surface); color:var(--text); outline:none;" />
+            style="flex:1; min-width:160px; padding:0.55rem 0.65rem; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:0.78rem; background:var(--surface); color:var(--text); outline:none;" />
           <select id="tbl-genre" onchange="tblRender()"
-            style="padding:0.45rem 0.65rem; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:0.78rem; background:var(--surface); color:var(--text); outline:none; cursor:pointer;">
+            style="padding:0.55rem 0.65rem; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:0.78rem; background:var(--surface); color:var(--text); outline:none; cursor:pointer;">
             <option value="">All genres</option>
           </select>
           <select id="tbl-rating" onchange="tblRender()"
-            style="padding:0.45rem 0.65rem; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:0.78rem; background:var(--surface); color:var(--text); outline:none; cursor:pointer;">
+            style="padding:0.55rem 0.65rem; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:0.78rem; background:var(--surface); color:var(--text); outline:none; cursor:pointer;">
             <option value="">All ratings</option>
             <option value="e5">★★★★★</option>
             <option value="e4.5">★★★★⯨</option>
@@ -546,7 +555,7 @@
                 <th class="tbl-th sortable" data-col="artist" onclick="tblSort('artist')" style="width:16%;">Artist</th>
                 <th class="tbl-th sortable" data-col="genre"  onclick="tblSort('genre')"  style="width:14%;">Genre</th>
                 <th class="tbl-th sortable" data-col="rating" onclick="tblSort('rating')" style="width:10%;">Rating</th>
-                <th class="tbl-th" style="">Notes</th>
+                <th class="tbl-th tbl-th-notes">Notes</th>
               </tr>
             </thead>
             <tbody id="album-tbody"></tbody>
@@ -1290,7 +1299,7 @@
         <td style="color:var(--muted);">${a.artist}</td>
         <td style="color:var(--muted);">${a.genre.map(g => `<span class="tag" style="display:inline-block;margin:0.1rem 0.15rem 0.1rem 0;">${g}</span>`).join('')}</td>
         <td><div class="star-display">${starsHTML(a.rating)}</div></td>
-        <td class="notes-cell">${a.notes}</td>
+        <td class="notes-cell tbl-td-notes">${a.notes}</td>
       </tr>`).join('')
     : `<tr><td colspan="5" style="padding:1.5rem 0.75rem; color:var(--muted); font-size:0.82rem;">No albums match.</td></tr>`;
 
