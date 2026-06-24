@@ -1402,6 +1402,10 @@
               <div>${starsHTML(parseFloat(avg))}</div>
               <span class="sub">across ${ALBUMS.length} album${ALBUMS.length !== 1 ? 's' : ''}</span>
             </div>
+            <div style="margin-left:2rem; padding-left:2rem; border-left:1px solid var(--border); display:flex; flex-direction:column; gap:0.2rem; justify-content:center;">
+              <span class="big" style="font-size:2rem;">${Object.keys(genreCounts).length}</span>
+              <span class="sub">unique genre${Object.keys(genreCounts).length !== 1 ? 's' : ''}</span>
+            </div>
           </div>
         </div>
 
