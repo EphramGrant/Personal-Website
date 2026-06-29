@@ -403,6 +403,7 @@
     <a href="#" onclick="showPage('cubing')" id="nav-cubing">Cubing</a>
     <a href="#" onclick="showPage('sports')" id="nav-sports">Sports</a>
     <a href="#" onclick="showPage('books')" id="nav-books">Books</a>
+    <a href="#" onclick="showPage('game')" id="nav-game">Game</a>
     <a href="#" onclick="showPage('resume')" id="nav-resume">Resume</a>
   </div>
 </nav>
@@ -420,7 +421,7 @@
       <a class="home-card" href="#" onclick="showPage('music')">
         <div class="home-card-icon">♩</div>
         <h3>Music</h3>
-        <p>Artists, playlists, and what I'm listening to.</p>
+        <p>Artists, playlists & what I'm listening to.</p>
       </a>
       <a class="home-card" href="#" onclick="showPage('gaming')">
         <div class="home-card-icon">◈</div>
@@ -446,6 +447,11 @@
         <div class="home-card-icon">→</div>
         <h3>Resume</h3>
         <p>Experience, education, and skills.</p>
+      </a>
+      <a class="home-card" href="#" onclick="showPage('game')">
+        <div class="home-card-icon">▶</div>
+        <h3>Game</h3>
+        <p>Play Star Blaster, my arcade shmup.</p>
       </a>
     </div>
   </div>
@@ -740,6 +746,42 @@
     </div>
   </div>
 
+  <!-- GAME -->
+  <div id="page-game" class="page">
+    <div class="container">
+      <span class="eyebrow">Project</span>
+      <h1 class="page-title">Star Blaster.</h1>
+      <div class="hobby-intro">
+        <p>A classic arcade shoot 'em up. Dodge enemy fire, blast your way through waves, and see how far you can get. Click the game to focus it before playing.</p>
+      </div>
+      <hr />
+      <div id="game-wrap" style="position:relative; width:540px; max-width:100%; margin:0 auto;">
+        <iframe
+          id="game-frame"
+          src="/game/index.html"
+          width="540"
+          height="960"
+          style="border:none; border-radius:8px; display:block; max-width:100%;"
+          allowfullscreen
+          scrolling="no">
+        </iframe>
+        <!-- Click-to-focus overlay -->
+        <div id="game-overlay" onclick="focusGame()" style="
+          position:absolute; inset:0;
+          display:flex; flex-direction:column;
+          align-items:center; justify-content:center;
+          background:rgba(0,0,0,0.45);
+          border-radius:8px;
+          cursor:pointer;
+          color:#fff;
+          gap:0.75rem;">
+          <span style="font-size:2.5rem;">▶</span>
+          <span style="font-family:'DM Mono',monospace; font-size:0.8rem; letter-spacing:0.1em; text-transform:uppercase;">Click to play</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- RESUME -->
   <div id="page-resume" class="page">
     <div class="container">
@@ -1017,7 +1059,13 @@
     window.scrollTo(0, 0);
     if (id === 'sports') { loadLiverpool(); loadEagles(); }
     if (id === 'music')  { loadAlbumsFromSheet(); }
+    if (id === 'game')   { document.getElementById('game-overlay').style.display = 'flex'; }
     return false;
+  }
+
+  function focusGame() {
+    document.getElementById('game-overlay').style.display = 'none';
+    document.getElementById('game-frame').focus();
   }
 
   document.querySelectorAll('a[onclick]').forEach(a => {
