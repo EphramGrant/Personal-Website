@@ -1,6 +1,3 @@
-/game/Build/*.br
-  Content-Encoding: br
-
 /game/Build/Web.framework.js.br
   Content-Type: application/javascript
   Content-Encoding: br
