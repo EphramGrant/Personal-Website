@@ -389,6 +389,35 @@
       height: 100%; background: var(--text); border-radius: 2px;
       transition: width 0.4s ease;
     }
+    /* ── GAME CARDS ── */
+    .game-card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--surface);
+      cursor: pointer;
+      transition: background 0.15s;
+      text-decoration: none;
+      display: block;
+    }
+    .game-card:hover { background: var(--tag-bg); }
+    .game-card-thumb {
+      width: 100%; aspect-ratio: 16/9;
+      object-fit: cover; display: block;
+      background: var(--tag-bg);
+    }
+    .game-card-thumb-placeholder {
+      width: 100%; aspect-ratio: 16/9;
+      background: var(--tag-bg);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem; color: var(--border);
+    }
+    .game-card-body { padding: 1.25rem; }
+    .game-card-body h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.1rem; margin-bottom: 0.35rem;
+    }
+    .game-card-body p { font-size: 0.82rem; color: var(--muted); line-height: 1.6; }
   </style>
 </head>
 <body>
@@ -403,6 +432,7 @@
     <a href="#" onclick="showPage('cubing')" id="nav-cubing">Cubing</a>
     <a href="#" onclick="showPage('sports')" id="nav-sports">Sports</a>
     <a href="#" onclick="showPage('books')" id="nav-books">Books</a>
+    <a href="#" onclick="showPage('games')" id="nav-games">Games</a>
     <a href="#" onclick="showPage('resume')" id="nav-resume">Resume</a>
   </div>
 </nav>
@@ -446,6 +476,11 @@
         <div class="home-card-icon">→</div>
         <h3>Resume</h3>
         <p>Experience, education, and skills.</p>
+      </a>
+      <a class="home-card" href="#" onclick="showPage('games')">
+        <div class="home-card-icon">▶</div>
+        <h3>Games</h3>
+        <p>Browser games I've built.</p>
       </a>
     </div>
   </div>
@@ -740,6 +775,37 @@
     </div>
   </div>
 
+  <!-- GAMES -->
+  <div id="page-games" class="page">
+    <div class="container">
+      <span class="eyebrow">Projects</span>
+      <h1 class="page-title">Games.</h1>
+      <div class="hobby-intro">
+        <p>Browser games I've built. Click any to play.</p>
+      </div>
+      <hr />
+      <div id="games-grid" class="item-grid" style="margin-top:1.5rem;"></div>
+    </div>
+  </div>
+
+  <!-- INDIVIDUAL GAME -->
+  <div id="page-game-detail" class="page">
+    <div class="container">
+      <button onclick="showPage('games')" style="
+        background: none; border: none; cursor: pointer;
+        font-family: inherit; font-size: 0.72rem; letter-spacing: 0.08em;
+        text-transform: uppercase; color: var(--muted); padding: 0;
+        margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.4rem;">
+        ← Back to Games
+      </button>
+      <span class="eyebrow" id="game-detail-eyebrow">Game</span>
+      <h1 class="page-title" id="game-detail-title"></h1>
+      <p id="game-detail-desc" style="margin-bottom: 2rem;"></p>
+      <hr />
+      <div id="game-detail-embed" style="margin-top: 1.5rem;"></div>
+    </div>
+  </div>
+
   <!-- RESUME -->
   <div id="page-resume" class="page">
     <div class="container">
@@ -1009,14 +1075,103 @@
   }
 
   // ── SHOW PAGE ──
+  // ── GAMES FRAMEWORK ──
+  // Add entries here to register a game. Each game needs:
+  //   id:        unique string used for routing
+  //   title:     display name
+  //   desc:      short description shown on the card and game page
+  //   thumb:     path to thumbnail image (or null for placeholder)
+  //   src:       path to the game's index.html (loaded in iframe)
+  //   width:     iframe width in px
+  //   height:    iframe height in px
+  const GAMES = [
+    // Example — uncomment and fill in when ready:
+    // {
+    //   id:     'star-blaster',
+    //   title:  'Star Blaster',
+    //   desc:   'A classic arcade shoot \'em up. Dodge enemy fire and blast through waves.',
+    //   thumb:  '/game/thumbnail.png',
+    //   src:    '/game/index.html',
+    //   width:  540,
+    //   height: 960,
+    // },
+  ];
+
+  function renderGamesGrid() {
+    const grid = document.getElementById('games-grid');
+    if (!grid) return;
+
+    if (!GAMES.length) {
+      grid.innerHTML = `<p style="color:var(--muted); font-size:0.85rem;">No games yet — check back soon.</p>`;
+      return;
+    }
+
+    grid.innerHTML = GAMES.map(g => `
+      <a class="game-card" href="#" onclick="openGame('${g.id}')">
+        ${g.thumb
+          ? `<img class="game-card-thumb" src="${g.thumb}" alt="${g.title}">`
+          : `<div class="game-card-thumb-placeholder">▶</div>`}
+        <div class="game-card-body">
+          <h3>${g.title}</h3>
+          <p>${g.desc}</p>
+        </div>
+      </a>`).join('');
+  }
+
+  function openGame(id) {
+    const game = GAMES.find(g => g.id === id);
+    if (!game) return;
+
+    document.getElementById('game-detail-title').textContent   = game.title;
+    document.getElementById('game-detail-desc').textContent    = game.desc;
+    document.getElementById('game-detail-eyebrow').textContent = 'Game';
+
+    const embed = document.getElementById('game-detail-embed');
+    embed.innerHTML = `
+      <div style="position:relative; width:${game.width}px; max-width:100%; margin:0 auto;">
+        <iframe
+          id="game-iframe"
+          src="${game.src}"
+          width="${game.width}"
+          height="${game.height}"
+          style="border:none; border-radius:8px; display:block; max-width:100%;"
+          allowfullscreen
+          scrolling="no">
+        </iframe>
+        <div id="game-overlay" onclick="focusGame()" style="
+          position:absolute; inset:0;
+          display:flex; flex-direction:column;
+          align-items:center; justify-content:center;
+          background:rgba(0,0,0,0.45);
+          border-radius:8px; cursor:pointer;
+          color:#fff; gap:0.75rem;">
+          <span style="font-size:2.5rem;">▶</span>
+          <span style="font-family:'DM Mono',monospace; font-size:0.8rem; letter-spacing:0.1em; text-transform:uppercase;">Click to play</span>
+        </div>
+      </div>`;
+
+    showPage('game-detail');
+  }
+
+  function focusGame() {
+    const overlay = document.getElementById('game-overlay');
+    const iframe  = document.getElementById('game-iframe');
+    if (overlay) overlay.style.display = 'none';
+    if (iframe)  iframe.focus();
+  }
+
   function showPage(id) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
     document.getElementById('page-' + id).classList.add('active');
-    document.getElementById('nav-' + id).classList.add('active');
+    // Only highlight nav for top-level pages
+    const navEl = document.getElementById('nav-' + id);
+    if (navEl) navEl.classList.add('active');
+    else if (id === 'game-detail') document.getElementById('nav-games').classList.add('active');
     window.scrollTo(0, 0);
     if (id === 'sports') { loadLiverpool(); loadEagles(); }
     if (id === 'music')  { loadAlbumsFromSheet(); }
+    if (id === 'games')  { renderGamesGrid(); }
     return false;
   }
 
