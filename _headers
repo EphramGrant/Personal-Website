@@ -10,14 +10,14 @@
 	Content-Type: application/octet-stream
 	Content-Encoding: gzip
 
-/game/Build/Builds.framework.js.gz
+/starblaster/Build/Builds.framework.js.gz
 	Content-Type: application/javascript
 	Content-Encoding: gzip
 
-/game/Build/Builds.wasm.gz
+/starblaster/Build/Builds.wasm.gz
 	Content-Type: application/wasm
 	Content-Encoding: gzip
 
-/game/Build/Builds.data.gz
+/starblaster/Build/Builds.data.gz
 	Content-Type: application/octet-stream
 	Content-Encoding: gzip
