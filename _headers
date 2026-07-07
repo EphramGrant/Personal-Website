@@ -9,3 +9,15 @@
 /cardgame/Build/YourGame.data.gz
 	Content-Type: application/octet-stream
 	Content-Encoding: gzip
+
+/game/Build/Builds.framework.js.gz
+	Content-Type: application/javascript
+	Content-Encoding: gzip
+
+/game/Build/Builds.wasm.gz
+	Content-Type: application/wasm
+	Content-Encoding: gzip
+
+/game/Build/Builds.data.gz
+	Content-Type: application/octet-stream
+	Content-Encoding: gzip
