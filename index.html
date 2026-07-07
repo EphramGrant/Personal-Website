@@ -1170,10 +1170,12 @@
       const outer = document.getElementById('game-outer');
       const iframe = document.getElementById('game-iframe');
       if (!outer || !iframe) return;
-      const scale = outer.offsetWidth / game.width;
+      const containerWidth = outer.offsetWidth;
+      if (!containerWidth) return;
+      const scale = containerWidth / game.width;
       iframe.style.transform = `scale(${scale})`;
     }
-    scaleGame();
+    requestAnimationFrame(() => requestAnimationFrame(scaleGame));
     window._gameResizeHandler = scaleGame;
     window.addEventListener('resize', window._gameResizeHandler);
 
