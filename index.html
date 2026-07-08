@@ -1553,36 +1553,48 @@
     const el = document.getElementById('album-stats');
     if (!el || !ALBUMS.length) return;
 
-    // Average rating
-    const avg = (ALBUMS.reduce((sum, a) => sum + a.rating, 0) / ALBUMS.length).toFixed(2);
+    // Average rating — exclude unrated albums
+    const ratedAlbums = ALBUMS.filter(a => a.rating > 0);
+    const avg = ratedAlbums.length
+      ? (ratedAlbums.reduce((sum, a) => sum + a.rating, 0) / ratedAlbums.length).toFixed(2)
+      : '—';
 
-    // Genre counts and average ratings
+    // Genre counts and average ratings — exclude unrated from averages
     const genreCounts = {};
     const genreRatings = {};
+    const genreRatedCounts = {};
     ALBUMS.forEach(a => a.genre.forEach(g => {
-      genreCounts[g]  = (genreCounts[g]  || 0) + 1;
-      genreRatings[g] = (genreRatings[g] || 0) + a.rating;
+      genreCounts[g] = (genreCounts[g] || 0) + 1;
+      if (a.rating > 0) {
+        genreRatings[g]      = (genreRatings[g]      || 0) + a.rating;
+        genreRatedCounts[g]  = (genreRatedCounts[g]  || 0) + 1;
+      }
     }));
     const topGenres = Object.entries(genreCounts)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 10);
 
-    // Rating distribution (0.5 increments)
+    // Rating distribution (0.5 increments) — exclude unrated
     const ratings = [0.5,1,1.5,2,2.5,3,3.5,4,4.5,5];
     const ratingCounts = {};
     ratings.forEach(r => ratingCounts[r] = 0);
     ALBUMS.forEach(a => {
+      if (a.rating <= 0) return;
       const r = Math.round(a.rating * 2) / 2;
       if (ratingCounts[r] !== undefined) ratingCounts[r]++;
     });
     const maxRatingCount = Math.max(...Object.values(ratingCounts)) || 1;
 
-    // Artist counts and average ratings
+    // Artist counts and average ratings — exclude unrated from averages
     const artistCounts = {};
     const artistRatings = {};
+    const artistRatedCounts = {};
     ALBUMS.forEach(a => {
-      artistCounts[a.artist]  = (artistCounts[a.artist]  || 0) + 1;
-      artistRatings[a.artist] = (artistRatings[a.artist] || 0) + a.rating;
+      artistCounts[a.artist] = (artistCounts[a.artist] || 0) + 1;
+      if (a.rating > 0) {
+        artistRatings[a.artist]      = (artistRatings[a.artist]      || 0) + a.rating;
+        artistRatedCounts[a.artist]  = (artistRatedCounts[a.artist]  || 0) + 1;
+      }
     });
     const topArtists = Object.entries(artistCounts)
       .sort((a, b) => b[1] - a[1])
@@ -1596,8 +1608,8 @@
           <div class="stat-avg">
             <span class="big">${avg}</span>
             <div style="display:flex; flex-direction:column; gap:0.2rem;">
-              <div>${starsHTML(parseFloat(avg))}</div>
-              <span class="sub">across ${ALBUMS.length} album${ALBUMS.length !== 1 ? 's' : ''}</span>
+              <div>${avg !== '—' ? starsHTML(parseFloat(avg)) : ''}</div>
+              <span class="sub">across ${ratedAlbums.length} rated album${ratedAlbums.length !== 1 ? 's' : ''}</span>
             </div>
             <div style="margin-left:2rem; padding-left:2rem; border-left:1px solid var(--border); display:flex; flex-direction:column; gap:0.2rem; justify-content:center;">
               <span class="big" style="font-size:2rem;">${Object.keys(genreCounts).length}</span>
@@ -1630,7 +1642,9 @@
           <span class="eyebrow">Top Genres</span>
           <div class="genre-bar-list">
             ${topGenres.map(([genre, count], i) => {
-              const avgRating = (genreRatings[genre] / count).toFixed(2);
+              const avgRating = genreRatedCounts[genre]
+                ? (genreRatings[genre] / genreRatedCounts[genre]).toFixed(2)
+                : '—';
               return `
               <div class="genre-bar-row">
                 <div class="genre-bar-label">
@@ -1649,7 +1663,9 @@
           <span class="eyebrow">Most Listened to Artists</span>
           <div class="genre-bar-list">
             ${topArtists.map(([artist, count], i) => {
-              const avgRating = (artistRatings[artist] / count).toFixed(2);
+              const avgRating = artistRatedCounts[artist]
+                ? (artistRatings[artist] / artistRatedCounts[artist]).toFixed(2)
+                : '—';
               return `
               <div class="genre-bar-row">
                 <div class="genre-bar-label">
