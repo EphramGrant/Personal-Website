@@ -1232,7 +1232,7 @@
       ALBUMS = (data.values || []).reverse().map(row => ({
         id:     parseInt(row[0]) || 0,
         album:  row[1] || '',
-        artist: row[2] || '',
+        artist: (row[2] || '').split(',').map(a => a.trim()).filter(Boolean),
         genre:  (row[3] || '').split(',').map(g => g.trim()).filter(Boolean),
         rating: parseFloat(row[4]) || 0,
         notes:  row[5] || '',
@@ -1383,7 +1383,7 @@
         <div class="aotd-cover-placeholder" id="aotd-cover-wrap">♩</div>
         <div class="aotd-info">
           <h3>${pick.album}</h3>
-          <div class="meta">${pick.artist} · ${pick.genre.join(', ')} · ${starsHTML(pick.rating)}</div>
+          <div class="meta">${pick.artist.join(', ')} · ${pick.genre.join(', ')} · ${starsHTML(pick.rating)}</div>
           <p>${pick.notes}</p>
           <div style="margin-top:0.5rem; font-size:0.68rem; letter-spacing:0.06em; color:var(--muted);">
             Next album in <span id="aotd-countdown" style="font-variant-numeric:tabular-nums;">--:--:--</span>
@@ -1409,7 +1409,7 @@
     window._aotdCountdownInterval = setInterval(tickCountdown, 1000);
 
     // Fetch cover art — no HEAD checks, image loads directly
-    const coverUrl = await fetchCoverArt(pick.album, pick.artist);
+    const coverUrl = await fetchCoverArt(pick.album, pick.artist[0] || '');
     const wrap = document.getElementById('aotd-cover-wrap');
     if (wrap && coverUrl) {
       const img = document.createElement('img');
@@ -1448,7 +1448,7 @@
     const exact   = ratVal.startsWith('e') ? parseFloat(ratVal.slice(1)) : null;
     const minRat  = ratVal.startsWith('m') ? parseFloat(ratVal.slice(1)) : 0;
     return ALBUMS.filter(a =>
-      (!q      || a.album.toLowerCase().includes(q) || a.artist.toLowerCase().includes(q) || a.notes.toLowerCase().includes(q)) &&
+      (!q      || a.album.toLowerCase().includes(q) || a.artist.some(ar => ar.toLowerCase().includes(q)) || a.notes.toLowerCase().includes(q)) &&
       (!genre  || a.genre.includes(genre)) &&
       (exact !== null ? a.rating === exact : a.rating >= minRat)
     );
@@ -1504,7 +1504,7 @@
     tbody.innerHTML = slice.length ? slice.map(a => `
       <tr>
         <td style="font-weight:500;">${a.album}</td>
-        <td style="color:var(--muted);">${a.artist}</td>
+        <td style="color:var(--muted);">${a.artist.join(', ')}</td>
         <td style="color:var(--muted);">${a.genre.map(g => `<span class="tag" style="display:inline-block;margin:0.1rem 0.15rem 0.1rem 0;">${g}</span>`).join('')}</td>
         <td><div class="star-display">${starsHTML(a.rating)}</div></td>
         <td class="notes-cell">${a.notes}</td>
@@ -1589,13 +1589,13 @@
     const artistCounts = {};
     const artistRatings = {};
     const artistRatedCounts = {};
-    ALBUMS.forEach(a => {
-      artistCounts[a.artist] = (artistCounts[a.artist] || 0) + 1;
+    ALBUMS.forEach(a => a.artist.forEach(ar => {
+      artistCounts[ar] = (artistCounts[ar] || 0) + 1;
       if (a.rating > 0) {
-        artistRatings[a.artist]      = (artistRatings[a.artist]      || 0) + a.rating;
-        artistRatedCounts[a.artist]  = (artistRatedCounts[a.artist]  || 0) + 1;
+        artistRatings[ar]      = (artistRatings[ar]      || 0) + a.rating;
+        artistRatedCounts[ar]  = (artistRatedCounts[ar]  || 0) + 1;
       }
-    });
+    }));
     const topArtists = Object.entries(artistCounts)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 10);
@@ -1616,8 +1616,8 @@
               <span class="sub">unique genre${Object.keys(genreCounts).length !== 1 ? 's' : ''}</span>
             </div>
             <div style="margin-left:2rem; padding-left:2rem; border-left:1px solid var(--border); display:flex; flex-direction:column; gap:0.2rem; justify-content:center;">
-              <span class="big" style="font-size:2rem;">${Object.keys(artistCounts).length}</span>
-              <span class="sub">unique artist${Object.keys(artistCounts).length !== 1 ? 's' : ''}</span>
+              <span class="big" style="font-size:2rem;">${new Set(ALBUMS.flatMap(a => a.artist)).size}</span>
+              <span class="sub">unique artist${new Set(ALBUMS.flatMap(a => a.artist)).size !== 1 ? 's' : ''}</span>
             </div>
           </div>
         </div>
