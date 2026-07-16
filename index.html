@@ -917,20 +917,24 @@
 		  just count it as a string. Often shortened to Char.<br><Strong>Boolean:</Strong> A true or false value. Often shortened to bool.</p>
       <hr />
       <h2>Control Flow</h2>
-      <p style="margin-top:0.5rem;">Content coming soon.</p>
+      <p style="margin-top:0.5rem;">Control flow determines what code runs and when. Without it your program would run top to bottom and always do the same thing. The core tool is the conditional statement.<br><strong>If:</strong> Runs a block of code if a condition is true.<br><strong>Else:</strong> Runs if the condition is false.<br><strong>Else If:</strong> Checks another condition if the previous one was false. You can chain as many as needed.<br>Conditions use comparison operators: <code>==</code> (equal), <code>!=</code> (not equal), <code>&gt;</code>, <code>&lt;</code>, <code>&gt;=</code>, <code>&lt;=</code>. Combine them with <code>&&</code> (and), <code>||</code> (or), <code>!</code> (not).</p>
       <img src="if-else-statements-flowcharts-insight.png" alt="If-Else Statements Flowchart" style="margin-top:1.25rem; width:100%; max-width:600px; border-radius:6px; border:1px solid var(--border); display:block;" />
       <hr />
       <h2>Loops</h2>
-      <p style="margin-top:0.5rem;">Content coming soon.</p>
+      <p style="margin-top:0.5rem;">Loops repeat a block of code multiple times without writing it out repeatedly. There are two main types found across most languages.<br><strong>For Loop:</strong> Repeats a set number of times. Used when you know how many iterations you need, such as going through every item in a list.<br><strong>While Loop:</strong> Runs as long as a condition is true. Used when you don't know how many iterations you need, such as waiting for user input. Be careful — if the condition never becomes false you'll create an infinite loop that freezes your program. For example, if I write a while loop that will continue looping until x > 10 and x never changes, the program will continue running until it crashes.</p>
       <hr />
       <h2>Functions</h2>
-      <p style="margin-top:0.5rem;">Content coming soon.</p>
+      <p style="margin-top:0.5rem;">A function is a reusable block of code that performs a specific task. You can define it once and call it whenever you need it instead of writing the same logic repeatedly.<br><strong>Parameters:</strong> Inputs passed into a function that change how it behaves.<br><strong>Return:</strong> A value sent back to wherever the function was called from. Functions that don't return anything just perform an action.<br>Good functions do one thing, do it well, and have a clear name describing what that thing is.  For example, I can have an "add" function that takes into two numbers as parameters and returns their sum.</p>
       <hr />
       <h2>Arrays & Collections</h2>
-      <p style="margin-top:0.5rem;">Content coming soon.</p>
+      <p style="margin-top:0.5rem;">Arrays and collections store multiple values in a single variable. Items are accessed by position, called an index. Most languages index from 0, so the first item is at index <code>0</code>.<br><strong>Arrays:</strong> Fixed-size ordered lists. Size is set when created and cannot change. These are useful when you know the exact amount of items in advance.<br><strong>Lists:</strong> Work like arrays but can grow and shrink as you add or remove items. These often have downsides compared to Arrays such as being slower and should generally only be used if necessary.<br><strong>Dictionaries:</strong> Store key-value pairs instead of indexed items. These are unordered. You look up a key to get its associated value, similar to a real dictionary. For example, I can search the dictionary for "Hello" (key) and it would return whatever value is stored under "hello" such as the definition of the word (value).</p>
       <hr />
       <h2>Object-Oriented Programming</h2>
-      <p style="margin-top:0.5rem;">Content coming soon.</p>
+      <p style="margin-top:0.5rem;">Object-Oriented Programming (OOP) structures code around objects — bundles of related data and behaviour. Most modern languages support it, and some explicitly require it.<br><strong>Class:</strong> A blueprint defining what an object looks like and what it can do.<br><strong>Object:</strong> A specific instance created from a class. A <code>Dog</code> class defines that all dogs have a name and can bark — each individual dog you create is an object.<br> Creating classes allows you to seperate your code effectively. This is very important because it can cause issues if your code is linked in a single program</p>
+<hr />
+<h2>Variable Scope</h2>
+      <p style="margin-top:0.5rem;">Variables are generally defined to the place where they were created. Variables that were created inside of a function or loop can usually not be accessed outside of these locations. The place where a variable can be used is called it's scope. A variable that is usable anywhere in the program has global scope. Many languages have ways to define global variables, but these are generally frowned upon and considered bad practice to use. This is because the entire program being able to change a value makes tracking bugs extremely difficult. This problem compounds as programs get bigger, so I reccommend making sure you build habits of not using it as soon as possible.</p>
+      
     </div>
   </div>
 
