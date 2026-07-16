@@ -949,7 +949,37 @@
       </div>
       <hr />
       <h2>Getting Started</h2>
-      <p style="margin-top:0.5rem;">Content coming soon.</p>
+      <p style="margin-top:0.5rem;">Python is designed to be readable. It uses indentation (spaces or tabs) to define blocks of code instead of curly braces, and doesn't require semicolons at the end of lines. Variables don't need a type declaration — Python figures it out automatically.</p>
+      <p><strong>Variables:</strong> Assign with <code>=</code>. No keyword needed.</p>
+      <div class="code-wrap"><span class="code-label">Python</span><pre><code><span class="cm"># Variables</span>
+name = <span class="str">"Ephram"</span>
+age = <span class="num">21</span>
+height = <span class="num">5.11</span>
+is_student = <span class="kw">True</span></code></pre></div>
+      <p><strong>Functions:</strong> Defined with the <code>def</code> keyword. Indented body, colon after the signature.</p>
+      <div class="code-wrap"><span class="code-label">Python</span><pre><code><span class="kw">def</span> <span class="fn">greet</span>(name):
+    <span class="kw">return</span> <span class="str">"Hello, "</span> + name
+
+<span class="fn">print</span>(<span class="fn">greet</span>(<span class="str">"Ephram"</span>))  <span class="cm"># Hello, Ephram</span></code></pre></div>
+      <p><strong>Control Flow:</strong> No parentheses required around conditions. Colon ends the condition line.</p>
+      <div class="code-wrap"><span class="code-label">Python</span><pre><code>score = <span class="num">75</span>
+
+<span class="kw">if</span> score >= <span class="num">90</span>:
+    <span class="fn">print</span>(<span class="str">"A"</span>)
+<span class="kw">elif</span> score >= <span class="num">70</span>:
+    <span class="fn">print</span>(<span class="str">"B"</span>)
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="str">"C or below"</span>)</code></pre></div>
+      <p><strong>Loops:</strong> <code>for</code> loops iterate over a sequence. <code>range(n)</code> generates numbers from 0 to n-1.</p>
+      <div class="code-wrap"><span class="code-label">Python</span><pre><code><span class="cm"># For loop</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">5</span>):
+    <span class="fn">print</span>(i)  <span class="cm"># 0 1 2 3 4</span>
+
+<span class="cm"># While loop</span>
+count = <span class="num">0</span>
+<span class="kw">while</span> count < <span class="num">3</span>:
+    <span class="fn">print</span>(count)
+    count += <span class="num">1</span></code></pre></div>
       <hr />
       <h2>Data Types & Variables</h2>
       <p style="margin-top:0.5rem;">Content coming soon.</p>
@@ -982,7 +1012,41 @@
       </div>
       <hr />
       <h2>Getting Started</h2>
-      <p style="margin-top:0.5rem;">Content coming soon.</p>
+      <p style="margin-top:0.5rem;">Java is strongly typed and verbose — every variable must have a declared type, every statement ends with a semicolon, and all code lives inside a class. It's more strict than Python but that strictness makes errors easier to catch early.</p>
+      <p><strong>Variables:</strong> Type must be declared before the name.</p>
+      <div class="code-wrap"><span class="code-label">Java</span><pre><code><span class="cm">// Variables</span>
+<span class="cl">String</span> name = <span class="str">"Ephram"</span>;
+<span class="kw">int</span> age = <span class="num">21</span>;
+<span class="kw">double</span> height = <span class="num">5.11</span>;
+<span class="kw">boolean</span> isStudent = <span class="kw">true</span>;</code></pre></div>
+      <p><strong>Functions:</strong> Called methods in Java. Must declare a return type — use <code>void</code> if nothing is returned.</p>
+      <div class="code-wrap"><span class="code-label">Java</span><pre><code><span class="kw">public</span> <span class="cl">String</span> <span class="fn">greet</span>(<span class="cl">String</span> name) {
+    <span class="kw">return</span> <span class="str">"Hello, "</span> + name;
+}
+
+<span class="cl">System</span>.out.<span class="fn">println</span>(<span class="fn">greet</span>(<span class="str">"Ephram"</span>));  <span class="cm">// Hello, Ephram</span></code></pre></div>
+      <p><strong>Control Flow:</strong> Condition must be in parentheses. Curly braces define the block.</p>
+      <div class="code-wrap"><span class="code-label">Java</span><pre><code><span class="kw">int</span> score = <span class="num">75</span>;
+
+<span class="kw">if</span> (score >= <span class="num">90</span>) {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="str">"A"</span>);
+} <span class="kw">else if</span> (score >= <span class="num">70</span>) {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="str">"B"</span>);
+} <span class="kw">else</span> {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="str">"C or below"</span>);
+}</code></pre></div>
+      <p><strong>Loops:</strong> <code>for</code> loops declare a counter variable, a condition, and an increment all in one line.</p>
+      <div class="code-wrap"><span class="code-label">Java</span><pre><code><span class="cm">// For loop</span>
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i < <span class="num">5</span>; i++) {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(i);  <span class="cm">// 0 1 2 3 4</span>
+}
+
+<span class="cm">// While loop</span>
+<span class="kw">int</span> count = <span class="num">0</span>;
+<span class="kw">while</span> (count < <span class="num">3</span>) {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(count);
+    count++;
+}</code></pre></div>
       <hr />
       <h2>Data Types & Variables</h2>
       <p style="margin-top:0.5rem;">Content coming soon.</p>
@@ -1015,7 +1079,45 @@
       </div>
       <hr />
       <h2>Getting Started</h2>
-      <p style="margin-top:0.5rem;">Content coming soon.</p>
+      <p style="margin-top:0.5rem;">JavaScript runs in the browser and is the primary language of the web. It's loosely typed — variables can hold any type and change type freely. Use <code>let</code> for variables that change and <code>const</code> for ones that don't. Avoid <code>var</code>; it has scoping quirks that cause bugs.</p>
+      <p><strong>Variables:</strong></p>
+      <div class="code-wrap"><span class="code-label">JavaScript</span><pre><code><span class="cm">// Variables</span>
+<span class="kw">const</span> name = <span class="str">"Ephram"</span>;
+<span class="kw">let</span> age = <span class="num">21</span>;
+<span class="kw">let</span> height = <span class="num">5.11</span>;
+<span class="kw">const</span> isStudent = <span class="kw">true</span>;</code></pre></div>
+      <p><strong>Functions:</strong> Two common ways to define them — traditional and arrow functions. Arrow functions are shorter and more common in modern JavaScript.</p>
+      <div class="code-wrap"><span class="code-label">JavaScript</span><pre><code><span class="cm">// Traditional</span>
+<span class="kw">function</span> <span class="fn">greet</span>(name) {
+    <span class="kw">return</span> <span class="str">"Hello, "</span> + name;
+}
+
+<span class="cm">// Arrow function</span>
+<span class="kw">const</span> <span class="fn">greet</span> = (name) => <span class="str">"Hello, "</span> + name;
+
+console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="str">"Ephram"</span>));  <span class="cm">// Hello, Ephram</span></code></pre></div>
+      <p><strong>Control Flow:</strong> Same syntax as Java — parentheses around condition, curly braces for the block.</p>
+      <div class="code-wrap"><span class="code-label">JavaScript</span><pre><code><span class="kw">let</span> score = <span class="num">75</span>;
+
+<span class="kw">if</span> (score >= <span class="num">90</span>) {
+    console.<span class="fn">log</span>(<span class="str">"A"</span>);
+} <span class="kw">else if</span> (score >= <span class="num">70</span>) {
+    console.<span class="fn">log</span>(<span class="str">"B"</span>);
+} <span class="kw">else</span> {
+    console.<span class="fn">log</span>(<span class="str">"C or below"</span>);
+}</code></pre></div>
+      <p><strong>Loops:</strong></p>
+      <div class="code-wrap"><span class="code-label">JavaScript</span><pre><code><span class="cm">// For loop</span>
+<span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">0</span>; i < <span class="num">5</span>; i++) {
+    console.<span class="fn">log</span>(i);  <span class="cm">// 0 1 2 3 4</span>
+}
+
+<span class="cm">// While loop</span>
+<span class="kw">let</span> count = <span class="num">0</span>;
+<span class="kw">while</span> (count < <span class="num">3</span>) {
+    console.<span class="fn">log</span>(count);
+    count++;
+}</code></pre></div>
       <hr />
       <h2>Variables & Data Types</h2>
       <p style="margin-top:0.5rem;">Content coming soon.</p>
@@ -1048,7 +1150,41 @@
       </div>
       <hr />
       <h2>Getting Started</h2>
-      <p style="margin-top:0.5rem;">Content coming soon.</p>
+      <p style="margin-top:0.5rem;">C# is strongly typed like Java but with cleaner syntax. It's the primary language for Unity so if you're here for game development this is where to focus. Every variable needs a declared type, every statement ends with a semicolon, and all code lives inside a class.</p>
+      <p><strong>Variables:</strong></p>
+      <div class="code-wrap"><span class="code-label">C#</span><pre><code><span class="cm">// Variables</span>
+<span class="kw">string</span> name = <span class="str">"Ephram"</span>;
+<span class="kw">int</span> age = <span class="num">21</span>;
+<span class="kw">float</span> height = <span class="num">5.11f</span>;  <span class="cm">// f suffix marks it as a float</span>
+<span class="kw">bool</span> isStudent = <span class="kw">true</span>;</code></pre></div>
+      <p><strong>Functions:</strong> Called methods in C#. Must declare a return type — use <code>void</code> if nothing is returned. Access modifiers (<code>public</code>, <code>private</code>) control visibility.</p>
+      <div class="code-wrap"><span class="code-label">C#</span><pre><code><span class="kw">public</span> <span class="kw">string</span> <span class="fn">Greet</span>(<span class="kw">string</span> name) {
+    <span class="kw">return</span> <span class="str">"Hello, "</span> + name;
+}
+
+<span class="cl">Debug</span>.<span class="fn">Log</span>(<span class="fn">Greet</span>(<span class="str">"Ephram"</span>));  <span class="cm">// Hello, Ephram</span></code></pre></div>
+      <p><strong>Control Flow:</strong> Same syntax as Java — parentheses around condition, curly braces for the block.</p>
+      <div class="code-wrap"><span class="code-label">C#</span><pre><code><span class="kw">int</span> score = <span class="num">75</span>;
+
+<span class="kw">if</span> (score >= <span class="num">90</span>) {
+    <span class="cl">Debug</span>.<span class="fn">Log</span>(<span class="str">"A"</span>);
+} <span class="kw">else if</span> (score >= <span class="num">70</span>) {
+    <span class="cl">Debug</span>.<span class="fn">Log</span>(<span class="str">"B"</span>);
+} <span class="kw">else</span> {
+    <span class="cl">Debug</span>.<span class="fn">Log</span>(<span class="str">"C or below"</span>);
+}</code></pre></div>
+      <p><strong>Loops:</strong></p>
+      <div class="code-wrap"><span class="code-label">C#</span><pre><code><span class="cm">// For loop</span>
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="num">0</span>; i < <span class="num">5</span>; i++) {
+    <span class="cl">Debug</span>.<span class="fn">Log</span>(i);  <span class="cm">// 0 1 2 3 4</span>
+}
+
+<span class="cm">// While loop</span>
+<span class="kw">int</span> count = <span class="num">0</span>;
+<span class="kw">while</span> (count < <span class="num">3</span>) {
+    <span class="cl">Debug</span>.<span class="fn">Log</span>(count);
+    count++;
+}</code></pre></div>
       <hr />
       <h2>Data Types & Variables</h2>
       <p style="margin-top:0.5rem;">Content coming soon.</p>
