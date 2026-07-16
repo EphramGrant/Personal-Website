@@ -26,14 +26,6 @@
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      transition: background 0.4s ease, color 0.4s ease;
-    }
-
-    /* Palette transitions on all themed elements */
-    nav, .home-card, .item-card, .stat-cell, .genre-bar-fill,
-    .genre-bar-track, footer, hr, .tag, pre, .pg-btn,
-    #album-table td, .tbl-th, .sport-game, .aotd-cover-placeholder {
-      transition: background 0.4s ease, border-color 0.4s ease, color 0.4s ease;
     }
 
     /* ── NAV ── */
@@ -1454,14 +1446,14 @@
   // ── COLOUR PALETTES ──
   const PALETTES = {
     home:       { bg: '#f9f8f5', surface: '#ffffff', border: '#e8e5de', text: '#1a1916', muted: '#7a7870', tagBg: '#efeee9' },
-    music:      { bg: '#f5f3f9', surface: '#fdfcff', border: '#e0daea', text: '#1a1620', muted: '#736d7e', tagBg: '#eceaf3' }, // soft violet
-    gaming:     { bg: '#f3f7f5', surface: '#fafdfb', border: '#d8e8e0', text: '#141c18', muted: '#5e7a6b', tagBg: '#e4eeea' }, // muted green
-    cubing:     { bg: '#f5f7fa', surface: '#fafcff', border: '#d8e0ee', text: '#141620', muted: '#5e6a80', tagBg: '#e4e9f5' }, // slate blue
-    sports:     { bg: '#faf5f3', surface: '#fffcfb', border: '#ecdcd8', text: '#201614', muted: '#80635e', tagBg: '#f2e8e5' }, // warm terracotta
-    books:      { bg: '#f7f5f0', surface: '#fdfcf8', border: '#e5dece', text: '#1c1a12', muted: '#7a7358', tagBg: '#eeeade' }, // warm parchment
-    games:      { bg: '#f3f5f7', surface: '#fafbfd', border: '#d8dce6', text: '#141618', muted: '#5e6475', tagBg: '#e4e6ee' }, // cool grey-blue
-    coding:     { bg: '#f3f7f5', surface: '#fafdfb', border: '#cde0d8', text: '#101c16', muted: '#4d7060', tagBg: '#daeee6' }, // deep teal
-    resume:     { bg: '#f9f8f5', surface: '#ffffff', border: '#e8e5de', text: '#1a1916', muted: '#7a7870', tagBg: '#efeee9' }, // default
+    music:      { bg: '#ede9f5', surface: '#f7f4fc', border: '#c8bfe0', text: '#1a1628', muted: '#6b6080', tagBg: '#ddd8ee' }, // violet
+    gaming:     { bg: '#e8f2ec', surface: '#f3faf6', border: '#b8d8c4', text: '#101c14', muted: '#4a6e58', tagBg: '#d4e8dc' }, // green
+    cubing:     { bg: '#e8edf5', surface: '#f3f6fc', border: '#b8c8e8', text: '#101428', muted: '#4a5870', tagBg: '#d4ddf0' }, // blue
+    sports:     { bg: '#f5ece8', surface: '#fdf6f3', border: '#e0c4bc', text: '#241410', muted: '#7a5248', tagBg: '#edd8d0' }, // terracotta
+    books:      { bg: '#f2eddf', surface: '#faf7ee', border: '#d8ccaa', text: '#1e1a0e', muted: '#7a6e48', tagBg: '#e8e0c8' }, // parchment
+    games:      { bg: '#e8ecf2', surface: '#f3f5fa', border: '#b8c4d8', text: '#101418', muted: '#4a5468', tagBg: '#d4dae8' }, // grey-blue
+    coding:     { bg: '#e4f0ec', surface: '#f0faf6', border: '#a8d4c4', text: '#0a1c14', muted: '#3a6650', tagBg: '#c8e4d8' }, // teal
+    resume:     { bg: '#f9f8f5', surface: '#ffffff', border: '#e8e5de', text: '#1a1916', muted: '#7a7870', tagBg: '#efeee9' },
   };
 
   function applyPalette(pageId) {
