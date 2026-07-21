@@ -6,6 +6,7 @@
   <title>Ephram Grant's Site</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -673,6 +674,12 @@
       <h2>Listening Stats</h2>
       <div id="album-stats" style="margin-top:1.5rem;">
         <div style="color:var(--muted); font-size:0.82rem;">Loading…</div>
+      </div>
+      <hr />
+      <h2>Listening Map</h2>
+      <p style="margin-top:0.5rem; margin-bottom:1rem;">Artist origins mapped by album count. Larger dots = more albums from that location.</p>
+      <div id="album-map" style="height:400px; border-radius:8px; border:1px solid var(--border); overflow:hidden; background:var(--tag-bg);">
+        <div style="display:flex; align-items:center; justify-content:center; height:100%; color:var(--muted); font-size:0.82rem;">Loading map…</div>
       </div>
     </div>
   </div>
@@ -1636,6 +1643,91 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     return false;
   }
 
+  // ── LISTENING MAP ──
+  let _map = null;
+  const _geoCache = {};
+
+  function loadLeaflet() {
+    return new Promise(resolve => {
+      if (window.L) { resolve(); return; }
+      const script = document.createElement('script');
+      script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+      script.onload = resolve;
+      document.head.appendChild(script);
+    });
+  }
+
+  async function geocode(location) {
+    if (!location) return null;
+    const key = location.toLowerCase().trim();
+    if (_geoCache[key]) return _geoCache[key];
+    try {
+      const cached = sessionStorage.getItem('geo::' + key);
+      if (cached) { _geoCache[key] = JSON.parse(cached); return _geoCache[key]; }
+    } catch {}
+    try {
+      await new Promise(r => setTimeout(r, 1100)); // Nominatim rate limit
+      const res  = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(location)}&format=json&limit=1`, {
+        headers: { 'User-Agent': 'PersonalMusicSite/1.0' }
+      });
+      const data = await res.json();
+      if (!data.length) return null;
+      const coords = { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+      _geoCache[key] = coords;
+      try { sessionStorage.setItem('geo::' + key, JSON.stringify(coords)); } catch {}
+      return coords;
+    } catch { return null; }
+  }
+
+  async function renderMap() {
+    const el = document.getElementById('album-map');
+    if (!el) return;
+
+    // Count albums per location
+    const locationCounts = {};
+    ALBUMS.forEach(a => {
+      if (!a.location) return;
+      locationCounts[a.location] = (locationCounts[a.location] || 0) + 1;
+    });
+
+    const locations = Object.entries(locationCounts);
+    if (!locations.length) {
+      el.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);font-size:0.82rem;">No location data yet — add a location column to your sheet.</div>';
+      return;
+    }
+
+    await loadLeaflet();
+
+    // Init map once
+    if (!_map) {
+      _map = L.map('album-map', { zoomControl: true, scrollWheelZoom: false }).setView([30, 10], 2);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
+        subdomains: 'abcd', maxZoom: 19
+      }).addTo(_map);
+    } else {
+      _map.eachLayer(l => { if (l instanceof L.CircleMarker) _map.removeLayer(l); });
+    }
+
+    const maxCount = Math.max(...locations.map(([, c]) => c));
+
+    // Geocode and plot — sequential to respect rate limit
+    for (const [location, count] of locations) {
+      const coords = await geocode(location);
+      if (!coords) continue;
+      const radius = 6 + (count / maxCount) * 18;
+      L.circleMarker([coords.lat, coords.lng], {
+        radius,
+        fillColor: getComputedStyle(document.documentElement).getPropertyValue('--text').trim() || '#1a1916',
+        fillOpacity: 0.7,
+        color: 'transparent',
+        weight: 0,
+      }).bindTooltip(`<strong>${location}</strong><br>${count} album${count !== 1 ? 's' : ''}`, {
+        direction: 'top', offset: [0, -4]
+      }).addTo(_map);
+    }
+  }
+
   document.querySelectorAll('a[onclick]').forEach(a => {
     a.addEventListener('click', e => e.preventDefault());
   });
@@ -1647,7 +1739,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
   let ALBUMS = [];
 
   async function loadAlbumsFromSheet() {
-    const range = 'Sheet1!A2:F';
+    const range = 'Sheet1!A2:G';
     const url   = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${range}?key=${API_KEY}`;
     const tbody = document.getElementById('album-tbody');
 
@@ -1660,15 +1752,17 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       ALBUMS = (data.values || []).reverse().map(row => ({
         id:     parseInt(row[0]) || 0,
         album:  row[1] || '',
-        artist: (row[2] || '').split('|').map(a => a.trim()).filter(Boolean),
+        artist: (row[2] || '').split(',').map(a => a.trim()).filter(Boolean),
         genre:  (row[3] || '').split(',').map(g => g.trim()).filter(Boolean),
         rating: parseFloat(row[4]) || 0,
-        notes:  row[5] || '',
+        notes:    row[5] || '',
+        location: row[6] || '',
       }));
       tblRender();
       renderStats();
       renderAlbumOfTheDay();
       scheduleMidnightRefresh();
+      renderMap();
     } catch (err) {
       if (tbody) tbody.innerHTML = `<tr><td colspan="5" style="padding:1.5rem 0.75rem; color:var(--muted); font-size:0.82rem;">Could not load albums — check your API key and sheet permissions.</td></tr>`;
       console.error('Sheet load error:', err);
