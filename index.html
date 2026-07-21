@@ -1660,7 +1660,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       ALBUMS = (data.values || []).reverse().map(row => ({
         id:     parseInt(row[0]) || 0,
         album:  row[1] || '',
-        artist: (row[2] || '').split(',').map(a => a.trim()).filter(Boolean),
+        artist: (row[2] || '').split('|').map(a => a.trim()).filter(Boolean),
         genre:  (row[3] || '').split(',').map(g => g.trim()).filter(Boolean),
         rating: parseFloat(row[4]) || 0,
         notes:  row[5] || '',
