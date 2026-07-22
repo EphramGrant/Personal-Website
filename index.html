@@ -466,6 +466,50 @@
       pointer-events: none;
     }
     .code-wrap pre { margin: 0; }
+    /* ── WC MUSIC PASSPORT ── */
+    .passport-wrap { margin-bottom: 0; }
+    .passport-progress-count {
+      font-size: 0.72rem; letter-spacing: 0.08em; color: var(--muted);
+      text-transform: uppercase; margin-bottom: 0.5rem;
+    }
+    .passport-progress-count strong { color: var(--text); }
+    .passport-track {
+      height: 4px; background: var(--border); border-radius: 2px;
+      overflow: hidden; margin-bottom: 1.5rem;
+    }
+    .passport-fill { height: 100%; background: var(--text); border-radius: 2px; }
+    .passport-confed { margin-bottom: 1.5rem; }
+    .passport-confed-title {
+      font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted); display: flex; align-items: center; gap: 0.5rem;
+      margin-bottom: 0.6rem;
+    }
+    .passport-confed-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .passport-country {
+      display: grid; grid-template-columns: 1.5rem 1.5rem 1fr;
+      gap: 0.6rem; align-items: center;
+      padding: 0.5rem 0.25rem;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer; transition: background 0.1s;
+    }
+    .passport-country:hover { background: var(--tag-bg); }
+    .passport-country:last-child { border-bottom: none; }
+    .passport-check {
+      width: 1.25rem; height: 1.25rem; border-radius: 50%;
+      border: 1.5px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.6rem; color: var(--muted); flex-shrink: 0;
+    }
+    .passport-check.done { border-color: var(--text); color: var(--text); }
+    .passport-flag { font-size: 1rem; }
+    .passport-country-name { font-size: 0.82rem; font-weight: 500; }
+    .passport-country-name.done { color: var(--text); }
+    .passport-artist { font-size: 0.72rem; color: var(--muted); grid-column: 3; margin-top: -0.15rem; }
+    .passport-artist em { font-style: italic; color: var(--text); }
+    .passport-footer {
+      font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--muted); text-align: center; margin-top: 1rem;
+    }
   </style>
 </head>
 <body>
@@ -476,6 +520,7 @@
 
     <a href="#" onclick="showPage('home')" id="nav-home" class="active">Home</a>
     <a href="#" onclick="showPage('music')" id="nav-music">Music</a>
+    <a href="#" onclick="showPage('passport')" id="nav-passport">Passport</a>
     <a href="#" onclick="showPage('gaming')" id="nav-gaming">Gaming</a>
     <a href="#" onclick="showPage('cubing')" id="nav-cubing">Cubing</a>
     <a href="#" onclick="showPage('sports')" id="nav-sports">Sports</a>
@@ -500,6 +545,11 @@
         <div class="home-card-icon">♩</div>
         <h3>Music</h3>
         <p>Artists, playlists & what I'm listening to.</p>
+      </a>
+      <a class="home-card" href="#" onclick="showPage('passport')">
+        <div class="home-card-icon">⊕</div>
+        <h3>Passport</h3>
+        <p>World Cup 2026 music challenge.</p>
       </a>
       <a class="home-card" href="#" onclick="showPage('gaming')">
         <div class="home-card-icon">◈</div>
@@ -680,6 +730,24 @@
       <p style="margin-top:0.5rem; margin-bottom:1rem;">Artist origins mapped by album count. Larger dots = more albums from that location.</p>
       <div id="album-map" style="height:400px; border-radius:8px; border:1px solid var(--border); overflow:hidden; background:var(--tag-bg);">
         <div style="display:flex; align-items:center; justify-content:center; height:100%; color:var(--muted); font-size:0.82rem;">Loading map…</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PASSPORT -->
+  <div id="page-passport" class="page">
+    <div class="container">
+      <span class="eyebrow">Music · World Cup 2026</span>
+      <h1 class="page-title">Passport.</h1>
+      <div class="hobby-intro">
+        <p>One artist per country in the tournament. Click a country to mark it as listened. Progress saves automatically.</p>
+      </div>
+      <hr />
+      <div class="passport-wrap">
+        <div class="passport-progress-count" id="pp-count"></div>
+        <div class="passport-track"><div class="passport-fill" id="pp-fill" style="width:0%"></div></div>
+        <div id="pp-body"></div>
+        <div class="passport-footer">Click a country to mark it · progress saves automatically</div>
       </div>
     </div>
   </div>
@@ -1633,9 +1701,10 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     else if (id.startsWith('coding-')) document.getElementById('nav-coding').classList.add('active');
     applyPalette(id);
     window.scrollTo(0, 0);
-    if (id === 'sports') { loadLiverpool(); loadEagles(); }
-    if (id === 'music')  { loadAlbumsFromSheet(); }
-    if (id === 'games')  { renderGamesGrid(); }
+    if (id === 'sports')   { loadLiverpool(); loadEagles(); }
+    if (id === 'music')    { loadAlbumsFromSheet(); }
+    if (id === 'games')    { renderGamesGrid(); }
+    if (id === 'passport') { ppLoad(); }
     if (id !== 'game-detail' && window._gameResizeHandler) {
       window.removeEventListener('resize', window._gameResizeHandler);
       window._gameResizeHandler = null;
@@ -1726,6 +1795,116 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
         direction: 'top', offset: [0, -4]
       }).addTo(_map);
     }
+  }
+
+  // ── WC MUSIC PASSPORT ──
+  const PP_DATA = [
+    { confed: "UEFA — Europe", countries: [
+      { code:"AUT", name:"Austria",              flag:"🇦🇹", artist:"Falco",            album:"Falco 3" },
+      { code:"BEL", name:"Belgium",              flag:"🇧🇪", artist:"Stromae",          album:"Racine Carrée" },
+      { code:"BIH", name:"Bosnia & Herzegovina", flag:"🇧🇦", artist:"Dino Merlin",      album:"Ono Što Iznutra Fali" },
+      { code:"HRV", name:"Croatia",              flag:"🇭🇷", artist:"Severina",         album:"Dalmatinka" },
+      { code:"ENG", name:"England",              flag:"🏴", artist:"Radiohead",         album:"OK Computer", done:true },
+      { code:"FRA", name:"France",               flag:"🇫🇷", artist:"Daft Punk",        album:"Discovery", done:true },
+      { code:"DEU", name:"Germany",              flag:"🇩🇪", artist:"Kraftwerk",        album:"Trans-Europe Express" },
+      { code:"NLD", name:"Netherlands",          flag:"🇳🇱", artist:"Tiësto",           album:"In My Memory" },
+      { code:"NOR", name:"Norway",               flag:"🇳🇴", artist:"a-ha",             album:"Hunting High and Low" },
+      { code:"PRT", name:"Portugal",             flag:"🇵🇹", artist:"Amália Rodrigues", album:"Amália at the Olympia" },
+      { code:"SCO", name:"Scotland",             flag:"🏴", artist:"Chvrches",          album:"The Bones of What You Believe" },
+      { code:"ESP", name:"Spain",                flag:"🇪🇸", artist:"Rosalía",          album:"El Mal Querer" },
+      { code:"SWE", name:"Sweden",               flag:"🇸🇪", artist:"Weatherday",       album:"Hornet Disaster", done:true },
+      { code:"CHE", name:"Switzerland",          flag:"🇨🇭", artist:"Stress",           album:"Stress" },
+      { code:"TUR", name:"Türkiye",              flag:"🇹🇷", artist:"Tarkan",           album:"Ölürüm Sana" },
+    ]},
+    { confed: "CONMEBOL — South America", countries: [
+      { code:"ARG", name:"Argentina", flag:"🇦🇷", artist:"Soda Stereo",     album:"Soda Stereo", done:true },
+      { code:"BRA", name:"Brazil",    flag:"🇧🇷", artist:"Caetano Veloso",  album:"Caetano Veloso (1968)" },
+      { code:"COL", name:"Colombia",  flag:"🇨🇴", artist:"Shakira",         album:"Pies Descalzos" },
+      { code:"ECU", name:"Ecuador",   flag:"🇪🇨", artist:"Julio Jaramillo", album:"Nuestro Juramento" },
+      { code:"PRY", name:"Paraguay",  flag:"🇵🇾", artist:"Kchiporros",      album:"Che Rekove" },
+      { code:"URY", name:"Uruguay",   flag:"🇺🇾", artist:"Jorge Drexler",   album:"Eco" },
+    ]},
+    { confed: "CAF — Africa", countries: [
+      { code:"DZA", name:"Algeria",     flag:"🇩🇿", artist:"Khaled",             album:"Khaled (1992)" },
+      { code:"CPV", name:"Cabo Verde",  flag:"🇨🇻", artist:"Cesária Évora",      album:"Miss Perfumado" },
+      { code:"COD", name:"DR Congo",    flag:"🇨🇩", artist:"Franco & TPOK Jazz", album:"Originalité" },
+      { code:"EGY", name:"Egypt",       flag:"🇪🇬", artist:"Amr Diab",           album:"Nour El Ain" },
+      { code:"GHA", name:"Ghana",       flag:"🇬🇭", artist:"Amaarae",            album:"The Angel You Don't Know" },
+      { code:"CIV", name:"Ivory Coast", flag:"🇨🇮", artist:"Magic System",       album:"Premiere Album" },
+      { code:"MAR", name:"Morocco",     flag:"🇲🇦", artist:"Saad Lamjarred",     album:"LM3ALLEM" },
+      { code:"SEN", name:"Senegal",     flag:"🇸🇳", artist:"Youssou N'Dour",     album:"The Guide (Wommat)" },
+      { code:"TUN", name:"Tunisia",     flag:"🇹🇳", artist:"Balti",              album:"Ye Baba" },
+    ]},
+    { confed: "AFC — Asia", countries: [
+      { code:"AUS", name:"Australia",         flag:"🇦🇺", artist:"ninajirachi",      album:"I Love My Computer", done:true },
+      { code:"IRN", name:"IR Iran",           flag:"🇮🇷", artist:"Googoosh",         album:"Googoosh Live in Concert" },
+      { code:"JPN", name:"Japan",             flag:"🇯🇵", artist:"Boris",            album:"NO", done:true },
+      { code:"JOR", name:"Jordan",            flag:"🇯🇴", artist:"Omar Al Abdallat", album:"Enta Al Asas" },
+      { code:"QAT", name:"Qatar",             flag:"🇶🇦", artist:"Dana Al Fardan",   album:"Kalila" },
+      { code:"KOR", name:"Republic of Korea", flag:"🇰🇷", artist:"IU",              album:"Modern Times" },
+      { code:"SAU", name:"Saudi Arabia",      flag:"🇸🇦", artist:"Mohammed Abdu",    album:"Best of Mohammed Abdu" },
+      { code:"UZB", name:"Uzbekistan",        flag:"🇺🇿", artist:"Yulduz Usmonova",  album:"Yolgizman" },
+    ]},
+    { confed: "CONCACAF — North & Central America", countries: [
+      { code:"CAN", name:"Canada",        flag:"🇨🇦", artist:"What Is Your Name?",  album:"The Now, Now and Never", done:true },
+      { code:"MEX", name:"Mexico",        flag:"🇲🇽", artist:"Vicente Fernández",   album:"Historia de un Ídolo, Vol. 1" },
+      { code:"USA", name:"United States", flag:"🇺🇸", artist:"The Strokes",         album:"The New Abnormal", done:true },
+      { code:"CUW", name:"Curaçao",       flag:"🇨🇼", artist:"Izaline Calister",    album:"Kanta" },
+    ]},
+    { confed: "OFC — Oceania", countries: [
+      { code:"NZL", name:"New Zealand", flag:"🇳🇿", artist:"Lorde", album:"Pure Heroine" },
+    ]},
+  ];
+
+  const PP_KEY = 'wc2026-passport';
+  let ppChecked = {};
+
+  function ppLoad() {
+    try { const r = localStorage.getItem(PP_KEY); if (r) ppChecked = JSON.parse(r); } catch {}
+    ppRender();
+  }
+
+  function ppSave() {
+    try { localStorage.setItem(PP_KEY, JSON.stringify(ppChecked)); } catch {}
+  }
+
+  function ppToggle(code) { ppChecked[code] = !ppChecked[code]; ppRender(); ppSave(); }
+
+  function ppRender() {
+    const countEl = document.getElementById('pp-count');
+    const fillEl  = document.getElementById('pp-fill');
+    const bodyEl  = document.getElementById('pp-body');
+    if (!countEl || !fillEl || !bodyEl) return;
+
+    let total = 0, done = 0;
+    PP_DATA.forEach(s => s.countries.forEach(c => { total++; if (ppChecked[c.code]) done++; }));
+    const pct = Math.round((done / total) * 100);
+    countEl.innerHTML = `<strong>${done} / ${total}</strong> countries listened · ${pct}%`;
+    fillEl.style.width = pct + '%';
+
+    let html = '';
+    PP_DATA.forEach(section => {
+      const sDone = section.countries.filter(c => ppChecked[c.code]).length;
+      html += `<div class="passport-confed">
+        <div class="passport-confed-title">${section.confed} <span style="color:var(--muted);font-weight:400;">(${sDone}/${section.countries.length})</span></div>`;
+      section.countries.forEach(c => {
+        const isChecked = !!ppChecked[c.code];
+        html += `<div class="passport-country" data-ppcode="${c.code}">
+          <div class="passport-check ${isChecked ? 'done' : ''}">${isChecked ? '✓' : ''}</div>
+          <div class="passport-flag">${c.flag}</div>
+          <div>
+            <div class="passport-country-name ${isChecked ? 'done' : ''}">${c.name}</div>
+            <div class="passport-artist">${c.artist} — <em>${c.album}</em></div>
+          </div>
+        </div>`;
+      });
+      html += `</div>`;
+    });
+
+    bodyEl.innerHTML = html;
+    bodyEl.querySelectorAll('.passport-country').forEach(row => {
+      row.addEventListener('click', () => ppToggle(row.getAttribute('data-ppcode')));
+    });
   }
 
   document.querySelectorAll('a[onclick]').forEach(a => {
