@@ -1804,13 +1804,13 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       { code:"BEL", name:"Belgium",              flag:"🇧🇪", artist:"Stromae",          album:"Racine Carrée" },
       { code:"BIH", name:"Bosnia & Herzegovina", flag:"🇧🇦", artist:"Dino Merlin",      album:"Ono Što Iznutra Fali" },
       { code:"HRV", name:"Croatia",              flag:"🇭🇷", artist:"Severina",         album:"Dalmatinka" },
-      { code:"ENG", name:"England",              flag:"🏴", artist:"Radiohead",         album:"OK Computer", done:true },
+      { code:"ENG", name:"England",              flag:"🚩", artist:"Radiohead",         album:"OK Computer", done:true },
       { code:"FRA", name:"France",               flag:"🇫🇷", artist:"Daft Punk",        album:"Discovery", done:true },
       { code:"DEU", name:"Germany",              flag:"🇩🇪", artist:"Kraftwerk",        album:"Trans-Europe Express" },
       { code:"NLD", name:"Netherlands",          flag:"🇳🇱", artist:"Tiësto",           album:"In My Memory" },
       { code:"NOR", name:"Norway",               flag:"🇳🇴", artist:"a-ha",             album:"Hunting High and Low" },
       { code:"PRT", name:"Portugal",             flag:"🇵🇹", artist:"Amália Rodrigues", album:"Amália at the Olympia" },
-      { code:"SCO", name:"Scotland",             flag:"🏴", artist:"Chvrches",          album:"The Bones of What You Believe" },
+      { code:"SCO", name:"Scotland",             flag:"🚩", artist:"Chvrches",          album:"The Bones of What You Believe" },
       { code:"ESP", name:"Spain",                flag:"🇪🇸", artist:"Rosalía",          album:"El Mal Querer" },
       { code:"SWE", name:"Sweden",               flag:"🇸🇪", artist:"Weatherday",       album:"Hornet Disaster", done:true },
       { code:"CHE", name:"Switzerland",          flag:"🇨🇭", artist:"Stress",           album:"Stress" },
@@ -1856,6 +1856,22 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     ]},
   ];
 
+  function getFlagCode(code) {
+    const map = {
+      AUT:'at', BEL:'be', BIH:'ba', HRV:'hr', ENG:'gb-eng', FRA:'fr',
+      DEU:'de', NLD:'nl', NOR:'no', PRT:'pt', SCO:'gb-sct', ESP:'es',
+      SWE:'se', CHE:'ch', TUR:'tr',
+      ARG:'ar', BRA:'br', COL:'co', ECU:'ec', PRY:'py', URY:'uy',
+      DZA:'dz', CPV:'cv', COD:'cd', EGY:'eg', GHA:'gh', CIV:'ci',
+      MAR:'ma', SEN:'sn', TUN:'tn',
+      AUS:'au', IRN:'ir', JPN:'jp', JOR:'jo', QAT:'qa', KOR:'kr',
+      SAU:'sa', UZB:'uz',
+      CAN:'ca', MEX:'mx', USA:'us', CUW:'cw',
+      NZL:'nz',
+    };
+    return map[code] || code.toLowerCase().slice(0,2);
+  }
+
   const PP_KEY = 'wc2026-passport';
   let ppChecked = {};
 
@@ -1891,7 +1907,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
         const isChecked = !!ppChecked[c.code];
         html += `<div class="passport-country" data-ppcode="${c.code}">
           <div class="passport-check ${isChecked ? 'done' : ''}">${isChecked ? '✓' : ''}</div>
-          <div class="passport-flag">${c.flag}</div>
+          <img src="https://flagcdn.com/w20/${getFlagCode(c.code)}.png" alt="${c.name}" style="width:20px;height:15px;object-fit:cover;border-radius:2px;flex-shrink:0;" />
           <div>
             <div class="passport-country-name ${isChecked ? 'done' : ''}">${c.name}</div>
             <div class="passport-artist">${c.artist} — <em>${c.album}</em></div>
