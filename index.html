@@ -1015,7 +1015,7 @@
       <p style="margin-top:0.5rem;">Loops repeat a block of code multiple times without writing it out repeatedly. There are two main types found across most languages.<br><strong>For Loop:</strong> Repeats a set number of times. Used when you know how many iterations you need, such as going through every item in a list.<br><strong>While Loop:</strong> Runs as long as a condition is true. Used when you don't know how many iterations you need, such as waiting for user input. Be careful — if the condition never becomes false you'll create an infinite loop that freezes your program. For example, if I write a while loop that will continue looping until x > 10 and x never changes, the program will continue running until it crashes.</p>
       <hr />
       <h2>Functions</h2>
-      <p style="margin-top:0.5rem;">A function is a reusable block of code that performs a specific task. You can define it once and call it whenever you need it instead of writing the same logic repeatedly.<br><strong>Parameters:</strong> Inputs passed into a function that change how it behaves.<br><strong>Return:</strong> A value sent back to wherever the function was called from. Functions that don't return anything just perform an action.<br>Good functions do one thing, do it well, and have a clear name describing what that thing is.  For example, I can have an "add" function that takes into two numbers as parameters and returns their sum.</p>
+      <p style="margin-top:0.5rem;">A function is a reusable block of code that performs a specific task. You can define it once and call it whenever you need it instead of writing the same logic repeatedly.<br><strong>Parameters:</strong> Inputs passed into a function that change how it behaves.<br><strong>Return:</strong> A value sent back to wherever the function was called from. Functions that don't explicitly return and anything just perform an action. often return a value with no information such as a void, null, or none.<br><strong>Helper Functions:</strong> A function that is used inside of another function. Good functions do one thing, do it well, and have a clear name describing what that thing is.  For example, I can have an "Add" function that takes into two numbers as parameters and returns their sum. It is considered bad practice to also have this function multiply. Instead, create multiple functions and use the specific function when its specific task is needed, including inside other functions.</p>
       <hr />
       <h2>Arrays & Collections</h2>
       <p style="margin-top:0.5rem;">Arrays and collections store multiple values in a single variable. Items are accessed by position, called an index. Most languages index from 0, so the first item is at index <code>0</code>.<br><strong>Arrays:</strong> Fixed-size ordered lists. Size is set when created and cannot change. These are useful when you know the exact amount of items in advance.<br><strong>Lists:</strong> Work like arrays but can grow and shrink as you add or remove items. These often have downsides compared to Arrays such as being slower and should generally only be used if necessary.<br><strong>Dictionaries:</strong> Store key-value pairs instead of indexed items. These are unordered. You look up a key to get its associated value, similar to a real dictionary. For example, I can search the dictionary for "Hello" (key) and it would return whatever value is stored under "hello" such as the definition of the word (value).</p>
@@ -1027,8 +1027,13 @@
       <p style="margin-top:0.5rem;">Variables are generally defined to the place where they were created. Variables that were created inside of a function or loop can usually not be accessed outside of these locations. The place where a variable can be used is called its scope. A variable that is usable anywhere in the program has global scope. Many languages have ways to define global variables, but these are generally frowned upon and considered bad practice to use. This is because the entire program being able to change a value makes tracking bugs extremely difficult. This problem compounds as programs get bigger, so I recommend making sure you build habits of not using it as soon as possible.</p>
       <hr />
       <h2>Challenges</h2>
-      <p style="margin-top:0.5rem;">Each language section on this site includes challenges at the end of every topic. These are short practical exercises to reinforce what you just read — the best way to learn programming is to actually write code, not just read about it.</p>
-      <p>To complete them you have a few options.<br><strong>IDE:</strong> The most practical option. An IDE (Integrated Development Environment) is a program that lets you write, run, and debug code. Good free options are VS Code (works for everything) or PyCharm for Python specifically.<br><strong>Browser:</strong> No setup required. Sites like Replit let you write and run code directly in your browser for free.<br><strong>Notepad:</strong> You can write code in any text editor and run it from the command line — works fine for simple exercises.<br><strong>Paper:</strong> Perfectly valid for tracing through logic and understanding what code does before you run it. Known as "tracing" or "desk checking".</p>
+      <p style="margin-top:0.5rem;">Each language section on this site includes challenges at the end of every topic. These are short practical exercises to reinforce 
+                what you just read with practice tasks. The best way to learn programming is to actually write code, not just read about it.</p>
+      <p>To complete them you have a few options.<br><strong>IDE:</strong> An IDE (Integrated Development Environment) is a program that lets you write, run, and debug code.
+          Good free options are VS Code (works for everything) or PyCharm for Python specifically. IDE's often come with many helpful extensions or features such as autocompleting
+          text and clearly highlighting errors. Use Youtube to find videos on setting up an IDE.<br><strong>Browser:</strong> No setup required. Sites like Replit let you write and 
+          run code directly in your browser for free.<br><strong>Notepad:</strong> You can write code in any online text editor. This works fine for simple exercises, but is generally unintuitive.
+          <br><strong>Paper:</strong> Perfectly valid for tracing through logic and understanding what code does before you run it. Known as "tracing" or "desk checking". This is convenient and easy to do, but you can't run your code to check for small errors.</p>
     </div>
   </div>
   <div id="page-coding-python" class="page">
@@ -1041,50 +1046,42 @@
       </div>
       <hr />
       <h2>Getting Started</h2>
-      <p style="margin-top:0.5rem;">Python is designed to be readable. It uses indentation to define blocks instead of curly braces, no semicolons, and no type declarations — Python figures out types automatically. It's the most beginner-friendly language to start with.</p>
-      <div class="code-wrap"><span class="code-label">Python</span><pre><code><span class="cm"># Variables — no type keyword needed</span>
-name = <span class="str">"Ephram"</span>
-age = <span class="num">21</span>
-
-<span class="cm"># Function</span>
-<span class="kw">def</span> <span class="fn">greet</span>(name):
-    <span class="kw">return</span> <span class="str">"Hello, "</span> + name
-
-<span class="cm"># Control flow</span>
-<span class="kw">if</span> age >= <span class="num">18</span>:
-    <span class="fn">print</span>(<span class="str">"Adult"</span>)
-
-<span class="cm"># Loop</span>
-<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">3</span>):
-    <span class="fn">print</span>(i)</code></pre></div>
+      <p style="margin-top:0.5rem;">Python is designed to be readable. It uses indentation to define blocks or sections of code, instead of curly braces like many languages. 
+        No semicolons are used at the end of lines, another common requirement (and source of frustration) in many languages. 
+        There are also no type declarations (Python figures out that 5 is an integer without you having to tell it). 
+        It's the most beginner-friendly language to start with.</p>
       <hr />
       <h2>Data Types &amp; Variables</h2>
-      <p style="margin-top:0.5rem;"><strong>int:</strong> Whole numbers. <code>age = 21</code><br><strong>float:</strong> Decimal numbers. <code>height = 5.11</code><br><strong>str:</strong> Text in single or double quotes. <code>name = "Ephram"</code><br><strong>bool:</strong> True or False.<br><strong>None:</strong> Represents the absence of a value.<br>Check a type with <code>type(variable)</code>. Assign multiple variables at once: <code>x, y = 1, 2</code></p>
+      <p style="margin-top:0.5rem;"><strong>int:</strong> Whole numbers.<br><strong>float:</strong> Decimal numbers.<br><strong>str:</strong> 
+      Text in single or double quotes.<br><strong>bool:</strong> True or False.<br><strong>None:</strong> Represents the absence of a value.<br>
+      Regular variable names are conventionally lowercase with an underscore between words. Constants, or named specific bits of information are often fully capitalized with underscores between words.
+      </p>
       <div class="code-wrap"><span class="code-label">Python</span><pre><code>name = <span class="str">"Ephram"</span>
 age = <span class="num">21</span>
 height = <span class="num">5.11</span>
 is_student = <span class="kw">True</span>
 nothing = <span class="kw">None</span>
+EYE_COLOR = <span class="str">"Brown"</span>
 
-<span class="fn">print</span>(<span class="fn">type</span>(age))    <span class="cm"># &lt;class 'int'&gt;</span>
+<span class="fn">print</span>(<span class="fn">type</span>(age))
 x, y, z = <span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>  <span class="cm"># multiple assignment</span></code></pre></div>
       <div class="challenge-wrap">
         <span class="challenge-label">Challenge</span>
-        <p class="challenge-text">Create variables for your name, age, and favourite number. Print each one on its own line using an f-string: <code>f"My name is {name}"</code></p>
+        <p class="challenge-text">Create variables for your name, age, and favourite number. Print each one on its own line.</code></p>
         <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('visible'); this.textContent = this.nextElementSibling.classList.contains('visible') ? 'Hide Solution' : 'Show Solution'">Show Solution</button>
         <div class="challenge-solution">
           <div class="code-wrap"><span class="code-label">Python</span><pre><code>name = <span class="str">"Ephram"</span>
 age = <span class="num">21</span>
-favourite_number = <span class="num">7</span>
+favorite_number = <span class="num">7</span>
 
-<span class="fn">print</span>(<span class="str">f"My name is {name}"</span>)
-<span class="fn">print</span>(<span class="str">f"I am {age} years old"</span>)
-<span class="fn">print</span>(<span class="str">f"My favourite number is {favourite_number}"</span>)</code></pre></div>
+<span class="fn">print</span>(name)
+<span class="fn">print</span>(age)
+<span class="fn">print</span>(favorite_number)</code></pre></div>
         </div>
       </div>
       <hr />
       <h2>Control Flow</h2>
-      <p style="margin-top:0.5rem;">Indentation defines the block — no curly braces. Colon is required after every condition.<br><strong>elif:</strong> Python's version of else if.<br><strong>match (3.10+):</strong> Checks one variable against multiple values, similar to switch in other languages.</p>
+      <p style="margin-top:0.5rem;">Indentation defines the block. No curly braces are needed. Colon is required after every condition.<br><strong>elif:</strong> Python's version of else if.<br><strong>match (3.10+):</strong> Checks one variable against multiple values, similar to switch in other languages.</p>
       <div class="code-wrap"><span class="code-label">Python</span><pre><code>score = <span class="num">75</span>
 
 <span class="kw">if</span> score >= <span class="num">90</span>:
