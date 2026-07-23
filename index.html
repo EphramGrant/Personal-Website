@@ -510,6 +510,22 @@
       font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase;
       color: var(--muted); text-align: center; margin-top: 1rem;
     }
+    /* ── CHALLENGE REVEAL ── */
+    .challenge-wrap { margin-top: 1rem; }
+    .challenge-label { font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .challenge-text { font-size: 0.85rem; line-height: 1.7; margin-top: 0.25rem; }
+    .reveal-btn {
+      margin-top: 0.6rem;
+      background: none; border: 1px solid var(--border);
+      border-radius: 4px; padding: 0.35rem 0.75rem;
+      font-family: inherit; font-size: 0.72rem;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--muted); cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .reveal-btn:hover { background: var(--tag-bg); color: var(--text); }
+    .challenge-solution { display: none; margin-top: 0.75rem; }
+    .challenge-solution.visible { display: block; }
   </style>
 </head>
 <body>
@@ -727,7 +743,7 @@
       </div>
       <hr />
       <h2>Listening Map</h2>
-      <p style="margin-top:0.5rem; margin-bottom:1rem;">Sourced from RateYourMusic from the "Currently", "Born", "Formed", or "Work Relevant To" sections with completely arbitrary methodology. It can take a few minutes to load</p>
+      <p style="margin-top:0.5rem; margin-bottom:1rem;">Sourced from RateYourMusic from the "Currently", "Born", "Formed", or "Work Relevant To" sections with completely arbitrary methodology. It can take a few minutes to load.</p>
       <div id="album-map" style="height:400px; border-radius:8px; border:1px solid var(--border); overflow:hidden; background:var(--tag-bg);">
         <div style="display:flex; align-items:center; justify-content:center; height:100%; color:var(--muted); font-size:0.82rem;">Loading map…</div>
       </div>
@@ -1009,11 +1025,12 @@
 <hr />
 <h2>Variable Scope</h2>
       <p style="margin-top:0.5rem;">Variables are generally defined to the place where they were created. Variables that were created inside of a function or loop can usually not be accessed outside of these locations. The place where a variable can be used is called its scope. A variable that is usable anywhere in the program has global scope. Many languages have ways to define global variables, but these are generally frowned upon and considered bad practice to use. This is because the entire program being able to change a value makes tracking bugs extremely difficult. This problem compounds as programs get bigger, so I recommend making sure you build habits of not using it as soon as possible.</p>
-      
+      <hr />
+      <h2>Challenges</h2>
+      <p style="margin-top:0.5rem;">Each language section on this site includes challenges at the end of every topic. These are short practical exercises to reinforce what you just read — the best way to learn programming is to actually write code, not just read about it.</p>
+      <p>To complete them you have a few options.<br><strong>IDE:</strong> The most practical option. An IDE (Integrated Development Environment) is a program that lets you write, run, and debug code. Good free options are VS Code (works for everything) or PyCharm for Python specifically.<br><strong>Browser:</strong> No setup required. Sites like Replit let you write and run code directly in your browser for free.<br><strong>Notepad:</strong> You can write code in any text editor and run it from the command line — works fine for simple exercises.<br><strong>Paper:</strong> Perfectly valid for tracing through logic and understanding what code does before you run it. Known as "tracing" or "desk checking".</p>
     </div>
   </div>
-
-  <!-- CODING: PYTHON -->
   <div id="page-coding-python" class="page">
     <div class="container">
       <button onclick="showPage('coding')" style="background:none; border:none; cursor:pointer; font-family:inherit; font-size:0.72rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); padding:0; margin-bottom:1.5rem; display:flex; align-items:center; gap:0.4rem;">← Back to Coding</button>
@@ -1024,40 +1041,25 @@
       </div>
       <hr />
       <h2>Getting Started</h2>
-      <p style="margin-top:0.5rem;">Python is designed to be readable. It uses indentation (spaces or tabs) to define blocks of code instead of curly braces, and doesn't require semicolons at the end of lines. Variables don't need a type declaration — Python figures it out automatically.</p>
-      <p><strong>Variables:</strong> Assign with <code>=</code>. No keyword needed.</p>
-      <div class="code-wrap"><span class="code-label">Python</span><pre><code><span class="cm"># Variables</span>
+      <p style="margin-top:0.5rem;">Python is designed to be readable. It uses indentation to define blocks instead of curly braces, no semicolons, and no type declarations — Python figures out types automatically. It's the most beginner-friendly language to start with.</p>
+      <div class="code-wrap"><span class="code-label">Python</span><pre><code><span class="cm"># Variables — no type keyword needed</span>
 name = <span class="str">"Ephram"</span>
 age = <span class="num">21</span>
-height = <span class="num">5.11</span>
-is_student = <span class="kw">True</span></code></pre></div>
-      <p><strong>Functions:</strong> Defined with the <code>def</code> keyword. Indented body, colon after the signature.</p>
-      <div class="code-wrap"><span class="code-label">Python</span><pre><code><span class="kw">def</span> <span class="fn">greet</span>(name):
+
+<span class="cm"># Function</span>
+<span class="kw">def</span> <span class="fn">greet</span>(name):
     <span class="kw">return</span> <span class="str">"Hello, "</span> + name
 
-<span class="fn">print</span>(<span class="fn">greet</span>(<span class="str">"Ephram"</span>))  <span class="cm"># Hello, Ephram</span></code></pre></div>
-      <p><strong>Control Flow:</strong> No parentheses required around conditions. Colon ends the condition line.</p>
-      <div class="code-wrap"><span class="code-label">Python</span><pre><code>score = <span class="num">75</span>
+<span class="cm"># Control flow</span>
+<span class="kw">if</span> age >= <span class="num">18</span>:
+    <span class="fn">print</span>(<span class="str">"Adult"</span>)
 
-<span class="kw">if</span> score >= <span class="num">90</span>:
-    <span class="fn">print</span>(<span class="str">"A"</span>)
-<span class="kw">elif</span> score >= <span class="num">70</span>:
-    <span class="fn">print</span>(<span class="str">"B"</span>)
-<span class="kw">else</span>:
-    <span class="fn">print</span>(<span class="str">"C or below"</span>)</code></pre></div>
-      <p><strong>Loops:</strong> <code>for</code> loops iterate over a sequence. <code>range(n)</code> generates numbers from 0 to n-1.</p>
-      <div class="code-wrap"><span class="code-label">Python</span><pre><code><span class="cm"># For loop</span>
-<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">5</span>):
-    <span class="fn">print</span>(i)  <span class="cm"># 0 1 2 3 4</span>
-
-<span class="cm"># While loop</span>
-count = <span class="num">0</span>
-<span class="kw">while</span> count < <span class="num">3</span>:
-    <span class="fn">print</span>(count)
-    count += <span class="num">1</span></code></pre></div>
+<span class="cm"># Loop</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">3</span>):
+    <span class="fn">print</span>(i)</code></pre></div>
       <hr />
-      <h2>Data Types & Variables</h2>
-      <p style="margin-top:0.5rem;">Python is dynamically typed — you don't declare a type, Python figures it out from the value assigned. Variables are created the moment you assign them.<br><strong>Integer (int):</strong> Whole numbers. <code>age = 21</code><br><strong>Float:</strong> Decimal numbers. <code>height = 5.11</code><br><strong>String (str):</strong> Text, wrapped in single or double quotes. <code>name = "Ephram"</code><br><strong>Boolean (bool):</strong> True or False. <code>is_student = True</code><br><strong>None:</strong> Python's version of null — represents the absence of a value. <code>result = None</code><br>You can check a variable's type with <code>type(variable)</code>. Python also allows multiple assignment on one line: <code>x, y, z = 1, 2, 3</code></p>
+      <h2>Data Types &amp; Variables</h2>
+      <p style="margin-top:0.5rem;"><strong>int:</strong> Whole numbers. <code>age = 21</code><br><strong>float:</strong> Decimal numbers. <code>height = 5.11</code><br><strong>str:</strong> Text in single or double quotes. <code>name = "Ephram"</code><br><strong>bool:</strong> True or False.<br><strong>None:</strong> Represents the absence of a value.<br>Check a type with <code>type(variable)</code>. Assign multiple variables at once: <code>x, y = 1, 2</code></p>
       <div class="code-wrap"><span class="code-label">Python</span><pre><code>name = <span class="str">"Ephram"</span>
 age = <span class="num">21</span>
 height = <span class="num">5.11</span>
@@ -1065,12 +1067,24 @@ is_student = <span class="kw">True</span>
 nothing = <span class="kw">None</span>
 
 <span class="fn">print</span>(<span class="fn">type</span>(age))    <span class="cm"># &lt;class 'int'&gt;</span>
-<span class="fn">print</span>(<span class="fn">type</span>(name))   <span class="cm"># &lt;class 'str'&gt;</span>
-
 x, y, z = <span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>  <span class="cm"># multiple assignment</span></code></pre></div>
+      <div class="challenge-wrap">
+        <span class="challenge-label">Challenge</span>
+        <p class="challenge-text">Create variables for your name, age, and favourite number. Print each one on its own line using an f-string: <code>f"My name is {name}"</code></p>
+        <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('visible'); this.textContent = this.nextElementSibling.classList.contains('visible') ? 'Hide Solution' : 'Show Solution'">Show Solution</button>
+        <div class="challenge-solution">
+          <div class="code-wrap"><span class="code-label">Python</span><pre><code>name = <span class="str">"Ephram"</span>
+age = <span class="num">21</span>
+favourite_number = <span class="num">7</span>
+
+<span class="fn">print</span>(<span class="str">f"My name is {name}"</span>)
+<span class="fn">print</span>(<span class="str">f"I am {age} years old"</span>)
+<span class="fn">print</span>(<span class="str">f"My favourite number is {favourite_number}"</span>)</code></pre></div>
+        </div>
+      </div>
       <hr />
       <h2>Control Flow</h2>
-      <p style="margin-top:0.5rem;">Python uses indentation to define blocks — there are no curly braces. The colon at the end of the condition line is required.<br><strong>If / Elif / Else:</strong> Standard conditional branching.<br><strong>Match (Python 3.10+):</strong> Similar to switch statements in other languages, useful for checking one variable against multiple values.</p>
+      <p style="margin-top:0.5rem;">Indentation defines the block — no curly braces. Colon is required after every condition.<br><strong>elif:</strong> Python's version of else if.<br><strong>match (3.10+):</strong> Checks one variable against multiple values, similar to switch in other languages.</p>
       <div class="code-wrap"><span class="code-label">Python</span><pre><code>score = <span class="num">75</span>
 
 <span class="kw">if</span> score >= <span class="num">90</span>:
@@ -1080,26 +1094,37 @@ x, y, z = <span class="num">1</span>, <span class="num">2</span>, <span class="n
 <span class="kw">else</span>:
     <span class="fn">print</span>(<span class="str">"C or below"</span>)
 
-<span class="cm"># Match statement (Python 3.10+)</span>
+<span class="cm"># Match (Python 3.10+)</span>
 day = <span class="str">"Monday"</span>
 <span class="kw">match</span> day:
-    <span class="kw">case</span> <span class="str">"Monday"</span>:
-        <span class="fn">print</span>(<span class="str">"Start of the week"</span>)
-    <span class="kw">case</span> <span class="str">"Friday"</span>:
-        <span class="fn">print</span>(<span class="str">"End of the week"</span>)
-    <span class="kw">case</span> _:
-        <span class="fn">print</span>(<span class="str">"Midweek"</span>)</code></pre></div>
+    <span class="kw">case</span> <span class="str">"Monday"</span>: <span class="fn">print</span>(<span class="str">"Start of the week"</span>)
+    <span class="kw">case</span> <span class="str">"Friday"</span>: <span class="fn">print</span>(<span class="str">"End of the week"</span>)
+    <span class="kw">case</span> _: <span class="fn">print</span>(<span class="str">"Midweek"</span>)</code></pre></div>
+      <div class="challenge-wrap">
+        <span class="challenge-label">Challenge</span>
+        <p class="challenge-text">Write a program that takes a temperature value and prints "Hot" if above 30, "Warm" if above 15, and "Cold" otherwise.</p>
+        <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('visible'); this.textContent = this.nextElementSibling.classList.contains('visible') ? 'Hide Solution' : 'Show Solution'">Show Solution</button>
+        <div class="challenge-solution">
+          <div class="code-wrap"><span class="code-label">Python</span><pre><code>temp = <span class="num">22</span>
+
+<span class="kw">if</span> temp > <span class="num">30</span>:
+    <span class="fn">print</span>(<span class="str">"Hot"</span>)
+<span class="kw">elif</span> temp > <span class="num">15</span>:
+    <span class="fn">print</span>(<span class="str">"Warm"</span>)
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="str">"Cold"</span>)</code></pre></div>
+        </div>
+      </div>
       <hr />
       <h2>Functions</h2>
-      <p style="margin-top:0.5rem;">Functions are defined with <code>def</code>. Python supports default parameter values, keyword arguments, and can return multiple values at once.<br><strong>Default parameters:</strong> Provide a fallback value if no argument is passed.<br><strong>*args:</strong> Accepts any number of positional arguments as a tuple.<br><strong>**kwargs:</strong> Accepts any number of keyword arguments as a dictionary.<br><strong>Lambda:</strong> A one-line anonymous function for simple operations.</p>
-      <div class="code-wrap"><span class="code-label">Python</span><pre><code><span class="cm"># Basic function</span>
-<span class="kw">def</span> <span class="fn">greet</span>(name, greeting=<span class="str">"Hello"</span>):
+      <p style="margin-top:0.5rem;">Defined with <code>def</code>. Can have default parameter values and return multiple values.<br><strong>Lambda:</strong> A one-line anonymous function for simple operations.</p>
+      <div class="code-wrap"><span class="code-label">Python</span><pre><code><span class="kw">def</span> <span class="fn">greet</span>(name, greeting=<span class="str">"Hello"</span>):
     <span class="kw">return</span> <span class="str">f"{greeting}, {name}!"</span>
 
-<span class="fn">print</span>(<span class="fn">greet</span>(<span class="str">"Ephram"</span>))            <span class="cm"># Hello, Ephram!</span>
-<span class="fn">print</span>(<span class="fn">greet</span>(<span class="str">"Ephram"</span>, <span class="str">"Hey"</span>))    <span class="cm"># Hey, Ephram!</span>
+<span class="fn">print</span>(<span class="fn">greet</span>(<span class="str">"Ephram"</span>))         <span class="cm"># Hello, Ephram!</span>
+<span class="fn">print</span>(<span class="fn">greet</span>(<span class="str">"Ephram"</span>, <span class="str">"Hey"</span>)) <span class="cm"># Hey, Ephram!</span>
 
-<span class="cm"># Returning multiple values</span>
+<span class="cm"># Multiple return values</span>
 <span class="kw">def</span> <span class="fn">min_max</span>(nums):
     <span class="kw">return</span> <span class="fn">min</span>(nums), <span class="fn">max</span>(nums)
 
@@ -1108,30 +1133,54 @@ lo, hi = <span class="fn">min_max</span>([<span class="num">3</span>, <span clas
 <span class="cm"># Lambda</span>
 square = <span class="kw">lambda</span> x: x ** <span class="num">2</span>
 <span class="fn">print</span>(<span class="fn">square</span>(<span class="num">5</span>))  <span class="cm"># 25</span></code></pre></div>
-      <hr />
-      <h2>Lists, Tuples & Dictionaries</h2>
-      <p style="margin-top:0.5rem;"><strong>List:</strong> Ordered, mutable collection. Items can be added, removed, or changed. Defined with square brackets.<br><strong>Tuple:</strong> Ordered, immutable collection. Once created it cannot be changed. Defined with parentheses. Useful for fixed data.<br><strong>Dictionary (dict):</strong> Key-value pairs. Keys must be unique. Defined with curly braces.<br><strong>Set:</strong> Unordered collection of unique values. Useful for removing duplicates or checking membership.</p>
-      <div class="code-wrap"><span class="code-label">Python</span><pre><code><span class="cm"># List</span>
-fruits = [<span class="str">"apple"</span>, <span class="str">"banana"</span>, <span class="str">"cherry"</span>]
-fruits.<span class="fn">append</span>(<span class="str">"mango"</span>)
-fruits.<span class="fn">remove</span>(<span class="str">"banana"</span>)
-<span class="fn">print</span>(fruits[<span class="num">0</span>])   <span class="cm"># apple</span>
+      <div class="challenge-wrap">
+        <span class="challenge-label">Challenge</span>
+        <p class="challenge-text">Write a function called <code>is_even</code> that takes a number and returns <code>True</code> if it's even and <code>False</code> if it's odd. Test it on a few numbers.</p>
+        <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('visible'); this.textContent = this.nextElementSibling.classList.contains('visible') ? 'Hide Solution' : 'Show Solution'">Show Solution</button>
+        <div class="challenge-solution">
+          <div class="code-wrap"><span class="code-label">Python</span><pre><code><span class="kw">def</span> <span class="fn">is_even</span>(number):
+    <span class="kw">return</span> number % <span class="num">2</span> == <span class="num">0</span>
 
-<span class="cm"># Tuple</span>
-coords = (<span class="num">40.7128</span>, <span class="num">-74.0060</span>)
+<span class="fn">print</span>(<span class="fn">is_even</span>(<span class="num">4</span>))   <span class="cm"># True</span>
+<span class="fn">print</span>(<span class="fn">is_even</span>(<span class="num">7</span>))   <span class="cm"># False</span>
+<span class="fn">print</span>(<span class="fn">is_even</span>(<span class="num">100</span>)) <span class="cm"># True</span></code></pre></div>
+        </div>
+      </div>
+      <hr />
+      <h2>Lists, Tuples &amp; Dictionaries</h2>
+      <p style="margin-top:0.5rem;"><strong>List:</strong> Ordered, mutable. Use square brackets.<br><strong>Tuple:</strong> Ordered, immutable. Use parentheses — good for fixed data like coordinates.<br><strong>Dictionary:</strong> Key-value pairs. Keys must be unique.<br><strong>Set:</strong> Unordered, unique values only. Good for removing duplicates.</p>
+      <div class="code-wrap"><span class="code-label">Python</span><pre><code>fruits = [<span class="str">"apple"</span>, <span class="str">"banana"</span>, <span class="str">"cherry"</span>]
+fruits.<span class="fn">append</span>(<span class="str">"mango"</span>)
+<span class="fn">print</span>(fruits[<span class="num">0</span>])  <span class="cm"># apple</span>
+
+coords = (<span class="num">40.71</span>, <span class="num">-74.00</span>)
 lat, lng = coords  <span class="cm"># unpacking</span>
 
-<span class="cm"># Dictionary</span>
 person = {<span class="str">"name"</span>: <span class="str">"Ephram"</span>, <span class="str">"age"</span>: <span class="num">21</span>}
-<span class="fn">print</span>(person[<span class="str">"name"</span>])          <span class="cm"># Ephram</span>
-person[<span class="str">"city"</span>] = <span class="str">"Fort Mill"</span>   <span class="cm"># add new key</span>
+person[<span class="str">"city"</span>] = <span class="str">"Fort Mill"</span>
 
-<span class="cm"># Set</span>
 unique = {<span class="num">1</span>, <span class="num">2</span>, <span class="num">2</span>, <span class="num">3</span>}
 <span class="fn">print</span>(unique)  <span class="cm"># {1, 2, 3}</span></code></pre></div>
+      <div class="challenge-wrap">
+        <span class="challenge-label">Challenge</span>
+        <p class="challenge-text">Create a list of 5 of your favourite albums. Loop through the list and print each one with its position number (starting from 1).</p>
+        <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('visible'); this.textContent = this.nextElementSibling.classList.contains('visible') ? 'Hide Solution' : 'Show Solution'">Show Solution</button>
+        <div class="challenge-solution">
+          <div class="code-wrap"><span class="code-label">Python</span><pre><code>albums = [
+    <span class="str">"In Rainbows"</span>,
+    <span class="str">"Somewhere Along The Highway"</span>,
+    <span class="str">"Deathconsciousness"</span>,
+    <span class="str">"Loveless"</span>,
+    <span class="str">"Discovery"</span>
+]
+
+<span class="kw">for</span> i, album <span class="kw">in</span> <span class="fn">enumerate</span>(albums, <span class="num">1</span>):
+    <span class="fn">print</span>(<span class="str">f"{i}. {album}"</span>)</code></pre></div>
+        </div>
+      </div>
       <hr />
-      <h2>Classes & OOP</h2>
-      <p style="margin-top:0.5rem;">Classes are defined with the <code>class</code> keyword. The <code>__init__</code> method is the constructor — it runs automatically when a new object is created. <code>self</code> refers to the instance itself and must be the first parameter of every method.<br><strong>Inheritance:</strong> A class can inherit from another using parentheses in the class definition.<br><strong>Dunder methods:</strong> Special methods wrapped in double underscores (<code>__str__</code>, <code>__len__</code> etc.) that define how objects behave with built-in operations.</p>
+      <h2>Classes &amp; OOP</h2>
+      <p style="margin-top:0.5rem;"><code>__init__</code> is the constructor, runs when a new object is created. <code>self</code> refers to the instance and must be the first parameter of every method.<br><strong>Inheritance:</strong> Pass the parent class in parentheses. Use <code>super()</code> to call the parent's methods.<br><strong>Dunder methods:</strong> <code>__str__</code>, <code>__len__</code> etc. define how objects behave with built-in operations.</p>
       <div class="code-wrap"><span class="code-label">Python</span><pre><code><span class="kw">class</span> <span class="cl">Animal</span>:
     <span class="kw">def</span> <span class="fn">__init__</span>(self, name, sound):
         self.name = name
@@ -1143,39 +1192,65 @@ unique = {<span class="num">1</span>, <span class="num">2</span>, <span class="n
     <span class="kw">def</span> <span class="fn">__str__</span>(self):
         <span class="kw">return</span> self.name
 
-<span class="cm"># Inheritance</span>
 <span class="kw">class</span> <span class="cl">Dog</span>(<span class="cl">Animal</span>):
     <span class="kw">def</span> <span class="fn">__init__</span>(self, name):
         <span class="fn">super()</span>.<span class="fn">__init__</span>(name, <span class="str">"woof"</span>)
 
-    <span class="kw">def</span> <span class="fn">fetch</span>(self):
-        <span class="kw">return</span> <span class="str">f"{self.name} fetches the ball!"</span>
-
 dog = <span class="cl">Dog</span>(<span class="str">"Rex"</span>)
-<span class="fn">print</span>(dog.<span class="fn">speak</span>())   <span class="cm"># Rex says woof</span>
-<span class="fn">print</span>(dog.<span class="fn">fetch</span>())   <span class="cm"># Rex fetches the ball!</span>
-<span class="fn">print</span>(dog)           <span class="cm"># Rex (uses __str__)</span></code></pre></div>
+<span class="fn">print</span>(dog.<span class="fn">speak</span>())  <span class="cm"># Rex says woof</span></code></pre></div>
+      <div class="challenge-wrap">
+        <span class="challenge-label">Challenge</span>
+        <p class="challenge-text">Create a <code>Car</code> class with <code>make</code>, <code>model</code>, and <code>year</code> attributes. Add a method called <code>description</code> that returns a string like "2020 Toyota Camry". Create two car objects and print their descriptions.</p>
+        <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('visible'); this.textContent = this.nextElementSibling.classList.contains('visible') ? 'Hide Solution' : 'Show Solution'">Show Solution</button>
+        <div class="challenge-solution">
+          <div class="code-wrap"><span class="code-label">Python</span><pre><code><span class="kw">class</span> <span class="cl">Car</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, make, model, year):
+        self.make = make
+        self.model = model
+        self.year = year
+
+    <span class="kw">def</span> <span class="fn">description</span>(self):
+        <span class="kw">return</span> <span class="str">f"{self.year} {self.make} {self.model}"</span>
+
+car1 = <span class="cl">Car</span>(<span class="str">"Toyota"</span>, <span class="str">"Camry"</span>, <span class="num">2020</span>)
+car2 = <span class="cl">Car</span>(<span class="str">"Honda"</span>, <span class="str">"Civic"</span>, <span class="num">2018</span>)
+
+<span class="fn">print</span>(car1.<span class="fn">description</span>())  <span class="cm"># 2020 Toyota Camry</span>
+<span class="fn">print</span>(car2.<span class="fn">description</span>())  <span class="cm"># 2018 Honda Civic</span></code></pre></div>
+        </div>
+      </div>
       <hr />
-      <h2>Libraries & Packages</h2>
-      <p style="margin-top:0.5rem;">Python's biggest strength is its ecosystem of libraries. Install them with <code>pip install package-name</code> and import them at the top of your file.<br><strong>import:</strong> Imports an entire module. <code>import math</code><br><strong>from … import:</strong> Imports specific items from a module. <code>from math import sqrt</code><br><strong>as:</strong> Gives an import an alias. <code>import numpy as np</code></p>
-      <div class="code-wrap"><span class="code-label">Python</span><pre><code><span class="cm"># Standard library</span>
-<span class="kw">import</span> math
-<span class="fn">print</span>(math.<span class="fn">sqrt</span>(<span class="num">16</span>))   <span class="cm"># 4.0</span>
-<span class="fn">print</span>(math.pi)         <span class="cm"># 3.14159...</span>
+      <h2>Libraries &amp; Packages</h2>
+      <p style="margin-top:0.5rem;">Install third-party libraries with <code>pip install package-name</code>. Import at the top of your file.<br><strong>import:</strong> Imports an entire module.<br><strong>from … import:</strong> Imports only what you need.<br><strong>as:</strong> Gives an import a shorter alias.</p>
+      <div class="code-wrap"><span class="code-label">Python</span><pre><code><span class="kw">import</span> math
+<span class="fn">print</span>(math.<span class="fn">sqrt</span>(<span class="num">16</span>))  <span class="cm"># 4.0</span>
 
-<span class="cm"># Selective import</span>
 <span class="kw">from</span> random <span class="kw">import</span> randint
-<span class="fn">print</span>(<span class="fn">randint</span>(<span class="num">1</span>, <span class="num">10</span>))  <span class="cm"># random number 1–10</span>
+<span class="fn">print</span>(<span class="fn">randint</span>(<span class="num">1</span>, <span class="num">10</span>))  <span class="cm"># random 1–10</span>
 
-<span class="cm"># Common third-party libraries</span>
-<span class="cm"># pip install numpy pandas requests</span>
-<span class="kw">import</span> numpy <span class="kw">as</span> np          <span class="cm"># numerical computing</span>
-<span class="kw">import</span> pandas <span class="kw">as</span> pd          <span class="cm"># data analysis</span>
-<span class="kw">import</span> requests              <span class="cm"># HTTP requests</span></code></pre></div>
+<span class="cm"># Common third-party (pip install first)</span>
+<span class="kw">import</span> numpy <span class="kw">as</span> np   <span class="cm"># numerical computing</span>
+<span class="kw">import</span> pandas <span class="kw">as</span> pd  <span class="cm"># data analysis</span>
+<span class="kw">import</span> requests       <span class="cm"># HTTP requests</span></code></pre></div>
+      <div class="challenge-wrap">
+        <span class="challenge-label">Challenge</span>
+        <p class="challenge-text">Use the <code>random</code> library to simulate rolling two dice. Print the result of each die and their total. Run it a few times to see different results.</p>
+        <button class="reveal-btn" onclick="this.nextElementSibling.classList.toggle('visible'); this.textContent = this.nextElementSibling.classList.contains('visible') ? 'Hide Solution' : 'Show Solution'">Show Solution</button>
+        <div class="challenge-solution">
+          <div class="code-wrap"><span class="code-label">Python</span><pre><code><span class="kw">from</span> random <span class="kw">import</span> randint
+
+die1 = <span class="fn">randint</span>(<span class="num">1</span>, <span class="num">6</span>)
+die2 = <span class="fn">randint</span>(<span class="num">1</span>, <span class="num">6</span>)
+
+<span class="fn">print</span>(<span class="str">f"Die 1: {die1}"</span>)
+<span class="fn">print</span>(<span class="str">f"Die 2: {die2}"</span>)
+<span class="fn">print</span>(<span class="str">f"Total: {die1 + die2}"</span>)</code></pre></div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- CODING: JAVA -->
+    <!-- CODING: JAVA -->
   <div id="page-coding-java" class="page">
     <div class="container">
       <button onclick="showPage('coding')" style="background:none; border:none; cursor:pointer; font-family:inherit; font-size:0.72rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); padding:0; margin-bottom:1.5rem; display:flex; align-items:center; gap:0.4rem;">← Back to Coding</button>
