@@ -2545,16 +2545,23 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
             const yearEntries = Object.entries(yearCounts).sort((a, b) => a[0] - b[0]);
             const maxYearCount = Math.max(...yearEntries.map(([, c]) => c)) || 1;
             // Only label every 5 years
-            return `<div style="margin-top:0.75rem; display:flex; align-items:flex-end; gap:1px; width:100%;">
-              ${yearEntries.map(([year, count]) => {
-                const pct = Math.round((count / maxYearCount) * 100);
-                const showLabel = year % 5 === 0;
-                return `<div style="display:flex; flex-direction:column; align-items:center; gap:0.2rem; flex:1; min-width:0;">
-                  <div style="width:100%; background:${count > 0 ? 'var(--text)' : 'var(--border)'}; border-radius:1px 1px 0 0; height:${Math.max(pct, count > 0 ? 2 : 1)}px;"></div>
-                  <div style="font-size:0.45rem; color:var(--muted); white-space:nowrap; overflow:hidden; width:100%; text-align:center;">${showLabel ? year : ''}</div>
-                </div>`;
-              }).join('')}
-            </div>`;
+            return `
+              <div style="margin-top:0.75rem;">
+                <div style="display:flex; align-items:flex-end; gap:1px; width:100%; height:100px;">
+                  ${yearEntries.map(([year, count]) => {
+                    const pct = Math.round((count / maxYearCount) * 100);
+                    return `<div style="flex:1; min-width:0; display:flex; align-items:flex-end; height:100%;">
+                      <div style="width:100%; background:${count > 0 ? 'var(--text)' : 'var(--border)'}; border-radius:1px 1px 0 0; height:${Math.max(pct, count > 0 ? 2 : 1)}%;"></div>
+                    </div>`;
+                  }).join('')}
+                </div>
+                <div style="display:flex; gap:1px; width:100%; margin-top:0.25rem;">
+                  ${yearEntries.map(([year]) => {
+                    const showLabel = year % 5 === 0;
+                    return `<div style="flex:1; min-width:0; font-size:0.45rem; color:var(--muted); text-align:center; overflow:hidden;">${showLabel ? year : ''}</div>`;
+                  }).join('')}
+                </div>
+              </div>`;
           })()}
         </div>
 
