@@ -2545,20 +2545,31 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
             const yearEntries = Object.entries(yearCounts).sort((a, b) => a[0] - b[0]);
             const maxYearCount = Math.max(...yearEntries.map(([, c]) => c)) || 1;
             // Only label every 5 years
+            const chartHeight = 100;
+            const ySteps = [0, 0.25, 0.5, 0.75, 1];
+            const yLabels = ySteps.map(s => Math.round(s * maxYearCount));
+            const seenLabels = new Set();
             return `
               <div style="margin-top:0.75rem; display:flex; gap:0.5rem; align-items:flex-start;">
-                <div style="display:flex; flex-direction:column; justify-content:space-between; align-items:flex-end; height:100px; padding-bottom:0; flex-shrink:0;">
-                  <span style="font-size:0.55rem; color:var(--muted);">${maxYearCount}</span>
-                  <span style="font-size:0.55rem; color:var(--muted);">0</span>
+                <div style="display:flex; flex-direction:column; justify-content:space-between; align-items:flex-end; height:${chartHeight}px; flex-shrink:0;">
+                  ${[...ySteps].reverse().map((s, i) => {
+                    const label = Math.round(s * maxYearCount);
+                    const isDupe = seenLabels.has(label);
+                    seenLabels.add(label);
+                    return `<span style="font-size:0.5rem; color:var(--muted); line-height:1;">${isDupe ? '' : label}</span>`;
+                  }).join('')}
                 </div>
                 <div style="flex:1; min-width:0;">
-                  <div style="display:flex; align-items:flex-end; gap:1px; width:100%; height:100px;">
-                    ${yearEntries.map(([year, count]) => {
-                      const pct = Math.round((count / maxYearCount) * 100);
-                      return `<div style="flex:1; min-width:0; display:flex; align-items:flex-end; height:100%;">
-                        <div style="width:100%; background:${count > 0 ? 'var(--text)' : 'var(--border)'}; border-radius:1px 1px 0 0; height:${Math.max(pct, count > 0 ? 2 : 1)}%;"></div>
-                      </div>`;
-                    }).join('')}
+                  <div style="position:relative; width:100%; height:${chartHeight}px;">
+                    ${ySteps.map(s => `<div style="position:absolute; left:0; right:0; bottom:${s * 100}%; border-top:1px ${s === 0 ? 'solid' : 'dashed'} var(--border);"></div>`).join('')}
+                    <div style="display:flex; align-items:flex-end; gap:1px; width:100%; height:100%; position:relative; z-index:1;">
+                      ${yearEntries.map(([year, count]) => {
+                        const pct = Math.round((count / maxYearCount) * 100);
+                        return `<div style="flex:1; min-width:0; display:flex; align-items:flex-end; height:100%;">
+                          <div style="width:100%; background:${count > 0 ? 'var(--text)' : 'transparent'}; border-radius:1px 1px 0 0; height:${Math.max(pct, count > 0 ? 2 : 0)}%;"></div>
+                        </div>`;
+                      }).join('')}
+                    </div>
                   </div>
                   <div style="display:flex; gap:1px; width:100%; margin-top:0.25rem; position:relative; height:1rem;">
                     ${yearEntries.map(([year]) => {
