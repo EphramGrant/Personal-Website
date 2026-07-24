@@ -2555,10 +2555,12 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
                     </div>`;
                   }).join('')}
                 </div>
-                <div style="display:flex; gap:1px; width:100%; margin-top:0.25rem;">
+                <div style="display:flex; gap:1px; width:100%; margin-top:0.25rem; position:relative; height:1rem;">
                   ${yearEntries.map(([year]) => {
                     const showLabel = year % 5 === 0;
-                    return `<div style="flex:1; min-width:0; font-size:0.45rem; color:var(--muted); text-align:center; overflow:hidden;">${showLabel ? year : ''}</div>`;
+                    return `<div style="flex:1; min-width:0; position:relative; display:flex; justify-content:center;">
+                      ${showLabel ? `<span style="position:absolute; font-size:0.55rem; color:var(--muted); white-space:nowrap; top:0;">${year}</span>` : ''}
+                    </div>`;
                   }).join('')}
                 </div>
               </div>`;
