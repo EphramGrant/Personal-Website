@@ -2539,22 +2539,19 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
             if (!yearAlbums.length) return '<p style="font-size:0.82rem;color:var(--muted);margin-top:0.5rem;">No year data yet — add a year column to your sheet.</p>';
             const minYear = Math.min(...yearAlbums.map(a => a.year));
             const maxYear = Math.max(...yearAlbums.map(a => a.year));
-            // Group by decade
-            const decades = {};
-            for (let d = Math.floor(minYear / 10) * 10; d <= maxYear; d += 10) decades[d] = 0;
-            yearAlbums.forEach(a => {
-              const d = Math.floor(a.year / 10) * 10;
-              decades[d] = (decades[d] || 0) + 1;
-            });
-            const decadeEntries = Object.entries(decades).sort((a, b) => a[0] - b[0]);
-            const maxDecadeCount = Math.max(...decadeEntries.map(([, c]) => c)) || 1;
-            return `<div style="margin-top:0.75rem; display:flex; align-items:flex-end; gap:0.35rem;">
-              ${decadeEntries.map(([decade, count]) => {
-                const pct = Math.round((count / maxDecadeCount) * 100);
-                return `<div style="display:flex; flex-direction:column; align-items:center; gap:0.25rem; flex:1;">
-                  <div style="font-size:0.6rem; color:var(--muted); min-height:1rem; display:flex; align-items:flex-end;">${count || ''}</div>
-                  <div style="width:100%; background:var(--text); border-radius:2px 2px 0 0; height:${pct}px; min-height:${count > 0 ? '3px' : '0'};"></div>
-                  <div style="font-size:0.6rem; color:var(--muted); white-space:nowrap;">${decade}s</div>
+            const yearCounts = {};
+            for (let y = minYear; y <= maxYear; y++) yearCounts[y] = 0;
+            yearAlbums.forEach(a => { yearCounts[a.year] = (yearCounts[a.year] || 0) + 1; });
+            const yearEntries = Object.entries(yearCounts).sort((a, b) => a[0] - b[0]);
+            const maxYearCount = Math.max(...yearEntries.map(([, c]) => c)) || 1;
+            // Only label every 5 years
+            return `<div style="margin-top:0.75rem; display:flex; align-items:flex-end; gap:1px; width:100%;">
+              ${yearEntries.map(([year, count]) => {
+                const pct = Math.round((count / maxYearCount) * 100);
+                const showLabel = year % 5 === 0;
+                return `<div style="display:flex; flex-direction:column; align-items:center; gap:0.2rem; flex:1; min-width:0;">
+                  <div style="width:100%; background:${count > 0 ? 'var(--text)' : 'var(--border)'}; border-radius:1px 1px 0 0; height:${Math.max(pct, count > 0 ? 2 : 1)}px;"></div>
+                  <div style="font-size:0.45rem; color:var(--muted); white-space:nowrap; overflow:hidden; width:100%; text-align:center;">${showLabel ? year : ''}</div>
                 </div>`;
               }).join('')}
             </div>`;
