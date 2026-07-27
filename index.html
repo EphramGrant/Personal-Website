@@ -2568,6 +2568,9 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       }
     }
 
+    const playAnim = done && !state.animPlayed;
+    if (playAnim) { state.animPlayed = true; gqSaveState(state); }
+
     const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));
     const dateStr = now.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase();
 
@@ -2576,7 +2579,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
         <div class="gq-file-header">
           <div class="gq-file-header-left">
             <div class="gq-file-stamp">Intelligence File · ${dateStr}</div>
-            <div class="gq-file-title ${done ? 'reveal-anim' : 'mystery'}">${done ? country.name : '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'}</div>
+            <div class="gq-file-title ${playAnim ? 'reveal-anim' : done ? '' : 'mystery'}">${done ? country.name : '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'}</div>
             <div class="gq-file-subtitle ${done ? 'visible' : ''}">${done ? country.continent : ''}</div>
           </div>
           <div class="gq-classified ${done ? 'declassified' : ''}">${done ? 'Declassified' : 'Classified'}</div>
@@ -2618,8 +2621,9 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     state.guesses.push(val);
 
     if (gqMatch(val, country)) {
-      state.status   = 'won';
-      state.revealed = Math.min(state.revealed, clues.length);
+      state.status     = 'won';
+      state.animPlayed = false; // will play once on this render
+      state.revealed   = Math.min(state.revealed, clues.length);
     } else {
       const wrongCount = state.guesses.filter(g => !gqMatch(g, country)).length;
       state.revealed = Math.min(wrongCount + 1, clues.length);
