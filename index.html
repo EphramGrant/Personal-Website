@@ -2522,7 +2522,6 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     // Status
     let statusHtml = '';
     if (lost) statusHtml = `<div class="gq-status fail">File remains classified. The country was <strong>${country.name}</strong>.</div>`;
-    else if (won) statusHtml = `<div class="gq-status correct">Identified in ${state.guesses.length} guess${state.guesses.length === 1 ? '' : 'es'} · ${toShow} clue${toShow === 1 ? '' : 's'} revealed.</div>`;
 
     // Guesses
     const guessesHtml = state.guesses.length ? `<div class="gq-guesses">
