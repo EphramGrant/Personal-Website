@@ -2352,22 +2352,21 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
   // Clue order: hardest → easiest
   function gqClues(c) {
     return [
-      { label: "Government",       value: c.government },
-      { label: "Currency",         value: c.currency },
-      { label: "Major water",      value: c.water },
-      { label: "Language",         value: c.language },
-      { label: "Population",       value: c.population },
+      { label: "Government",      value: c.government },
+      { label: "Major water",     value: c.water },
       { label: "Neighbor count",  value: `${c.neighborCount} neighboring countr${c.neighborCount === 1 ? 'y' : 'ies'}` },
+      { label: "Currency",        value: c.currency },
+      { label: "Language",        value: c.language },
+      { label: "Continent",       value: c.continent },
       { label: "Neighbors",       value: c.neighbors },
-      { label: "Continent",        value: c.continent },
-      { label: "Shape",            value: c.shape, isShape: true,  isMultiChoice: true },
-      { label: "Capital",          value: c.capital },
-      { label: "Flag",             value: c.flag, isFlag: true,   isMultiChoice: true },
+      { label: "Capital",         value: c.capital },
+      { label: "Shape",           value: c.shape, isShape: true, isMultiChoice: true },
+      { label: "Flag",            value: c.flag,  isFlag: true,  isMultiChoice: true },
     ];
   }
 
   const GQ_KEY    = 'terrafiles-state';
-  const GQ_MAX    = 9; // wrong guesses before auto-reveal all
+  const GQ_MAX    = 8; // wrong guesses before auto-reveal all
 
   function gqDailyCountry() {
     const now  = new Date();
@@ -2549,7 +2548,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     };
 
     // Clue indices for shape (5) and flag (7) — pulled into header
-    const SHAPE_I = 8, FLAG_I = 10;
+    const SHAPE_I = 8, FLAG_I = 9;
 
     function visualCell(cl, i) {
       const revealed = i < toShow;
@@ -2737,7 +2736,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
         const clueEls = document.querySelectorAll('.gq-fact:not(.unrevealed) .gq-fact-value');
         // Find the last revealed non-visual clue
         const cluesList = gqClues(country);
-        const SHAPE_I = 8, FLAG_I = 10;
+        const SHAPE_I = 8, FLAG_I = 9;
         let revealedCount = 0;
         cluesList.forEach((cl, i) => {
           if (i === SHAPE_I || i === FLAG_I) return;
