@@ -716,10 +716,40 @@
     .gq-status.fail    { background: rgba(192,57,43,0.1);  color: #a03028; border: 1px solid rgba(192,57,43,0.2); }
     .gq-remaining { font-size: 0.65rem; color: rgba(0,0,0,0.4); margin-bottom: 0.75rem; letter-spacing: 0.05em; }
     .gq-bonus { margin-top: 1rem; border-top: 1px dashed rgba(0,0,0,0.2); padding-top: 0.9rem; }
+    /* Stats panel */
+    .gq-stats-panel {
+      margin-top: 1.25rem; padding: 1rem 1.25rem;
+      background: rgba(0,0,0,0.06); border-radius: 4px;
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+    .gq-stats-title {
+      font-size: 0.6rem; letter-spacing: 0.16em; text-transform: uppercase;
+      color: rgba(0,0,0,0.4); margin-bottom: 0.75rem;
+    }
+    .gq-stats-grid {
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.5rem; text-align: center;
+    }
+    .gq-stat-cell { display: flex; flex-direction: column; gap: 0.15rem; }
+    .gq-stat-val { font-size: 1.4rem; color: #1a1208; line-height: 1; }
+    .gq-stat-lbl { font-size: 0.5rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(0,0,0,0.4); }
+    /* Infinite mode */
+    .gq-infinite-btn {
+      margin-top: 1rem; width: 100%; padding: 0.6rem;
+      background: #1a1208; color: #d4c89a;
+      border: none; border-radius: 3px; font-family: inherit;
+      font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+      cursor: pointer;
+    }
+    .gq-infinite-btn:hover { background: #2e2010; }
+    .gq-infinite-label {
+      font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: rgba(0,0,0,0.35); text-align: center; margin-top: 0.4rem;
+    }
     @media (max-width: 500px) {
       .gq-file-body { padding: 1rem; }
       .gq-file-header { padding: 1rem; }
       .gq-file-visuals { grid-template-columns: 1fr; }
+      .gq-stats-grid { grid-template-columns: repeat(3, 1fr); }
     }
   </style>
 </head>
@@ -2365,8 +2395,66 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     ];
   }
 
+  const GQ_STATS_KEY = 'terrafiles-stats';
+
+  function gqLoadStats() {
+    try {
+      const raw = localStorage.getItem(GQ_STATS_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch {}
+    return { played: 0, wins: 0, streak: 0, bestStreak: 0, totalClues: 0 };
+  }
+
+  function gqSaveStats(s) {
+    try { localStorage.setItem(GQ_STATS_KEY, JSON.stringify(s)); } catch {}
+  }
+
+  function gqRecordResult(won, cluesUsed) {
+    const s = gqLoadStats();
+    s.played++;
+    if (won) {
+      s.wins++;
+      s.streak++;
+      s.totalClues += cluesUsed;
+      if (s.streak > s.bestStreak) s.bestStreak = s.streak;
+    } else {
+      s.streak = 0;
+    }
+    gqSaveStats(s);
+  }
+
   const GQ_KEY    = 'terrafiles-state';
   const GQ_MAX    = 8; // wrong guesses before auto-reveal all
+
+  const GQ_INF_KEY = 'terrafiles-infinite';
+  let _gqInfMode   = false;
+  let _gqInfCountry = null;
+
+  function gqInfCountry() { return _gqInfCountry; }
+
+  function gqStartInfinite() {
+    _gqInfMode = true;
+    // Pick a random country different from today's
+    const daily  = gqDailyCountry();
+    const pool   = GQ_COUNTRIES.filter(c => c.name !== daily.name);
+    const seed   = Date.now();
+    const idx    = Math.abs(seed * 1664525 + 1013904223) % pool.length;
+    _gqInfCountry = pool[Math.abs(idx) % pool.length];
+    localStorage.removeItem(GQ_INF_KEY);
+    gqRender();
+  }
+
+  function gqLoadInfState() {
+    try {
+      const raw = localStorage.getItem(GQ_INF_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch {}
+    return { guesses: [], revealed: 0, status: 'playing', bonusAnswers: {}, animPlayed: false };
+  }
+
+  function gqSaveInfState(state) {
+    try { localStorage.setItem(GQ_INF_KEY, JSON.stringify(state)); } catch {}
+  }
 
   function gqDailyCountry() {
     const now  = new Date();
@@ -2390,6 +2478,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
   }
 
   function gqLoadState() {
+    if (_gqInfMode) return gqLoadInfState();
     try {
       const raw = localStorage.getItem(GQ_KEY);
       if (raw) {
@@ -2401,6 +2490,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
   }
 
   function gqSaveState(state) {
+    if (_gqInfMode) { gqSaveInfState(state); return; }
     try { localStorage.setItem(GQ_KEY, JSON.stringify(state)); } catch {}
   }
 
@@ -2530,7 +2620,8 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     const el = document.getElementById('gq-game');
     if (!el) return;
 
-    const country    = gqDailyCountry();
+    const country    = _gqInfMode ? gqInfCountry() : gqDailyCountry();
+    if (!country) return;
     const state      = gqLoadState();
     const clues      = gqClues(country);
     const toShow     = Math.min(state.revealed, clues.length);
@@ -2652,6 +2743,41 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       }
     }
 
+    // Record stats once when daily game ends
+    if (done && !_gqInfMode && !state.statsRecorded) {
+      state.statsRecorded = true;
+      gqSaveState(state);
+      gqRecordResult(won, toShow);
+    }
+
+    // Stats panel (daily only)
+    let statsHtml = '';
+    if (done && !_gqInfMode) {
+      const st = gqLoadStats();
+      const winRate = st.played > 0 ? Math.round((st.wins / st.played) * 100) : 0;
+      const avgClues = st.wins > 0 ? (st.totalClues / st.wins).toFixed(1) : '—';
+      statsHtml = `<div class="gq-stats-panel">
+        <div class="gq-stats-title">Your Stats</div>
+        <div class="gq-stats-grid">
+          <div class="gq-stat-cell"><span class="gq-stat-val">${st.played}</span><span class="gq-stat-lbl">Played</span></div>
+          <div class="gq-stat-cell"><span class="gq-stat-val">${winRate}%</span><span class="gq-stat-lbl">Win rate</span></div>
+          <div class="gq-stat-cell"><span class="gq-stat-val">${st.streak}</span><span class="gq-stat-lbl">Streak</span></div>
+          <div class="gq-stat-cell"><span class="gq-stat-val">${st.bestStreak}</span><span class="gq-stat-lbl">Best</span></div>
+          <div class="gq-stat-cell"><span class="gq-stat-val">${avgClues}</span><span class="gq-stat-lbl">Avg clues</span></div>
+        </div>
+        <button class="gq-infinite-btn" onclick="gqStartInfinite()">▶ Play Infinite Mode</button>
+        <div class="gq-infinite-label">Practice with another random country</div>
+      </div>`;
+    }
+
+    // Infinite mode — next file button
+    let infNextHtml = '';
+    if (done && _gqInfMode) {
+      infNextHtml = `<div class="gq-bonus" style="text-align:center;">
+        <button class="gq-infinite-btn" onclick="gqStartInfinite()">▶ Next File</button>
+      </div>`;
+    }
+
     const playAnim = done && !state.animPlayed;
     if (playAnim) { state.animPlayed = true; gqSaveState(state); }
 
@@ -2682,6 +2808,8 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
           ${guessesHtml}
           ${inputHtml}
           ${bonusHtml}
+          ${statsHtml}
+          ${infNextHtml}
         </div>
       </div>`;
 
@@ -2695,10 +2823,10 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     const val = inp.value.trim();
     if (!val) return;
 
-    const country = gqDailyCountry();
+    const country = _gqInfMode ? gqInfCountry() : gqDailyCountry();
+    if (!country) return;
     const state   = gqLoadState();
     const clues   = gqClues(country);
-
     if (state.status !== 'playing') return;
     if (state.guesses.includes(val)) { inp.value = ''; return; }
 
@@ -2772,7 +2900,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
   }
 
   function gqSubmitBonus(fromIndex) {
-    const country = gqDailyCountry();
+    const country = _gqInfMode ? gqInfCountry() : gqDailyCountry();
     const clues   = gqClues(country);
     const hidden  = clues.slice(fromIndex);
     const state   = gqLoadState();
