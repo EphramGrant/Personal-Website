@@ -528,130 +528,167 @@
     .challenge-solution.visible { display: block; }
     /* ── GEOQUIZ BROCHURE ── */
     .gq-brochure {
-      border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: 10px;
       overflow: hidden;
-      background: var(--surface);
-      max-width: 600px;
+      max-width: 580px;
       margin: 0 auto;
-      box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+      font-family: 'DM Mono', monospace;
     }
+    /* Header band */
     .gq-brochure-header {
-      background: var(--text);
-      color: var(--bg);
-      padding: 1.5rem 2rem 1.25rem;
-      text-align: center;
+      background: #1a3a2a;
+      color: #f0ede4;
+      padding: 0;
       position: relative;
     }
-    .gq-brochure-header .gq-eyebrow {
-      font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase;
-      opacity: 0.6; margin-bottom: 0.4rem;
+    .gq-brochure-header-top {
+      padding: 1.5rem 1.75rem 1rem;
+      text-align: center;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
     }
-    .gq-brochure-header h2 {
+    .gq-brochure-tagline {
+      font-size: 0.58rem; letter-spacing: 0.22em; text-transform: uppercase;
+      color: #8fbc8f; margin-bottom: 0.6rem;
+    }
+    .gq-brochure-title {
       font-family: 'DM Serif Display', serif;
-      font-size: 1.6rem; letter-spacing: -0.01em; margin: 0;
-      opacity: 0.15; /* mystery title */
-      background: var(--bg); color: transparent;
-      border-radius: 3px; display: inline-block;
-      padding: 0 0.5rem; user-select: none;
+      font-size: 2rem; margin: 0; line-height: 1.1;
+      color: #f0ede4;
     }
-    .gq-brochure-header h2.revealed {
-      background: transparent; color: var(--bg); opacity: 1;
+    .gq-brochure-title.mystery {
+      color: transparent;
+      background: rgba(255,255,255,0.12);
+      border-radius: 4px;
+      padding: 0 0.5rem;
+      user-select: none;
     }
-    .gq-brochure-header .gq-header-sub {
-      font-size: 0.7rem; letter-spacing: 0.08em; opacity: 0.5;
-      margin-top: 0.5rem; text-transform: uppercase;
+    .gq-brochure-title.reveal-anim {
+      animation: gq-title-reveal 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     }
-    .gq-brochure-body { padding: 1.5rem 2rem; }
+    @keyframes gq-title-reveal {
+      0%   { opacity: 0; letter-spacing: 0.3em; transform: translateY(6px); }
+      100% { opacity: 1; letter-spacing: -0.01em; transform: translateY(0); }
+    }
+    .gq-brochure-subtitle.reveal-anim {
+      animation: gq-sub-reveal 0.6s ease 0.3s both;
+    }
+    @keyframes gq-sub-reveal {
+      from { opacity: 0; transform: translateY(4px); }
+      to   { opacity: 1; transform: none; }
+    }
+    .gq-brochure-subtitle { opacity: 0; }
+    .gq-brochure-subtitle.visible { opacity: 1; }
+    .gq-brochure-subtitle {
+      font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: rgba(240,237,228,0.45); margin-top: 0.5rem;
+    }
+    /* Header visual strip — flag + shape */
+    .gq-brochure-visuals {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 1px; background: rgba(255,255,255,0.08);
+    }
+    .gq-visual-cell {
+      background: #122a1c;
+      padding: 1rem 1.25rem;
+      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+    }
+    .gq-visual-label {
+      font-size: 0.55rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: #8fbc8f;
+    }
+    .gq-visual-img { display: block; border-radius: 3px; }
+    .gq-visual-redact {
+      border-radius: 3px; background: rgba(255,255,255,0.08);
+      border: 1px dashed rgba(255,255,255,0.15);
+    }
+    /* MC options in header */
+    .gq-visual-mc { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; }
+    .gq-visual-mc-opt {
+      padding: 3px; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px;
+      cursor: pointer; background: rgba(255,255,255,0.05);
+      transition: background 0.1s;
+    }
+    .gq-visual-mc-opt:hover { background: rgba(255,255,255,0.12); }
+    .gq-visual-mc-opt.selected { border-color: #8fbc8f; background: rgba(143,188,143,0.15); outline: 2px solid #8fbc8f; }
+    /* Body */
+    .gq-brochure-body {
+      background: #f5f2e8;
+      padding: 1.5rem 1.75rem;
+    }
+    /* Divider */
+    .gq-brochure-divider {
+      display: flex; align-items: center; gap: 0.75rem;
+      margin: 0 0 1.25rem;
+    }
+    .gq-brochure-divider::before,
+    .gq-brochure-divider::after {
+      content: ''; flex: 1; height: 1px; background: #c8c2b0;
+    }
+    .gq-brochure-divider span {
+      font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; color: #8c8472;
+    }
+    /* Fact grid */
     .gq-fact-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1px;
-      background: var(--border);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      overflow: hidden;
-      margin-bottom: 1.5rem;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 1px; background: #c8c2b0;
+      border: 1px solid #c8c2b0; border-radius: 6px;
+      overflow: hidden; margin-bottom: 1.25rem;
     }
     .gq-fact {
-      background: var(--surface);
-      padding: 0.85rem 1rem;
-      display: flex; flex-direction: column; gap: 0.25rem;
+      background: #f5f2e8;
+      padding: 0.75rem 0.9rem;
+      display: flex; flex-direction: column; gap: 0.2rem;
     }
     .gq-fact-label {
-      font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
+      font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase; color: #8c8472;
     }
-    .gq-fact-value { font-size: 0.82rem; color: var(--text); line-height: 1.4; }
-    .gq-fact-value img { width: 32px; height: 24px; border-radius: 2px; object-fit: cover; display: block; }
+    .gq-fact-value { font-size: 0.8rem; color: #1a1612; line-height: 1.4; }
     .gq-redacted {
-      display: block;
-      background: var(--text);
-      color: transparent;
-      border-radius: 2px;
-      user-select: none;
-      width: 100%;
-      height: 1em;
-      vertical-align: middle;
+      display: block; background: #1a1612;
+      border-radius: 2px; width: 100%; height: 0.9em;
     }
-    .gq-redacted-flag {
-      width: 48px; height: 32px;
-      background: var(--text);
-      border-radius: 2px;
-      display: block;
-    }
-    .gq-fact.gq-fact-bonus { background: var(--tag-bg); }
+    .gq-fact.unrevealed .gq-fact-label { opacity: 0.4; }
+    .gq-fact.gq-fact-bonus { background: #ede8d8; }
+    /* Bonus inline input */
     .gq-bonus-inline {
       width: 100%; padding: 0.3rem 0.5rem;
-      border: 1px dashed var(--border); border-radius: 3px;
-      font-family: inherit; font-size: 0.78rem;
-      background: var(--surface); color: var(--text); outline: none;
-      margin-top: 0.1rem;
+      border: 1px dashed #c8c2b0; border-radius: 3px;
+      font-family: inherit; font-size: 0.75rem;
+      background: #f5f2e8; color: #1a1612; outline: none;
+      margin-top: 0.15rem;
     }
-    .gq-bonus-inline:focus { border-color: var(--text); border-style: solid; }
-    .gq-input-row { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; }
+    .gq-bonus-inline:focus { border-color: #1a3a2a; border-style: solid; }
+    /* Guess input */
+    .gq-input-row { display: flex; gap: 0.5rem; margin-bottom: 0.6rem; }
     .gq-input {
       flex: 1; padding: 0.55rem 0.75rem;
-      border: 1px solid var(--border); border-radius: 6px;
+      border: 1px solid #c8c2b0; border-radius: 6px;
       font-family: inherit; font-size: 0.85rem;
-      background: var(--surface); color: var(--text); outline: none;
+      background: #faf8f0; color: #1a1612; outline: none;
     }
-    .gq-input:focus { border-color: var(--text); }
+    .gq-input:focus { border-color: #1a3a2a; }
     .gq-btn {
-      padding: 0.55rem 1.25rem; background: var(--text); color: var(--bg);
+      padding: 0.55rem 1.25rem; background: #1a3a2a; color: #f5f2e8;
       border: none; border-radius: 6px; font-family: inherit;
-      font-size: 0.78rem; letter-spacing: 0.05em; cursor: pointer;
+      font-size: 0.75rem; letter-spacing: 0.05em; cursor: pointer;
     }
-    .gq-btn:hover { opacity: 0.85; }
-    .gq-guesses { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 1rem; }
+    .gq-btn:hover { background: #0e261a; }
+    .gq-guesses { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-bottom: 0.75rem; }
     .gq-guess-tag {
-      font-size: 0.72rem; padding: 0.25rem 0.6rem;
-      background: var(--tag-bg); border-radius: 3px; color: var(--muted);
+      font-size: 0.68rem; padding: 0.2rem 0.55rem;
+      background: #e8e2d0; border-radius: 3px; color: #6a6050;
     }
-    .gq-guess-tag.wrong { background: #fce8e8; color: #b94040; }
-    .gq-status { font-size: 0.85rem; margin-bottom: 1rem; padding: 0.75rem 1rem; border-radius: 6px; }
-    .gq-status.correct { background: #e8f5e8; color: #2a6a2a; border: 1px solid #b8d8b8; }
-    .gq-status.fail    { background: #fce8e8; color: #b94040; border: 1px solid #e8b8b8; }
-    .gq-remaining { font-size: 0.72rem; color: var(--muted); margin-bottom: 1rem; }
-    /* Bonus round */
-    .gq-bonus { margin-top: 1.5rem; border-top: 1px solid var(--border); padding-top: 1.25rem; }
-    .gq-bonus-item {
-      display: grid; grid-template-columns: 6.5rem 1fr auto;
-      gap: 0.5rem; align-items: center;
-      padding: 0.5rem 0; border-bottom: 1px solid var(--border);
-    }
-    .gq-bonus-item:last-child { border-bottom: none; }
-    .gq-bonus-label { font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
-    .gq-bonus-input {
-      padding: 0.35rem 0.6rem; border: 1px solid var(--border); border-radius: 4px;
-      font-family: inherit; font-size: 0.78rem;
-      background: var(--surface); color: var(--text); outline: none;
-    }
-    .gq-bonus-input.correct-ans { border-color: #2a6a2a; background: #e8f5e8; }
-    .gq-bonus-input.wrong-ans   { border-color: #b94040; background: #fce8e8; }
-    .gq-bonus-reveal { font-size: 0.75rem; color: var(--muted); white-space: nowrap; }
+    .gq-guess-tag.wrong { background: #f5dada; color: #a03030; }
+    .gq-status { font-size: 0.82rem; margin-bottom: 1rem; padding: 0.65rem 0.9rem; border-radius: 6px; }
+    .gq-status.correct { background: #d8edd8; color: #1a5a1a; border: 1px solid #a8cca8; }
+    .gq-status.fail    { background: #f5dada; color: #a03030; border: 1px solid #e0a8a8; }
+    .gq-remaining { font-size: 0.68rem; color: #8c8472; margin-bottom: 1rem; }
+    .gq-bonus { margin-top: 1.25rem; border-top: 1px solid #c8c2b0; padding-top: 1rem; }
     @media (max-width: 500px) {
       .gq-fact-grid { grid-template-columns: 1fr; }
       .gq-brochure-body { padding: 1rem; }
+      .gq-brochure-visuals { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -2289,10 +2326,46 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       { label: "Population",   value: c.population },
       { label: "Neighbours",   value: `${c.neighbours} neighbouring countr${c.neighbours === 1 ? 'y' : 'ies'}` },
       { label: "Continent",    value: c.continent },
-      { label: "Shape",        value: c.shape },
+      { label: "Shape",        value: c.flag,  isShape: true,  isMultiChoice: true },
       { label: "Capital",      value: c.capital },
-      { label: "Flag",         value: c.flag, isFlag: true },
+      { label: "Flag",         value: c.flag,  isFlag: true,   isMultiChoice: true },
     ];
+  }
+
+  function gqMCSeed(country, clueIndex) {
+    const now = new Date();
+    const est = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+    return (est.getFullYear() * 10000 + (est.getMonth() + 1) * 100 + est.getDate()) ^ (country.name.length * 31 + clueIndex * 97);
+  }
+
+  function gqGetOptions(country, clueIndex) {
+    // Pick 3 wrong options + correct, seeded shuffle
+    const pool = GQ_COUNTRIES.filter(c => c.name !== country.name);
+    let s = gqMCSeed(country, clueIndex);
+    const shuffled = [...pool];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      s = (s * 22695477 + 1) & 0xffffffff;
+      const j = Math.abs(s) % (i + 1);
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    const distractors = shuffled.slice(0, 3).map(c => c.flag);
+    const opts = [country.flag, ...distractors];
+    // Shuffle options deterministically
+    let s2 = gqMCSeed(country, clueIndex + 100);
+    for (let i = opts.length - 1; i > 0; i--) {
+      s2 = (s2 * 1664525 + 1013904223) & 0xffffffff;
+      const j = Math.abs(s2) % (i + 1);
+      [opts[i], opts[j]] = [opts[j], opts[i]];
+    }
+    return opts;
+  }
+
+  function gqShapeUrl(flagCode) {
+    return `https://raw.githubusercontent.com/djaiss/mapsicon/master/all/${flagCode}/256.png`;
+  }
+
+  function gqFlagUrl(flagCode) {
+    return `https://flagcdn.com/w80/${flagCode}.png`;
   }
 
   const GQ_KEY    = 'geoquiz-state';
@@ -2348,44 +2421,77 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     const el = document.getElementById('gq-game');
     if (!el) return;
 
-    const country = gqDailyCountry();
-    const state   = gqLoadState();
-    const clues   = gqClues(country);
-    const toShow  = Math.min(state.revealed, clues.length);
-    const won     = state.status === 'won';
-    const lost    = state.status === 'lost';
-    const done    = won || lost;
+    const country    = gqDailyCountry();
+    const state      = gqLoadState();
+    const clues      = gqClues(country);
+    const toShow     = Math.min(state.revealed, clues.length);
+    const won        = state.status === 'won';
+    const lost       = state.status === 'lost';
+    const done       = won || lost;
     const wrongCount = state.guesses.filter(g => !gqMatch(g, country)).length;
 
-    // Build fact grid — all 8 facts, redacted if not yet revealed
-    const factHtml = clues.map((cl, i) => {
+    // Separate shape (index 5) and flag (index 7) from body facts
+    const SHAPE_IDX = 5;
+    const FLAG_IDX  = 7;
+
+    function visualCell(cl, i) {
       const revealed = i < toShow;
+      const label = `<div class="gq-visual-label">${cl.label}</div>`;
+
       if (revealed) {
-        const val = cl.isFlag
-          ? `<img src="https://flagcdn.com/w40/${cl.value}.png" alt="flag">`
-          : cl.value;
+        const src = cl.isFlag ? gqFlagUrl(cl.value) : gqShapeUrl(cl.value);
+        const sz  = cl.isFlag
+          ? `width:72px;height:54px;border-radius:3px;object-fit:cover;`
+          : `width:72px;height:72px;object-fit:contain;filter:brightness(0) invert(1);`;
+        return `<div class="gq-visual-cell">${label}<img src="${src}" style="${sz}" class="gq-visual-img" alt="${cl.label}"></div>`;
+      } else if (done && !state.bonusSubmitted) {
+        const opts   = gqGetOptions(country, i);
+        const sz     = cl.isFlag
+          ? `width:52px;height:39px;border-radius:2px;object-fit:cover;`
+          : `width:52px;height:52px;object-fit:contain;filter:brightness(0) invert(1);`;
+        const imgSrc = (code) => cl.isFlag ? gqFlagUrl(code) : gqShapeUrl(code);
+        const optHtml = opts.map(opt => {
+          const sel = (state.bonusAnswers && state.bonusAnswers[`mc-${i}`] === opt) ? 'selected' : '';
+          return `<button class="gq-visual-mc-opt ${sel}" onclick="gqSelectMC(${i},'${opt}')" type="button">
+            <img src="${imgSrc(opt)}" style="${sz}" alt="${opt}">
+          </button>`;
+        }).join('');
+        return `<div class="gq-visual-cell">${label}<div class="gq-visual-mc">${optHtml}</div></div>`;
+      } else if (done && state.bonusSubmitted) {
+        const correct = state.bonusAnswers[i];
+        const src = cl.isFlag ? gqFlagUrl(cl.value) : gqShapeUrl(cl.value);
+        const sz  = cl.isFlag
+          ? `width:72px;height:54px;border-radius:3px;object-fit:cover;`
+          : `width:72px;height:72px;object-fit:contain;filter:brightness(0) invert(1);`;
+        const tick = `<div style="font-size:1rem;color:${correct ? '#8fbc8f' : '#e08080'}">${correct ? '✓' : '✗'}</div>`;
+        return `<div class="gq-visual-cell">${label}<img src="${src}" style="${sz}" class="gq-visual-img" alt="${cl.label}">${tick}</div>`;
+      } else {
+        const sz = cl.isFlag ? `width:72px;height:54px;` : `width:72px;height:72px;`;
+        return `<div class="gq-visual-cell">${label}<div class="gq-visual-redact" style="${sz}"></div></div>`;
+      }
+    }
+
+    // Body facts — exclude shape and flag
+    const bodyClues = clues.filter((_, i) => i !== SHAPE_IDX && i !== FLAG_IDX);
+    const bodyFacts = bodyClues.map((cl, bi) => {
+      const i        = clues.indexOf(cl);
+      const revealed = i < toShow;
+
+      if (revealed) {
         return `<div class="gq-fact">
           <span class="gq-fact-label">${cl.label}</span>
-          <span class="gq-fact-value">${val}</span>
+          <span class="gq-fact-value">${cl.value}</span>
         </div>`;
       } else if (done && !state.bonusSubmitted) {
-        // Bonus mode — inline input on the redacted cell
-        const inp = cl.isFlag
-          ? `<input class="gq-bonus-inline" id="gq-bonus-${i}" placeholder="flag code…" autocomplete="off" />`
-          : `<input class="gq-bonus-inline" id="gq-bonus-${i}" placeholder="classified…" autocomplete="off" />`;
         return `<div class="gq-fact unrevealed gq-fact-bonus">
           <span class="gq-fact-label">${cl.label}</span>
-          ${inp}
+          <input class="gq-bonus-inline" id="gq-bonus-${i}" placeholder="classified…" autocomplete="off" onkeydown="if(event.key==='Enter') gqSubmitBonus(${toShow})" />
         </div>`;
       } else if (done && state.bonusSubmitted) {
-        // Show correct/wrong with answer
         const correct = state.bonusAnswers[i];
-        const val = cl.isFlag
-          ? `<img src="https://flagcdn.com/w40/${cl.value}.png" alt="flag" style="width:32px;height:24px;border-radius:2px;">`
-          : cl.value;
         return `<div class="gq-fact" style="border-left:3px solid ${correct ? '#2a6a2a' : '#b94040'};">
           <span class="gq-fact-label">${cl.label} <span style="color:${correct ? '#2a6a2a' : '#b94040'}">${correct ? '✓' : '✗'}</span></span>
-          <span class="gq-fact-value">${val}</span>
+          <span class="gq-fact-value">${cl.value}</span>
         </div>`;
       } else {
         return `<div class="gq-fact unrevealed">
@@ -2395,13 +2501,10 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       }
     }).join('');
 
-    // Status banner
+    // Status — only show fail message, win is shown by the reveal animation
     let statusHtml = '';
-    if (done) {
-      const msg = won
-        ? `Destination identified — ${toShow} clue${toShow === 1 ? '' : 's'} used · ${state.guesses.length} guess${state.guesses.length === 1 ? '' : 'es'}`
-        : `Destination was <strong>${country.name}</strong>`;
-      statusHtml = `<div class="gq-status ${won ? 'correct' : 'fail'}">${msg}</div>`;
+    if (lost) {
+      statusHtml = `<div class="gq-status fail">Better luck tomorrow.</div>`;
     }
 
     // Wrong guesses
@@ -2412,30 +2515,33 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       </div>`;
     }
 
-    // Input or remaining count
+    // Input
     let inputHtml = '';
     if (!done) {
       inputHtml = `
         <div class="gq-input-row">
-          <input id="gq-input" class="gq-input" placeholder="Name this destination…" autocomplete="off" />
+          <input id="gq-input" class="gq-input" placeholder="Name this destination…" autocomplete="off" onkeydown="if(event.key==='Enter') gqGuess()" />
           <button class="gq-btn" onclick="gqGuess()">Guess</button>
         </div>
         <p class="gq-remaining">${GQ_MAX - wrongCount} wrong guess${(GQ_MAX - wrongCount) === 1 ? '' : 'es'} before full reveal</p>`;
+    } else if (won) {
+      inputHtml = `<p class="gq-remaining" style="margin-bottom:0.5rem;">Solved in ${state.guesses.length} guess${state.guesses.length === 1 ? '' : 'es'} · ${toShow} clue${toShow === 1 ? '' : 's'} revealed</p>`;
+    }
     }
 
-    // Bonus round
+    // Bonus
     let bonusHtml = '';
     const hidden = clues.slice(toShow);
     if (done && hidden.length > 0) {
       if (!state.bonusSubmitted) {
         bonusHtml = `<div class="gq-bonus">
-          <p style="font-size:0.82rem; color:var(--muted); margin-bottom:0.75rem;">The redacted sections are still classified — fill them in above, then submit.</p>
+          <p style="font-size:0.78rem; color:#8c8472; margin-bottom:0.75rem;">Redacted sections remain classified — fill them in, then submit.</p>
           <button class="gq-btn" onclick="gqSubmitBonus(${toShow})">Declassify</button>
         </div>`;
       } else {
         const score = Object.values(state.bonusAnswers).filter(Boolean).length;
         bonusHtml = `<div class="gq-bonus">
-          <p style="font-size:0.82rem; color:var(--muted);">Bonus complete — <strong>${score}/${hidden.length}</strong> correct.</p>
+          <p style="font-size:0.78rem; color:#8c8472;">Bonus complete — <strong>${score}/${hidden.length}</strong> correct.</p>
         </div>`;
       }
     }
@@ -2443,13 +2549,20 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     el.innerHTML = `
       <div class="gq-brochure">
         <div class="gq-brochure-header">
-          <div class="gq-eyebrow">Today's Destination</div>
-          <h2 class="${done ? 'revealed' : ''}">${done ? country.name : '???'}</h2>
-          <div class="gq-header-sub">${done ? country.continent : 'Location classified'}</div>
+          <div class="gq-brochure-header-top">
+            <div class="gq-brochure-tagline">Today's Destination</div>
+            <div class="gq-brochure-title ${done ? 'reveal-anim' : 'mystery'}">${done ? country.name : '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'}</div>
+            <div class="gq-brochure-subtitle ${done ? 'reveal-anim visible' : ''}">${done ? country.continent : ''}</div>
+          </div>
+          <div class="gq-brochure-visuals">
+            ${visualCell(clues[SHAPE_IDX], SHAPE_IDX)}
+            ${visualCell(clues[FLAG_IDX],  FLAG_IDX)}
+          </div>
         </div>
         <div class="gq-brochure-body">
           ${statusHtml}
-          <div class="gq-fact-grid">${factHtml}</div>
+          <div class="gq-brochure-divider"><span>Intelligence File</span></div>
+          <div class="gq-fact-grid">${bodyFacts}</div>
           ${guessesHtml}
           ${inputHtml}
           ${bonusHtml}
@@ -2457,10 +2570,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       </div>`;
 
     const inp = document.getElementById('gq-input');
-    if (inp) {
-      inp.addEventListener('keydown', e => { if (e.key === 'Enter') gqGuess(); });
-      inp.focus();
-    }
+    if (inp) inp.focus();
   }
 
   function gqGuess() {
@@ -2494,23 +2604,33 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     gqRender();
   }
 
+  function gqSelectMC(clueIndex, value) {
+    const state = gqLoadState();
+    if (!state.bonusAnswers) state.bonusAnswers = {};
+    state.bonusAnswers[`mc-${clueIndex}`] = value;
+    gqSaveState(state);
+    gqRender();
+  }
+
   function gqSubmitBonus(fromIndex) {
     const country = gqDailyCountry();
     const clues   = gqClues(country);
     const hidden  = clues.slice(fromIndex);
     const state   = gqLoadState();
+    const prev    = state.bonusAnswers || {};
 
     state.bonusAnswers   = {};
     state.bonusSubmitted = true;
 
     hidden.forEach((cl, i) => {
       const idx = fromIndex + i;
-      const inp = document.getElementById(`gq-bonus-${idx}`);
-      if (!inp) return;
-      const answer = inp.value.trim().toLowerCase();
-      if (cl.isFlag) {
-        state.bonusAnswers[idx] = answer === cl.value.toLowerCase();
+      if (cl.isMultiChoice) {
+        const selected = prev[`mc-${idx}`];
+        state.bonusAnswers[idx] = selected === cl.value;
       } else {
+        const inp = document.getElementById(`gq-bonus-${idx}`);
+        if (!inp) return;
+        const answer = inp.value.trim().toLowerCase();
         state.bonusAnswers[idx] = answer.length > 1 && cl.value.toLowerCase().includes(answer);
       }
     });
