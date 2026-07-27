@@ -669,7 +669,15 @@
       font-size: 0.4rem; letter-spacing: 0.15em; color: rgba(255,255,255,0.1);
     }
     .gq-fact.unrevealed .gq-fact-label { opacity: 0.4; }
-    .gq-fact.gq-fact-bonus { background: rgba(255,255,255,0.3); }
+    .gq-fact.typing .gq-fact-value { overflow: hidden; white-space: nowrap; }
+    @keyframes gq-shake {
+      0%, 100% { transform: translateX(0); }
+      20%       { transform: translateX(-6px); }
+      40%       { transform: translateX(6px); }
+      60%       { transform: translateX(-4px); }
+      80%       { transform: translateX(4px); }
+    }
+    .gq-file.shake { animation: gq-shake 0.35s ease; }
     .gq-bonus-inline {
       width: 100%; padding: 0.25rem 0.4rem;
       border: 1px dashed rgba(0,0,0,0.3); border-radius: 2px;
@@ -2390,7 +2398,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
         if (s.dateKey === gqTodayKey()) return s;
       }
     } catch {}
-    return { dateKey: gqTodayKey(), guesses: [], revealed: 1, status: 'playing', bonusAnswers: {} };
+    return { dateKey: gqTodayKey(), guesses: [], revealed: 0, status: 'playing', bonusAnswers: {} };
   }
 
   function gqSaveState(state) {
@@ -2405,6 +2413,69 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     const norm = gqNormalise(input);
     if (gqNormalise(country.name) === norm) return true;
     return (country.aliases || []).some(a => gqNormalise(a) === norm);
+  }
+
+  // ── TERRAFILES AUDIO ──
+  const _gqAC = typeof AudioContext !== 'undefined' ? new AudioContext() : null;
+
+  function gqSound(type) {
+    if (!_gqAC) return;
+    const ctx = _gqAC;
+    if (ctx.state === 'suspended') ctx.resume();
+    const now = ctx.currentTime;
+
+    if (type === 'wrong') {
+      // Low thud + short noise burst
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.type = 'sawtooth'; osc.frequency.setValueAtTime(140, now);
+      osc.frequency.exponentialRampToValueAtTime(60, now + 0.18);
+      gain.gain.setValueAtTime(0.18, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+      osc.start(now); osc.stop(now + 0.22);
+
+    } else if (type === 'reveal') {
+      // Soft paper-rustle click
+      const buf = ctx.createBuffer(1, ctx.sampleRate * 0.06, ctx.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / data.length, 3);
+      const src = ctx.createBufferSource();
+      const gain = ctx.createGain();
+      const filter = ctx.createBiquadFilter();
+      src.buffer = buf; filter.type = 'bandpass'; filter.frequency.value = 2200; filter.Q.value = 0.8;
+      src.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+      gain.gain.setValueAtTime(0.35, now);
+      src.start(now);
+
+    } else if (type === 'correct') {
+      // Ascending two-tone stamp
+      [220, 330].forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.type = 'sine'; osc.frequency.value = freq;
+        const t = now + i * 0.12;
+        gain.gain.setValueAtTime(0, t);
+        gain.gain.linearRampToValueAtTime(0.22, t + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.28);
+        osc.start(t); osc.stop(t + 0.3);
+      });
+    }
+  }
+
+  // ── TYPEWRITER ──
+  function gqTypewriter(el, text, speed = 28) {
+    el.textContent = '';
+    let i = 0;
+    const tick = () => {
+      if (i <= text.length) {
+        el.textContent = text.slice(0, i);
+        i++;
+        setTimeout(tick, speed);
+      }
+    };
+    tick();
   }
 
   function gqMCSeed(country, i) {
@@ -2622,19 +2693,52 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
 
     if (gqMatch(val, country)) {
       state.status     = 'won';
-      state.animPlayed = false; // will play once on this render
+      state.animPlayed = false;
       state.revealed   = Math.min(state.revealed, clues.length);
+      gqSaveState(state);
+      gqSound('correct');
+      gqRender();
     } else {
       const wrongCount = state.guesses.filter(g => !gqMatch(g, country)).length;
-      state.revealed = Math.min(wrongCount + 1, clues.length);
+      const prevRevealed = state.revealed;
+      state.revealed = Math.min(wrongCount, clues.length);
       if (wrongCount >= GQ_MAX) {
         state.status   = 'lost';
         state.revealed = clues.length;
       }
+      gqSaveState(state);
+      gqSound('wrong');
+      // Shake the file
+      const fileEl = document.querySelector('.gq-file');
+      if (fileEl) {
+        fileEl.classList.remove('shake');
+        void fileEl.offsetWidth; // reflow to restart animation
+        fileEl.classList.add('shake');
+        fileEl.addEventListener('animationend', () => fileEl.classList.remove('shake'), { once: true });
+      }
+      gqRender();
+      // Typewriter on newly revealed clues
+      if (state.revealed > prevRevealed) {
+        const newIdx = state.revealed - 1;
+        const clueEls = document.querySelectorAll('.gq-fact:not(.unrevealed) .gq-fact-value');
+        // Find the last revealed non-visual clue
+        const cluesList = gqClues(country);
+        const SHAPE_I = 8, FLAG_I = 10;
+        let revealedCount = 0;
+        cluesList.forEach((cl, i) => {
+          if (i === SHAPE_I || i === FLAG_I) return;
+          if (i === newIdx) {
+            const targetEl = clueEls[revealedCount];
+            if (targetEl) {
+              gqSound('reveal');
+              gqTypewriter(targetEl, cl.value);
+            }
+          }
+          if (i < state.revealed && i !== SHAPE_I && i !== FLAG_I) revealedCount++;
+        });
+      }
     }
-
-    gqSaveState(state);
-    gqRender();
+    inp.value = '';
   }
 
   function gqCheckPopulation(answer, value) {
