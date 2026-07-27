@@ -724,7 +724,7 @@
     <a href="#" onclick="showPage('home')" id="nav-home" class="active">Home</a>
     <a href="#" onclick="showPage('music')" id="nav-music">Music</a>
     <a href="#" onclick="showPage('passport')" id="nav-passport">Passport</a>
-    <a href="#" onclick="showPage('geoquiz')" id="nav-geoquiz">GeoQuiz</a>
+    <a href="#" onclick="showPage('terrafiles')" id="nav-terrafiles">TerraFiles</a>
     <a href="#" onclick="showPage('gaming')" id="nav-gaming">Gaming</a>
     <a href="#" onclick="showPage('cubing')" id="nav-cubing">Cubing</a>
     <a href="#" onclick="showPage('sports')" id="nav-sports">Sports</a>
@@ -754,10 +754,10 @@
         <h3>Music Passport</h3>
         <p>Album recommendation for every country at the World Cup</p>
       </a>
-      <a class="home-card" href="#" onclick="showPage('geoquiz')">
+      <a class="home-card" href="#" onclick="showPage('terrafiles')">
         <div class="home-card-icon">🌍</div>
-        <h3>GeoQuiz</h3>
-        <p>Daily country guessing game.</p>
+        <h3>TerraFiles</h3>
+        <p>Daily classified country guessing game.</p>
       </a>
       <a class="home-card" href="#" onclick="showPage('gaming')">
         <div class="home-card-icon">◈</div>
@@ -1633,14 +1633,14 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
   </div>
 
   <!-- GEOQUIZ -->
-  <div id="page-geoquiz" class="page">
+  <div id="page-terrafiles" class="page">
     <div class="container">
       <span class="eyebrow">Daily Game</span>
-      <h1 class="page-title">GeoQuiz.</h1>
+      <h1 class="page-title">TerraFiles.</h1>
       <p style="margin-bottom:1.5rem;">A new destination every day. The brochure starts classified and each wrong guess reveals more. How few clues do you need? Currently a heavy work in progress with only ~40 countries and a lot of bugs.</p>
       <div id="gq-game"></div>
       <div style="margin-top:1.5rem; text-align:center;">
-        <button onclick="localStorage.removeItem('geoquiz-state'); gqRender();" style="background:none; border:1px dashed var(--border); border-radius:4px; padding:0.35rem 0.75rem; font-family:inherit; font-size:0.65rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); cursor:pointer;">⟳ Reset (testing only)</button>
+        <button onclick="localStorage.removeItem('terrafiles-state'); gqRender();" style="background:none; border:1px dashed var(--border); border-radius:4px; padding:0.35rem 0.75rem; font-family:inherit; font-size:0.65rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); cursor:pointer;">⟳ Reset (testing only)</button>
       </div>
     </div>
   </div>
@@ -2038,7 +2038,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     books:      { bg: '#f2eddf', surface: '#faf7ee', border: '#d8ccaa', text: '#1e1a0e', muted: '#7a6e48', tagBg: '#e8e0c8' }, // parchment
     games:      { bg: '#e8ecf2', surface: '#f3f5fa', border: '#b8c4d8', text: '#101418', muted: '#4a5468', tagBg: '#d4dae8' }, // grey-blue
     coding:     { bg: '#e4f0ec', surface: '#f0faf6', border: '#a8d4c4', text: '#0a1c14', muted: '#3a6650', tagBg: '#c8e4d8' }, // teal
-    geoquiz:    { bg: '#eaf0e8', surface: '#f4faf2', border: '#b8d4b0', text: '#0e1c0c', muted: '#3e6038', tagBg: '#cce4c8' }, // forest green
+    terrafiles:    { bg: '#eaf0e8', surface: '#f4faf2', border: '#b8d4b0', text: '#0e1c0c', muted: '#3e6038', tagBg: '#cce4c8' }, // forest green
     resume:     { bg: '#f9f8f5', surface: '#ffffff', border: '#e8e5de', text: '#1a1916', muted: '#7a7870', tagBg: '#efeee9' },
   };
 
@@ -2070,7 +2070,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     if (id === 'music')    { loadAlbumsFromSheet(); }
     if (id === 'gaming')   { renderGamesGrid(); }
     if (id === 'passport') { ppLoad(); }
-    if (id === 'geoquiz')  { gqRender(); }
+    if (id === 'terrafiles')  { gqRender(); }
     if (id !== 'game-detail' && window._gameResizeHandler) {
       window.removeEventListener('resize', window._gameResizeHandler);
       window._gameResizeHandler = null;
@@ -2358,7 +2358,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     ];
   }
 
-  const GQ_KEY    = 'geoquiz-state';
+  const GQ_KEY    = 'terrafiles-state';
   const GQ_MAX    = 9; // wrong guesses before auto-reveal all
 
   function gqDailyCountry() {
