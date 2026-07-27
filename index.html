@@ -526,6 +526,133 @@
     .reveal-btn:hover { background: var(--tag-bg); color: var(--text); }
     .challenge-solution { display: none; margin-top: 0.75rem; }
     .challenge-solution.visible { display: block; }
+    /* ── GEOQUIZ BROCHURE ── */
+    .gq-brochure {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--surface);
+      max-width: 600px;
+      margin: 0 auto;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+    }
+    .gq-brochure-header {
+      background: var(--text);
+      color: var(--bg);
+      padding: 1.5rem 2rem 1.25rem;
+      text-align: center;
+      position: relative;
+    }
+    .gq-brochure-header .gq-eyebrow {
+      font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase;
+      opacity: 0.6; margin-bottom: 0.4rem;
+    }
+    .gq-brochure-header h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.6rem; letter-spacing: -0.01em; margin: 0;
+      opacity: 0.15; /* mystery title */
+      background: var(--bg); color: transparent;
+      border-radius: 3px; display: inline-block;
+      padding: 0 0.5rem; user-select: none;
+    }
+    .gq-brochure-header h2.revealed {
+      background: transparent; color: var(--bg); opacity: 1;
+    }
+    .gq-brochure-header .gq-header-sub {
+      font-size: 0.7rem; letter-spacing: 0.08em; opacity: 0.5;
+      margin-top: 0.5rem; text-transform: uppercase;
+    }
+    .gq-brochure-body { padding: 1.5rem 2rem; }
+    .gq-fact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+    .gq-fact {
+      background: var(--surface);
+      padding: 0.85rem 1rem;
+      display: flex; flex-direction: column; gap: 0.25rem;
+    }
+    .gq-fact-label {
+      font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
+    }
+    .gq-fact-value { font-size: 0.82rem; color: var(--text); line-height: 1.4; }
+    .gq-fact-value img { width: 32px; height: 24px; border-radius: 2px; object-fit: cover; display: block; }
+    .gq-redacted {
+      display: block;
+      background: var(--text);
+      color: transparent;
+      border-radius: 2px;
+      user-select: none;
+      width: 100%;
+      height: 1em;
+      vertical-align: middle;
+    }
+    .gq-redacted-flag {
+      width: 48px; height: 32px;
+      background: var(--text);
+      border-radius: 2px;
+      display: block;
+    }
+    .gq-fact.gq-fact-bonus { background: var(--tag-bg); }
+    .gq-bonus-inline {
+      width: 100%; padding: 0.3rem 0.5rem;
+      border: 1px dashed var(--border); border-radius: 3px;
+      font-family: inherit; font-size: 0.78rem;
+      background: var(--surface); color: var(--text); outline: none;
+      margin-top: 0.1rem;
+    }
+    .gq-bonus-inline:focus { border-color: var(--text); border-style: solid; }
+    .gq-input-row { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; }
+    .gq-input {
+      flex: 1; padding: 0.55rem 0.75rem;
+      border: 1px solid var(--border); border-radius: 6px;
+      font-family: inherit; font-size: 0.85rem;
+      background: var(--surface); color: var(--text); outline: none;
+    }
+    .gq-input:focus { border-color: var(--text); }
+    .gq-btn {
+      padding: 0.55rem 1.25rem; background: var(--text); color: var(--bg);
+      border: none; border-radius: 6px; font-family: inherit;
+      font-size: 0.78rem; letter-spacing: 0.05em; cursor: pointer;
+    }
+    .gq-btn:hover { opacity: 0.85; }
+    .gq-guesses { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 1rem; }
+    .gq-guess-tag {
+      font-size: 0.72rem; padding: 0.25rem 0.6rem;
+      background: var(--tag-bg); border-radius: 3px; color: var(--muted);
+    }
+    .gq-guess-tag.wrong { background: #fce8e8; color: #b94040; }
+    .gq-status { font-size: 0.85rem; margin-bottom: 1rem; padding: 0.75rem 1rem; border-radius: 6px; }
+    .gq-status.correct { background: #e8f5e8; color: #2a6a2a; border: 1px solid #b8d8b8; }
+    .gq-status.fail    { background: #fce8e8; color: #b94040; border: 1px solid #e8b8b8; }
+    .gq-remaining { font-size: 0.72rem; color: var(--muted); margin-bottom: 1rem; }
+    /* Bonus round */
+    .gq-bonus { margin-top: 1.5rem; border-top: 1px solid var(--border); padding-top: 1.25rem; }
+    .gq-bonus-item {
+      display: grid; grid-template-columns: 6.5rem 1fr auto;
+      gap: 0.5rem; align-items: center;
+      padding: 0.5rem 0; border-bottom: 1px solid var(--border);
+    }
+    .gq-bonus-item:last-child { border-bottom: none; }
+    .gq-bonus-label { font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .gq-bonus-input {
+      padding: 0.35rem 0.6rem; border: 1px solid var(--border); border-radius: 4px;
+      font-family: inherit; font-size: 0.78rem;
+      background: var(--surface); color: var(--text); outline: none;
+    }
+    .gq-bonus-input.correct-ans { border-color: #2a6a2a; background: #e8f5e8; }
+    .gq-bonus-input.wrong-ans   { border-color: #b94040; background: #fce8e8; }
+    .gq-bonus-reveal { font-size: 0.75rem; color: var(--muted); white-space: nowrap; }
+    @media (max-width: 500px) {
+      .gq-fact-grid { grid-template-columns: 1fr; }
+      .gq-brochure-body { padding: 1rem; }
+    }
   </style>
 </head>
 <body>
@@ -537,6 +664,7 @@
     <a href="#" onclick="showPage('home')" id="nav-home" class="active">Home</a>
     <a href="#" onclick="showPage('music')" id="nav-music">Music</a>
     <a href="#" onclick="showPage('passport')" id="nav-passport">Passport</a>
+    <a href="#" onclick="showPage('geoquiz')" id="nav-geoquiz">GeoQuiz</a>
     <a href="#" onclick="showPage('gaming')" id="nav-gaming">Gaming</a>
     <a href="#" onclick="showPage('cubing')" id="nav-cubing">Cubing</a>
     <a href="#" onclick="showPage('sports')" id="nav-sports">Sports</a>
@@ -565,6 +693,11 @@
         <div class="home-card-icon">⊕</div>
         <h3>Music Passport</h3>
         <p>Album recommendation for every country at the World Cup</p>
+      </a>
+      <a class="home-card" href="#" onclick="showPage('geoquiz')">
+        <div class="home-card-icon">🌍</div>
+        <h3>GeoQuiz</h3>
+        <p>Daily country guessing game.</p>
       </a>
       <a class="home-card" href="#" onclick="showPage('gaming')">
         <div class="home-card-icon">◈</div>
@@ -1439,6 +1572,19 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     </div>
   </div>
 
+  <!-- GEOQUIZ -->
+  <div id="page-geoquiz" class="page">
+    <div class="container">
+      <span class="eyebrow">Daily Game</span>
+      <h1 class="page-title">GeoQuiz.</h1>
+      <p style="margin-bottom:1.5rem;">A new destination every day. The brochure starts classified — each wrong guess reveals more. How few clues do you need?</p>
+      <div id="gq-game"></div>
+      <div style="margin-top:1.5rem; text-align:center;">
+        <button onclick="localStorage.removeItem('geoquiz-state'); gqRender();" style="background:none; border:1px dashed var(--border); border-radius:4px; padding:0.35rem 0.75rem; font-family:inherit; font-size:0.65rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); cursor:pointer;">⟳ Reset (testing only)</button>
+      </div>
+    </div>
+  </div>
+
   <!-- RESUME -->
   <div id="page-resume" class="page">
     <div class="container">
@@ -1832,6 +1978,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     books:      { bg: '#f2eddf', surface: '#faf7ee', border: '#d8ccaa', text: '#1e1a0e', muted: '#7a6e48', tagBg: '#e8e0c8' }, // parchment
     games:      { bg: '#e8ecf2', surface: '#f3f5fa', border: '#b8c4d8', text: '#101418', muted: '#4a5468', tagBg: '#d4dae8' }, // grey-blue
     coding:     { bg: '#e4f0ec', surface: '#f0faf6', border: '#a8d4c4', text: '#0a1c14', muted: '#3a6650', tagBg: '#c8e4d8' }, // teal
+    geoquiz:    { bg: '#eaf0e8', surface: '#f4faf2', border: '#b8d4b0', text: '#0e1c0c', muted: '#3e6038', tagBg: '#cce4c8' }, // forest green
     resume:     { bg: '#f9f8f5', surface: '#ffffff', border: '#e8e5de', text: '#1a1916', muted: '#7a7870', tagBg: '#efeee9' },
   };
 
@@ -1863,6 +2010,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     if (id === 'music')    { loadAlbumsFromSheet(); }
     if (id === 'gaming')   { renderGamesGrid(); }
     if (id === 'passport') { ppLoad(); }
+    if (id === 'geoquiz')  { gqRender(); }
     if (id !== 'game-detail' && window._gameResizeHandler) {
       window.removeEventListener('resize', window._gameResizeHandler);
       window._gameResizeHandler = null;
@@ -2084,6 +2232,291 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     bodyEl.querySelectorAll('.passport-country').forEach(row => {
       row.addEventListener('click', () => ppToggle(row.getAttribute('data-ppcode')));
     });
+  }
+
+  // ── GEOQUIZ ──
+  const GQ_COUNTRIES = [
+    { name:"Austria",       aliases:[],               flag:"at", continent:"Europe",        capital:"Vienna",       government:"Federal parliamentary republic",  water:"Danube River",         population:"~9 million",    neighbours:8, shape:"landlocked central European country" },
+    { name:"Belgium",       aliases:[],               flag:"be", continent:"Europe",        capital:"Brussels",     government:"Federal parliamentary monarchy",  water:"Meuse River",          population:"~11 million",   neighbours:4, shape:"small western European country" },
+    { name:"Bosnia",        aliases:["bosnia and herzegovina","bih"], flag:"ba", continent:"Europe", capital:"Sarajevo", government:"Federal parliamentary republic", water:"Adriatic Sea",      population:"~3.3 million",  neighbours:3, shape:"small Balkan country" },
+    { name:"Croatia",       aliases:[],               flag:"hr", continent:"Europe",        capital:"Zagreb",       government:"Parliamentary republic",          water:"Adriatic Sea",         population:"~4 million",    neighbours:5, shape:"crescent-shaped Balkan country" },
+    { name:"England",       aliases:["great britain","uk","united kingdom"], flag:"gb", continent:"Europe", capital:"London", government:"Constitutional monarchy", water:"English Channel",    population:"~56 million",   neighbours:1, shape:"southern part of Great Britain" },
+    { name:"France",        aliases:[],               flag:"fr", continent:"Europe",        capital:"Paris",        government:"Semi-presidential republic",      water:"English Channel",      population:"~68 million",   neighbours:8, shape:"hexagonal western European country" },
+    { name:"Germany",       aliases:[],               flag:"de", continent:"Europe",        capital:"Berlin",       government:"Federal parliamentary republic",  water:"Rhine River",          population:"~84 million",   neighbours:9, shape:"central European country" },
+    { name:"Netherlands",   aliases:["holland"],      flag:"nl", continent:"Europe",        capital:"Amsterdam",    government:"Constitutional monarchy",         water:"North Sea",            population:"~17 million",   neighbours:3, shape:"flat low-lying delta country" },
+    { name:"Norway",        aliases:[],               flag:"no", continent:"Europe",        capital:"Oslo",         government:"Constitutional monarchy",         water:"North Sea",            population:"~5.4 million",  neighbours:3, shape:"long narrow Scandinavian country" },
+    { name:"Portugal",      aliases:[],               flag:"pt", continent:"Europe",        capital:"Lisbon",       government:"Semi-presidential republic",      water:"Atlantic Ocean",       population:"~10.3 million", neighbours:1, shape:"western Iberian peninsula" },
+    { name:"Scotland",      aliases:[],               flag:"gb", continent:"Europe",        capital:"Edinburgh",    government:"Devolved parliamentary legislature", water:"North Sea",         population:"~5.5 million",  neighbours:1, shape:"northern part of Great Britain" },
+    { name:"Spain",         aliases:[],               flag:"es", continent:"Europe",        capital:"Madrid",       government:"Constitutional monarchy",         water:"Mediterranean Sea",    population:"~47 million",   neighbours:5, shape:"most of Iberian peninsula" },
+    { name:"Sweden",        aliases:[],               flag:"se", continent:"Europe",        capital:"Stockholm",    government:"Constitutional monarchy",         water:"Baltic Sea",           population:"~10.5 million", neighbours:3, shape:"elongated Scandinavian country" },
+    { name:"Switzerland",   aliases:[],               flag:"ch", continent:"Europe",        capital:"Bern",         government:"Federal directorial republic",    water:"Lake Geneva",          population:"~8.7 million",  neighbours:5, shape:"landlocked Alpine country" },
+    { name:"Turkey",        aliases:["türkiye"],      flag:"tr", continent:"Europe/Asia",   capital:"Ankara",       government:"Presidential republic",           water:"Bosphorus Strait",     population:"~85 million",   neighbours:8, shape:"transcontinental country bridging Europe and Asia" },
+    { name:"Argentina",     aliases:[],               flag:"ar", continent:"South America", capital:"Buenos Aires",  government:"Federal presidential republic",  water:"Río de la Plata",      population:"~46 million",   neighbours:5, shape:"long tapering southern South American country" },
+    { name:"Brazil",        aliases:["brasil"],       flag:"br", continent:"South America", capital:"Brasília",     government:"Federal presidential republic",   water:"Amazon River",         population:"~215 million",  neighbours:10, shape:"largest country in South America" },
+    { name:"Colombia",      aliases:[],               flag:"co", continent:"South America", capital:"Bogotá",       government:"Presidential republic",           water:"Pacific Ocean",        population:"~52 million",   neighbours:5, shape:"northwestern South American country" },
+    { name:"Ecuador",       aliases:[],               flag:"ec", continent:"South America", capital:"Quito",        government:"Presidential republic",           water:"Pacific Ocean",        population:"~18 million",   neighbours:2, shape:"small western South American country" },
+    { name:"Paraguay",      aliases:[],               flag:"py", continent:"South America", capital:"Asunción",     government:"Presidential republic",           water:"Paraguay River",       population:"~7.4 million",  neighbours:3, shape:"landlocked central South American country" },
+    { name:"Uruguay",       aliases:[],               flag:"uy", continent:"South America", capital:"Montevideo",   government:"Presidential republic",           water:"Río de la Plata",      population:"~3.5 million",  neighbours:2, shape:"small southeastern South American country" },
+    { name:"Algeria",       aliases:[],               flag:"dz", continent:"Africa",        capital:"Algiers",      government:"Presidential republic",           water:"Mediterranean Sea",    population:"~45 million",   neighbours:6, shape:"largest country in Africa" },
+    { name:"Cabo Verde",    aliases:["cape verde"],   flag:"cv", continent:"Africa",        capital:"Praia",        government:"Semi-presidential republic",      water:"Atlantic Ocean",       population:"~560,000",      neighbours:0, shape:"island nation off West Africa" },
+    { name:"DR Congo",      aliases:["democratic republic of congo","congo"], flag:"cd", continent:"Africa", capital:"Kinshasa", government:"Semi-presidential republic", water:"Congo River",  population:"~100 million",  neighbours:9, shape:"large central African country" },
+    { name:"Egypt",         aliases:[],               flag:"eg", continent:"Africa",        capital:"Cairo",        government:"Presidential republic",           water:"Nile River",           population:"~105 million",  neighbours:4, shape:"northeastern African country" },
+    { name:"Ghana",         aliases:[],               flag:"gh", continent:"Africa",        capital:"Accra",        government:"Presidential republic",           water:"Gulf of Guinea",       population:"~33 million",   neighbours:3, shape:"western African country" },
+    { name:"Ivory Coast",   aliases:["cote d'ivoire","côte d'ivoire"], flag:"ci", continent:"Africa", capital:"Yamoussoukro", government:"Presidential republic", water:"Gulf of Guinea",      population:"~27 million",   neighbours:5, shape:"western African country" },
+    { name:"Morocco",       aliases:[],               flag:"ma", continent:"Africa",        capital:"Rabat",        government:"Constitutional monarchy",         water:"Atlantic Ocean",       population:"~37 million",   neighbours:2, shape:"northwestern African country" },
+    { name:"Senegal",       aliases:[],               flag:"sn", continent:"Africa",        capital:"Dakar",        government:"Presidential republic",           water:"Atlantic Ocean",       population:"~17 million",   neighbours:5, shape:"westernmost African country" },
+    { name:"Tunisia",       aliases:[],               flag:"tn", continent:"Africa",        capital:"Tunis",        government:"Presidential republic",           water:"Mediterranean Sea",    population:"~12 million",   neighbours:2, shape:"small northern African country" },
+    { name:"Australia",     aliases:[],               flag:"au", continent:"Oceania",       capital:"Canberra",     government:"Federal parliamentary monarchy",  water:"Indian Ocean",         population:"~26 million",   neighbours:0, shape:"island continent" },
+    { name:"Iran",          aliases:["ir iran"],      flag:"ir", continent:"Asia",          capital:"Tehran",       government:"Islamic republic",                water:"Persian Gulf",         population:"~88 million",   neighbours:7, shape:"large western Asian country" },
+    { name:"Japan",         aliases:[],               flag:"jp", continent:"Asia",          capital:"Tokyo",        government:"Constitutional monarchy",         water:"Pacific Ocean",        population:"~125 million",  neighbours:0, shape:"island archipelago in East Asia" },
+    { name:"Jordan",        aliases:[],               flag:"jo", continent:"Asia",          capital:"Amman",        government:"Constitutional monarchy",         water:"Dead Sea",             population:"~10 million",   neighbours:5, shape:"small western Asian country" },
+    { name:"Qatar",         aliases:[],               flag:"qa", continent:"Asia",          capital:"Doha",         government:"Absolute monarchy",               water:"Persian Gulf",         population:"~2.9 million",  neighbours:1, shape:"small peninsula in the Arabian Gulf" },
+    { name:"South Korea",   aliases:["korea","republic of korea"], flag:"kr", continent:"Asia", capital:"Seoul",   government:"Presidential republic",           water:"Yellow Sea",           population:"~52 million",   neighbours:1, shape:"southern half of Korean peninsula" },
+    { name:"Saudi Arabia",  aliases:[],               flag:"sa", continent:"Asia",          capital:"Riyadh",       government:"Absolute monarchy",               water:"Red Sea",              population:"~35 million",   neighbours:8, shape:"large Arabian peninsula country" },
+    { name:"Uzbekistan",    aliases:[],               flag:"uz", continent:"Asia",          capital:"Tashkent",     government:"Presidential republic",           water:"Aral Sea",             population:"~36 million",   neighbours:5, shape:"doubly landlocked central Asian country" },
+    { name:"Canada",        aliases:[],               flag:"ca", continent:"North America", capital:"Ottawa",       government:"Federal parliamentary monarchy",  water:"Great Lakes",          population:"~38 million",   neighbours:1, shape:"second largest country in the world" },
+    { name:"Mexico",        aliases:[],               flag:"mx", continent:"North America", capital:"Mexico City",  government:"Federal presidential republic",   water:"Gulf of Mexico",       population:"~130 million",  neighbours:3, shape:"southern North American country" },
+    { name:"United States", aliases:["usa","us","america"], flag:"us", continent:"North America", capital:"Washington D.C.", government:"Federal presidential republic", water:"Gulf of Mexico",population:"~335 million",  neighbours:2, shape:"third largest country in the world" },
+    { name:"Curaçao",       aliases:["curacao"],      flag:"cw", continent:"North America", capital:"Willemstad",   government:"Autonomous constituent country",  water:"Caribbean Sea",        population:"~155,000",      neighbours:0, shape:"small Caribbean island" },
+    { name:"New Zealand",   aliases:["nz"],           flag:"nz", continent:"Oceania",       capital:"Wellington",   government:"Parliamentary monarchy",          water:"Tasman Sea",           population:"~5 million",    neighbours:0, shape:"two main islands in the South Pacific" },
+  ];
+
+  // Clue order: hardest → easiest
+  function gqClues(c) {
+    return [
+      { label: "Government",   value: c.government },
+      { label: "Major water",  value: c.water },
+      { label: "Population",   value: c.population },
+      { label: "Neighbours",   value: `${c.neighbours} neighbouring countr${c.neighbours === 1 ? 'y' : 'ies'}` },
+      { label: "Continent",    value: c.continent },
+      { label: "Shape",        value: c.shape },
+      { label: "Capital",      value: c.capital },
+      { label: "Flag",         value: c.flag, isFlag: true },
+    ];
+  }
+
+  const GQ_KEY    = 'geoquiz-state';
+  const GQ_MAX    = 6; // wrong guesses before auto-reveal all
+
+  function gqDailyCountry() {
+    const now  = new Date();
+    const est  = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+    const seed = est.getFullYear() * 10000 + (est.getMonth() + 1) * 100 + est.getDate();
+    const pool = [...GQ_COUNTRIES];
+    // Seeded shuffle
+    let s = seed;
+    for (let i = pool.length - 1; i > 0; i--) {
+      s = (s * 1664525 + 1013904223) & 0xffffffff;
+      const j = Math.abs(s) % (i + 1);
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+    return pool[0];
+  }
+
+  function gqTodayKey() {
+    const now = new Date();
+    const est = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+    return `${est.getFullYear()}-${est.getMonth()+1}-${est.getDate()}`;
+  }
+
+  function gqLoadState() {
+    try {
+      const raw = localStorage.getItem(GQ_KEY);
+      if (raw) {
+        const s = JSON.parse(raw);
+        if (s.dateKey === gqTodayKey()) return s;
+      }
+    } catch {}
+    return { dateKey: gqTodayKey(), guesses: [], revealed: 1, status: 'playing', bonusAnswers: {} };
+  }
+
+  function gqSaveState(state) {
+    try { localStorage.setItem(GQ_KEY, JSON.stringify(state)); } catch {}
+  }
+
+  function gqNormalise(str) {
+    return str.toLowerCase().trim().replace(/[^a-z0-9 ]/g, '');
+  }
+
+  function gqMatch(input, country) {
+    const norm = gqNormalise(input);
+    if (gqNormalise(country.name) === norm) return true;
+    return (country.aliases || []).some(a => gqNormalise(a) === norm);
+  }
+
+  function gqRender() {
+    const el = document.getElementById('gq-game');
+    if (!el) return;
+
+    const country = gqDailyCountry();
+    const state   = gqLoadState();
+    const clues   = gqClues(country);
+    const toShow  = Math.min(state.revealed, clues.length);
+    const won     = state.status === 'won';
+    const lost    = state.status === 'lost';
+    const done    = won || lost;
+    const wrongCount = state.guesses.filter(g => !gqMatch(g, country)).length;
+
+    // Build fact grid — all 8 facts, redacted if not yet revealed
+    const factHtml = clues.map((cl, i) => {
+      const revealed = i < toShow;
+      if (revealed) {
+        const val = cl.isFlag
+          ? `<img src="https://flagcdn.com/w40/${cl.value}.png" alt="flag">`
+          : cl.value;
+        return `<div class="gq-fact">
+          <span class="gq-fact-label">${cl.label}</span>
+          <span class="gq-fact-value">${val}</span>
+        </div>`;
+      } else if (done && !state.bonusSubmitted) {
+        // Bonus mode — inline input on the redacted cell
+        const inp = cl.isFlag
+          ? `<input class="gq-bonus-inline" id="gq-bonus-${i}" placeholder="flag code…" autocomplete="off" />`
+          : `<input class="gq-bonus-inline" id="gq-bonus-${i}" placeholder="classified…" autocomplete="off" />`;
+        return `<div class="gq-fact unrevealed gq-fact-bonus">
+          <span class="gq-fact-label">${cl.label}</span>
+          ${inp}
+        </div>`;
+      } else if (done && state.bonusSubmitted) {
+        // Show correct/wrong with answer
+        const correct = state.bonusAnswers[i];
+        const val = cl.isFlag
+          ? `<img src="https://flagcdn.com/w40/${cl.value}.png" alt="flag" style="width:32px;height:24px;border-radius:2px;">`
+          : cl.value;
+        return `<div class="gq-fact" style="border-left:3px solid ${correct ? '#2a6a2a' : '#b94040'};">
+          <span class="gq-fact-label">${cl.label} <span style="color:${correct ? '#2a6a2a' : '#b94040'}">${correct ? '✓' : '✗'}</span></span>
+          <span class="gq-fact-value">${val}</span>
+        </div>`;
+      } else {
+        return `<div class="gq-fact unrevealed">
+          <span class="gq-fact-label">${cl.label}</span>
+          <span class="gq-fact-value"><span class="gq-redacted">&nbsp;</span></span>
+        </div>`;
+      }
+    }).join('');
+
+    // Status banner
+    let statusHtml = '';
+    if (done) {
+      const msg = won
+        ? `Destination identified — ${toShow} clue${toShow === 1 ? '' : 's'} used · ${state.guesses.length} guess${state.guesses.length === 1 ? '' : 'es'}`
+        : `Destination was <strong>${country.name}</strong>`;
+      statusHtml = `<div class="gq-status ${won ? 'correct' : 'fail'}">${msg}</div>`;
+    }
+
+    // Wrong guesses
+    let guessesHtml = '';
+    if (state.guesses.length) {
+      guessesHtml = `<div class="gq-guesses">
+        ${state.guesses.map(g => `<span class="gq-guess-tag ${gqMatch(g, country) ? '' : 'wrong'}">${g}</span>`).join('')}
+      </div>`;
+    }
+
+    // Input or remaining count
+    let inputHtml = '';
+    if (!done) {
+      inputHtml = `
+        <div class="gq-input-row">
+          <input id="gq-input" class="gq-input" placeholder="Name this destination…" autocomplete="off" />
+          <button class="gq-btn" onclick="gqGuess()">Guess</button>
+        </div>
+        <p class="gq-remaining">${GQ_MAX - wrongCount} wrong guess${(GQ_MAX - wrongCount) === 1 ? '' : 'es'} before full reveal</p>`;
+    }
+
+    // Bonus round
+    let bonusHtml = '';
+    const hidden = clues.slice(toShow);
+    if (done && hidden.length > 0) {
+      if (!state.bonusSubmitted) {
+        bonusHtml = `<div class="gq-bonus">
+          <p style="font-size:0.82rem; color:var(--muted); margin-bottom:0.75rem;">The redacted sections are still classified — fill them in above, then submit.</p>
+          <button class="gq-btn" onclick="gqSubmitBonus(${toShow})">Declassify</button>
+        </div>`;
+      } else {
+        const score = Object.values(state.bonusAnswers).filter(Boolean).length;
+        bonusHtml = `<div class="gq-bonus">
+          <p style="font-size:0.82rem; color:var(--muted);">Bonus complete — <strong>${score}/${hidden.length}</strong> correct.</p>
+        </div>`;
+      }
+    }
+
+    el.innerHTML = `
+      <div class="gq-brochure">
+        <div class="gq-brochure-header">
+          <div class="gq-eyebrow">Today's Destination</div>
+          <h2 class="${done ? 'revealed' : ''}">${done ? country.name : '???'}</h2>
+          <div class="gq-header-sub">${done ? country.continent : 'Location classified'}</div>
+        </div>
+        <div class="gq-brochure-body">
+          ${statusHtml}
+          <div class="gq-fact-grid">${factHtml}</div>
+          ${guessesHtml}
+          ${inputHtml}
+          ${bonusHtml}
+        </div>
+      </div>`;
+
+    const inp = document.getElementById('gq-input');
+    if (inp) {
+      inp.addEventListener('keydown', e => { if (e.key === 'Enter') gqGuess(); });
+      inp.focus();
+    }
+  }
+
+  function gqGuess() {
+    const inp = document.getElementById('gq-input');
+    if (!inp) return;
+    const val = inp.value.trim();
+    if (!val) return;
+
+    const country = gqDailyCountry();
+    const state   = gqLoadState();
+    const clues   = gqClues(country);
+
+    if (state.status !== 'playing') return;
+    if (state.guesses.includes(val)) { inp.value = ''; return; }
+
+    state.guesses.push(val);
+
+    if (gqMatch(val, country)) {
+      state.status   = 'won';
+      state.revealed = Math.min(state.revealed, clues.length);
+    } else {
+      const wrongCount = state.guesses.filter(g => !gqMatch(g, country)).length;
+      state.revealed = Math.min(wrongCount + 1, clues.length);
+      if (wrongCount >= GQ_MAX) {
+        state.status   = 'lost';
+        state.revealed = clues.length;
+      }
+    }
+
+    gqSaveState(state);
+    gqRender();
+  }
+
+  function gqSubmitBonus(fromIndex) {
+    const country = gqDailyCountry();
+    const clues   = gqClues(country);
+    const hidden  = clues.slice(fromIndex);
+    const state   = gqLoadState();
+
+    state.bonusAnswers   = {};
+    state.bonusSubmitted = true;
+
+    hidden.forEach((cl, i) => {
+      const idx = fromIndex + i;
+      const inp = document.getElementById(`gq-bonus-${idx}`);
+      if (!inp) return;
+      const answer = inp.value.trim().toLowerCase();
+      if (cl.isFlag) {
+        state.bonusAnswers[idx] = answer === cl.value.toLowerCase();
+      } else {
+        state.bonusAnswers[idx] = answer.length > 1 && cl.value.toLowerCase().includes(answer);
+      }
+    });
+
+    gqSaveState(state);
+    gqRender();
   }
 
   document.querySelectorAll('a[onclick]').forEach(a => {
