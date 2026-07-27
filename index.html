@@ -1645,7 +1645,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     <div class="container">
       <span class="eyebrow">Daily Game</span>
       <h1 class="page-title">TerraFiles.</h1>
-      <p style="margin-bottom:1.5rem;">A new destination every day. The brochure starts classified and each wrong guess reveals more. How few clues do you need? Currently a heavy work in progress with only ~40 countries and a lot of bugs.</p>
+      <p style="margin-bottom:1.5rem;">A new country every day. The file starts classified and each wrong guess reveals more. Currently a heavy work in progress with only ~40 countries and a lot of bugs.</p>
       <div id="gq-game"></div>
       <div style="margin-top:1.5rem; text-align:center;">
         <button onclick="localStorage.removeItem('terrafiles-state'); gqRender();" style="background:none; border:1px dashed var(--border); border-radius:4px; padding:0.35rem 0.75rem; font-family:inherit; font-size:0.65rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); cursor:pointer;">⟳ Reset (testing only)</button>
@@ -2436,17 +2436,30 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       osc.start(now); osc.stop(now + 0.22);
 
     } else if (type === 'reveal') {
-      // Soft paper-rustle click
-      const buf = ctx.createBuffer(1, ctx.sampleRate * 0.06, ctx.sampleRate);
+      // Pronounced typewriter key click — sharp noise burst with low thump
+      const buf = ctx.createBuffer(1, ctx.sampleRate * 0.12, ctx.sampleRate);
       const data = buf.getChannelData(0);
-      for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / data.length, 3);
-      const src = ctx.createBufferSource();
+      for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / data.length, 2.5);
+      const src  = ctx.createBufferSource();
       const gain = ctx.createGain();
-      const filter = ctx.createBiquadFilter();
-      src.buffer = buf; filter.type = 'bandpass'; filter.frequency.value = 2200; filter.Q.value = 0.8;
-      src.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
-      gain.gain.setValueAtTime(0.35, now);
+      const hi   = ctx.createBiquadFilter();
+      const lo   = ctx.createBiquadFilter();
+      src.buffer = buf;
+      hi.type = 'highpass'; hi.frequency.value = 1800;
+      lo.type = 'lowpass';  lo.frequency.value = 7000;
+      src.connect(hi); hi.connect(lo); lo.connect(gain); gain.connect(ctx.destination);
+      gain.gain.setValueAtTime(0.7, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
       src.start(now);
+      // Low mechanical thump underneath
+      const osc = ctx.createOscillator();
+      const og  = ctx.createGain();
+      osc.connect(og); og.connect(ctx.destination);
+      osc.type = 'sine'; osc.frequency.setValueAtTime(180, now);
+      osc.frequency.exponentialRampToValueAtTime(80, now + 0.08);
+      og.gain.setValueAtTime(0.25, now);
+      og.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+      osc.start(now); osc.stop(now + 0.1);
 
     } else if (type === 'correct') {
       // Ascending two-tone stamp
@@ -2465,12 +2478,13 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
   }
 
   // ── TYPEWRITER ──
-  function gqTypewriter(el, text, speed = 28) {
+  function gqTypewriter(el, text, speed = 55) {
     el.textContent = '';
     let i = 0;
     const tick = () => {
       if (i <= text.length) {
         el.textContent = text.slice(0, i);
+        if (i > 0 && i <= text.length) gqSound('reveal');
         i++;
         setTimeout(tick, speed);
       }
@@ -2730,8 +2744,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
           if (i === newIdx) {
             const targetEl = clueEls[revealedCount];
             if (targetEl) {
-              gqSound('reveal');
-              gqTypewriter(targetEl, cl.value);
+                gqTypewriter(targetEl, cl.value);
             }
           }
           if (i < state.revealed && i !== SHAPE_I && i !== FLAG_I) revealedCount++;
