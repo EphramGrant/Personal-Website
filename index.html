@@ -2448,7 +2448,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       hi.type = 'highpass'; hi.frequency.value = 1800;
       lo.type = 'lowpass';  lo.frequency.value = 7000;
       src.connect(hi); hi.connect(lo); lo.connect(gain); gain.connect(ctx.destination);
-      gain.gain.setValueAtTime(0.3, now);
+      gain.gain.setValueAtTime(0.12, now);
       gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
       src.start(now);
       // Low mechanical thump underneath
@@ -2457,7 +2457,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       osc.connect(og); og.connect(ctx.destination);
       osc.type = 'sine'; osc.frequency.setValueAtTime(180, now);
       osc.frequency.exponentialRampToValueAtTime(80, now + 0.08);
-      og.gain.setValueAtTime(0.1, now);
+      og.gain.setValueAtTime(0.04, now);
       og.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
       osc.start(now); osc.stop(now + 0.1);
 
