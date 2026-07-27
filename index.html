@@ -2451,7 +2451,11 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
 
     // Helpers
     const flagUrl  = c => `https://flagcdn.com/w80/${c}.png`;
-    const shapeUrl = c => `https://raw.githubusercontent.com/djaiss/mapsicon/master/all/${c}/256.png`;
+    const shapeUrl = c => {
+      // mapsicon only supports 2-letter ISO codes, not subdivisions like gb-eng
+      const base = c.split('-')[0];
+      return `https://raw.githubusercontent.com/djaiss/mapsicon/master/all/${base}/256.png`;
+    };
 
     // Clue indices for shape (5) and flag (7) — pulled into header
     const SHAPE_I = 5, FLAG_I = 7;
@@ -2460,10 +2464,11 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       const revealed = i < toShow;
       const label = `<div class="gq-visual-label">${cl.label}</div>`;
       if (revealed) {
-        const src = cl.isFlag ? flagUrl(cl.value) : shapeUrl(cl.value);
-        const sz  = cl.isFlag ? 'width:64px;height:48px;border-radius:2px;object-fit:cover;'
-                              : 'width:64px;height:64px;object-fit:contain;';
-        return `<div class="gq-visual-cell">${label}<img src="${src}" style="${sz}" alt="${cl.label}"></div>`;
+        const src = cl.isShape ? shapeUrl(cl.value) : flagUrl(cl.value);
+        const sz  = cl.isShape ? 'width:64px;height:64px;object-fit:contain;'
+                               : 'width:64px;height:48px;border-radius:2px;object-fit:cover;';
+        const err = cl.isShape ? `onerror="this.style.display='none'"` : '';
+        return `<div class="gq-visual-cell">${label}<img src="${src}" style="${sz}" ${err} alt="${cl.label}"></div>`;
       } else if (done && !state.bonusSubmitted) {
         const opts = gqGetOptions(country, i);
         const sz   = cl.isFlag ? 'width:50px;height:38px;border-radius:2px;object-fit:cover;'
@@ -2478,11 +2483,12 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
         return `<div class="gq-visual-cell">${label}<div class="gq-visual-mc">${opts_html}</div></div>`;
       } else if (done && state.bonusSubmitted) {
         const correct = state.bonusAnswers?.[i];
-        const src = cl.isFlag ? flagUrl(cl.value) : shapeUrl(cl.value);
-        const sz  = cl.isFlag ? 'width:64px;height:48px;border-radius:2px;object-fit:cover;'
-                              : 'width:64px;height:64px;object-fit:contain;';
+        const src = cl.isShape ? shapeUrl(cl.value) : flagUrl(cl.value);
+        const sz  = cl.isShape ? 'width:64px;height:64px;object-fit:contain;'
+                               : 'width:64px;height:48px;border-radius:2px;object-fit:cover;';
+        const err = cl.isShape ? `onerror="this.style.display='none'"` : '';
         return `<div class="gq-visual-cell">${label}
-          <img src="${src}" style="${sz}" alt="${cl.label}">
+          <img src="${src}" style="${sz}" ${err} alt="${cl.label}">
           <span style="font-size:0.9rem;color:${correct ? '#27ae60' : '#c0392b'}">${correct ? '✓' : '✗'}</span>
         </div>`;
       } else {
