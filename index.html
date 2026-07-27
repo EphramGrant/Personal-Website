@@ -542,7 +542,6 @@
     <a href="#" onclick="showPage('sports')" id="nav-sports">Sports</a>
     <a href="#" onclick="showPage('books')" id="nav-books">Books</a>
     <a href="#" onclick="showPage('coding')" id="nav-coding">Coding</a>
-    <a href="#" onclick="showPage('games')" id="nav-games">Games</a>
     <a href="#" onclick="showPage('resume')" id="nav-resume">Resume</a>
   </div>
 </nav>
@@ -570,7 +569,7 @@
       <a class="home-card" href="#" onclick="showPage('gaming')">
         <div class="home-card-icon">◈</div>
         <h3>Gaming</h3>
-        <p>Favorites, currently playing, and wishlist.</p>
+        <p>Favorites, currently playing, and browser games.</p>
       </a>
       <a class="home-card" href="#" onclick="showPage('cubing')">
         <div class="home-card-icon">⬡</div>
@@ -591,11 +590,6 @@
         <div class="home-card-icon">→</div>
         <h3>Resume</h3>
         <p>Experience, education, and skills.</p>
-      </a>
-      <a class="home-card" href="#" onclick="showPage('games')">
-        <div class="home-card-icon">▶</div>
-        <h3>Games</h3>
-        <p>Browser games I've built.</p>
       </a>
       <a class="home-card" href="#" onclick="showPage('coding')">
         <div class="home-card-icon">&lt;/&gt;</div>
@@ -801,9 +795,33 @@
       <hr />
       <h2>Currently Playing</h2>
       <p style="margin-top:0.5rem">I'm working through the Dark Souls Trilogy and I just picked up Yoshi and the Mysterious Book.</p>
+      <hr />
+      <h2>Browser Games</h2>
+      <div class="hobby-intro" style="margin-bottom:1.5rem;">
+        <p>Browser games I've built. Click any to play.</p>
+      </div>
+      <div id="games-grid" class="item-grid" style="margin-top:0;"></div>
     </div>
     </div>
 
+  </div>
+
+  <!-- INDIVIDUAL GAME -->
+  <div id="page-game-detail" class="page">
+    <div class="container">
+      <button onclick="showPage('gaming')" style="
+        background: none; border: none; cursor: pointer;
+        font-family: inherit; font-size: 0.72rem; letter-spacing: 0.08em;
+        text-transform: uppercase; color: var(--muted); padding: 0;
+        margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.4rem;">
+        ← Back to Gaming
+      </button>
+      <span class="eyebrow" id="game-detail-eyebrow">Game</span>
+      <h1 class="page-title" id="game-detail-title"></h1>
+      <p id="game-detail-desc" style="margin-bottom: 2rem;"></p>
+      <hr />
+      <div id="game-detail-embed" style="margin-top: 1.5rem;"></div>
+    </div>
   </div>
 
   <!-- CUBING -->
@@ -916,37 +934,6 @@
       <hr />
       <h2>To-Read List</h2>
       <p style="margin-top:0.5rem">Dungeon Crawler Carl - Matt Dinniman. Invincible Compendium Book 3. Children of Dune - Frank Herbert. </p>
-    </div>
-  </div>
-
-  <!-- GAMES -->
-  <div id="page-games" class="page">
-    <div class="container">
-      <span class="eyebrow">Projects</span>
-      <h1 class="page-title">Games.</h1>
-      <div class="hobby-intro">
-        <p>Browser games I've built. Click any to play.</p>
-      </div>
-      <hr />
-      <div id="games-grid" class="item-grid" style="margin-top:1.5rem;"></div>
-    </div>
-  </div>
-
-  <!-- INDIVIDUAL GAME -->
-  <div id="page-game-detail" class="page">
-    <div class="container">
-      <button onclick="showPage('games')" style="
-        background: none; border: none; cursor: pointer;
-        font-family: inherit; font-size: 0.72rem; letter-spacing: 0.08em;
-        text-transform: uppercase; color: var(--muted); padding: 0;
-        margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.4rem;">
-        ← Back to Games
-      </button>
-      <span class="eyebrow" id="game-detail-eyebrow">Game</span>
-      <h1 class="page-title" id="game-detail-title"></h1>
-      <p id="game-detail-desc" style="margin-bottom: 2rem;"></p>
-      <hr />
-      <div id="game-detail-embed" style="margin-top: 1.5rem;"></div>
     </div>
   </div>
 
@@ -1868,13 +1855,13 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     // Only highlight nav for top-level pages
     const navEl = document.getElementById('nav-' + id);
     if (navEl) navEl.classList.add('active');
-    else if (id === 'game-detail') document.getElementById('nav-games').classList.add('active');
+    else if (id === 'game-detail') document.getElementById('nav-gaming').classList.add('active');
     else if (id.startsWith('coding-')) document.getElementById('nav-coding').classList.add('active');
     applyPalette(id);
     window.scrollTo(0, 0);
     if (id === 'sports')   { loadLiverpool(); loadEagles(); }
     if (id === 'music')    { loadAlbumsFromSheet(); }
-    if (id === 'games')    { renderGamesGrid(); }
+    if (id === 'gaming')   { renderGamesGrid(); }
     if (id === 'passport') { ppLoad(); }
     if (id !== 'game-detail' && window._gameResizeHandler) {
       window.removeEventListener('resize', window._gameResizeHandler);
