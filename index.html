@@ -526,132 +526,192 @@
     .reveal-btn:hover { background: var(--tag-bg); color: var(--text); }
     .challenge-solution { display: none; margin-top: 0.75rem; }
     .challenge-solution.visible { display: block; }
-    /* ── GEOQUIZ BROCHURE ── */
-    .gq-brochure {
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      overflow: hidden;
-      background: var(--surface);
-      max-width: 600px;
-      margin: 0 auto;
-      box-shadow: 0 2px 16px rgba(0,0,0,0.06);
-    }
-    .gq-brochure-header {
-      background: var(--text);
-      color: var(--bg);
-      padding: 1.5rem 2rem 1.25rem;
-      text-align: center;
+    /* ── GEOQUIZ: CLASSIFIED FILE ── */
+    .gq-file {
+      max-width: 580px; margin: 0 auto;
+      background: #d4c89a;
+      background-image: repeating-linear-gradient(
+        0deg, transparent, transparent 27px, rgba(0,0,0,0.04) 27px, rgba(0,0,0,0.04) 28px
+      );
+      border-radius: 2px 2px 4px 4px;
+      box-shadow: 2px 4px 18px rgba(0,0,0,0.22), inset 0 0 0 1px rgba(0,0,0,0.08);
       position: relative;
+      font-family: 'DM Mono', monospace;
     }
-    .gq-brochure-header .gq-eyebrow {
+    /* Tab at top */
+    .gq-file::before {
+      content: '';
+      position: absolute; top: -18px; left: 28px;
+      width: 90px; height: 20px;
+      background: #c4b888;
+      border-radius: 4px 4px 0 0;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1);
+    }
+    /* Header bar */
+    .gq-file-header {
+      background: #b8a86e;
+      border-bottom: 2px solid rgba(0,0,0,0.15);
+      padding: 1.25rem 1.75rem 1rem;
+      display: flex; justify-content: space-between; align-items: flex-start;
+    }
+    .gq-file-header-left { flex: 1; }
+    .gq-file-stamp {
       font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase;
-      opacity: 0.6; margin-bottom: 0.4rem;
+      color: rgba(0,0,0,0.45); margin-bottom: 0.35rem;
     }
-    .gq-brochure-header h2 {
+    .gq-file-title {
       font-family: 'DM Serif Display', serif;
-      font-size: 1.6rem; letter-spacing: -0.01em; margin: 0;
-      opacity: 0.15; /* mystery title */
-      background: var(--bg); color: transparent;
-      border-radius: 3px; display: inline-block;
-      padding: 0 0.5rem; user-select: none;
+      font-size: 1.8rem; color: #1a1208; line-height: 1.1; margin: 0;
     }
-    .gq-brochure-header h2.revealed {
-      background: transparent; color: var(--bg); opacity: 1;
+    .gq-file-title.mystery {
+      background: #1a1208; color: transparent;
+      border-radius: 2px; display: inline-block;
+      padding: 0 0.4rem; user-select: none; letter-spacing: -0.02em;
     }
-    .gq-brochure-header .gq-header-sub {
-      font-size: 0.7rem; letter-spacing: 0.08em; opacity: 0.5;
-      margin-top: 0.5rem; text-transform: uppercase;
+    .gq-file-title.reveal-anim {
+      animation: gq-reveal 0.9s cubic-bezier(0.22,1,0.36,1) forwards;
     }
-    .gq-brochure-body { padding: 1.5rem 2rem; }
+    @keyframes gq-reveal {
+      0%   { opacity:0; letter-spacing:0.3em; transform:translateY(5px); }
+      100% { opacity:1; letter-spacing:-0.01em; transform:translateY(0); }
+    }
+    .gq-file-subtitle {
+      font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase;
+      color: rgba(0,0,0,0.4); margin-top: 0.35rem;
+      opacity: 0; transition: opacity 0.5s 0.4s;
+    }
+    .gq-file-subtitle.visible { opacity: 1; }
+    /* Classified stamp */
+    .gq-classified {
+      border: 3px solid #c0392b;
+      color: #c0392b; padding: 0.2rem 0.5rem;
+      font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+      transform: rotate(-8deg); font-weight: 700;
+      opacity: 0.85; white-space: nowrap; margin-top: 0.25rem;
+      display: inline-block;
+    }
+    .gq-classified.declassified {
+      border-color: #27ae60; color: #27ae60;
+      transform: rotate(-6deg);
+    }
+    /* Visuals strip — flag + shape */
+    .gq-file-visuals {
+      display: grid; grid-template-columns: 1fr 1fr;
+      border-bottom: 2px solid rgba(0,0,0,0.12);
+      background: #c8b87a;
+    }
+    .gq-visual-cell {
+      padding: 1rem; display: flex; flex-direction: column;
+      align-items: center; gap: 0.5rem;
+      border-right: 1px solid rgba(0,0,0,0.1);
+    }
+    .gq-visual-cell:last-child { border-right: none; }
+    .gq-visual-label {
+      font-size: 0.55rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: rgba(0,0,0,0.45);
+    }
+    .gq-visual-redact {
+      background: #1a1208; border-radius: 2px;
+      display: block; position: relative; overflow: hidden;
+    }
+    .gq-visual-redact::after {
+      content: 'REDACTED';
+      position: absolute; inset: 0; display: flex;
+      align-items: center; justify-content: center;
+      font-size: 0.5rem; letter-spacing: 0.2em; color: rgba(255,255,255,0.12);
+    }
+    .gq-visual-mc { display: flex; flex-wrap: wrap; gap: 0.35rem; justify-content: center; }
+    .gq-visual-mc-opt {
+      padding: 3px; border: 2px solid rgba(0,0,0,0.2); border-radius: 3px;
+      cursor: pointer; background: rgba(255,255,255,0.25);
+      transition: background 0.1s;
+    }
+    .gq-visual-mc-opt:hover { background: rgba(255,255,255,0.45); }
+    .gq-visual-mc-opt.selected { border-color: #1a1208; background: rgba(255,255,255,0.5); outline: 2px solid #1a1208; }
+    /* Body */
+    .gq-file-body { padding: 1.25rem 1.75rem; }
+    .gq-file-meta {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 1rem; padding-bottom: 0.6rem;
+      border-bottom: 1px solid rgba(0,0,0,0.12);
+      font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase;
+      color: rgba(0,0,0,0.4);
+    }
+    /* Fact rows */
     .gq-fact-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1px;
-      background: var(--border);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      overflow: hidden;
-      margin-bottom: 1.5rem;
+      display: flex; flex-direction: column; gap: 0;
+      border: 1px solid rgba(0,0,0,0.15); border-radius: 3px;
+      overflow: hidden; margin-bottom: 1.25rem;
+      background: rgba(0,0,0,0.06);
     }
     .gq-fact {
-      background: var(--surface);
-      padding: 0.85rem 1rem;
-      display: flex; flex-direction: column; gap: 0.25rem;
+      display: grid; grid-template-columns: 7rem 1fr;
+      gap: 0.75rem; align-items: center;
+      padding: 0.55rem 0.75rem;
+      background: rgba(212,200,154,0.6);
+      border-bottom: 1px solid rgba(0,0,0,0.08);
     }
+    .gq-fact:last-child { border-bottom: none; }
     .gq-fact-label {
-      font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
+      font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: rgba(0,0,0,0.45); flex-shrink: 0;
     }
-    .gq-fact-value { font-size: 0.82rem; color: var(--text); line-height: 1.4; }
-    .gq-fact-value img { width: 32px; height: 24px; border-radius: 2px; object-fit: cover; display: block; }
+    .gq-fact-value { font-size: 0.8rem; color: #1a1208; line-height: 1.4; }
     .gq-redacted {
-      display: block;
-      background: var(--text);
-      color: transparent;
-      border-radius: 2px;
-      user-select: none;
-      width: 100%;
-      height: 1em;
-      vertical-align: middle;
+      display: inline-block; background: #1a1208;
+      border-radius: 1px; height: 0.9em; width: 100%;
+      position: relative; overflow: hidden; vertical-align: middle;
     }
-    .gq-redacted-flag {
-      width: 48px; height: 32px;
-      background: var(--text);
-      border-radius: 2px;
-      display: block;
+    .gq-redacted::after {
+      content: 'REDACTED';
+      position: absolute; inset: 0; display: flex;
+      align-items: center; justify-content: center;
+      font-size: 0.4rem; letter-spacing: 0.15em; color: rgba(255,255,255,0.1);
     }
-    .gq-fact.gq-fact-bonus { background: var(--tag-bg); }
+    .gq-fact.unrevealed .gq-fact-label { opacity: 0.4; }
+    .gq-fact.gq-fact-bonus { background: rgba(255,255,255,0.3); }
     .gq-bonus-inline {
-      width: 100%; padding: 0.3rem 0.5rem;
-      border: 1px dashed var(--border); border-radius: 3px;
+      width: 100%; padding: 0.25rem 0.4rem;
+      border: 1px dashed rgba(0,0,0,0.3); border-radius: 2px;
       font-family: inherit; font-size: 0.78rem;
-      background: var(--surface); color: var(--text); outline: none;
-      margin-top: 0.1rem;
+      background: rgba(255,255,255,0.5); color: #1a1208; outline: none;
     }
-    .gq-bonus-inline:focus { border-color: var(--text); border-style: solid; }
-    .gq-input-row { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; }
+    .gq-bonus-inline:focus { border-style: solid; border-color: #1a1208; }
+    /* Input */
+    .gq-input-row { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; }
     .gq-input {
-      flex: 1; padding: 0.55rem 0.75rem;
-      border: 1px solid var(--border); border-radius: 6px;
+      flex: 1; padding: 0.5rem 0.75rem;
+      border: 1px solid rgba(0,0,0,0.25); border-radius: 3px;
       font-family: inherit; font-size: 0.85rem;
-      background: var(--surface); color: var(--text); outline: none;
+      background: rgba(255,255,255,0.55); color: #1a1208; outline: none;
     }
-    .gq-input:focus { border-color: var(--text); }
+    .gq-input:focus { border-color: #1a1208; background: rgba(255,255,255,0.75); }
     .gq-btn {
-      padding: 0.55rem 1.25rem; background: var(--text); color: var(--bg);
-      border: none; border-radius: 6px; font-family: inherit;
-      font-size: 0.78rem; letter-spacing: 0.05em; cursor: pointer;
+      padding: 0.5rem 1.1rem; background: #1a1208; color: #d4c89a;
+      border: none; border-radius: 3px; font-family: inherit;
+      font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
+      cursor: pointer;
     }
-    .gq-btn:hover { opacity: 0.85; }
-    .gq-guesses { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 1rem; }
+    .gq-btn:hover { background: #2e2010; }
+    .gq-guesses { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-bottom: 0.75rem; }
     .gq-guess-tag {
-      font-size: 0.72rem; padding: 0.25rem 0.6rem;
-      background: var(--tag-bg); border-radius: 3px; color: var(--muted);
+      font-size: 0.68rem; padding: 0.2rem 0.5rem;
+      background: rgba(0,0,0,0.08); border-radius: 2px; color: rgba(0,0,0,0.5);
+      font-family: inherit;
     }
-    .gq-guess-tag.wrong { background: #fce8e8; color: #b94040; }
-    .gq-status { font-size: 0.85rem; margin-bottom: 1rem; padding: 0.75rem 1rem; border-radius: 6px; }
-    .gq-status.correct { background: #e8f5e8; color: #2a6a2a; border: 1px solid #b8d8b8; }
-    .gq-status.fail    { background: #fce8e8; color: #b94040; border: 1px solid #e8b8b8; }
-    .gq-remaining { font-size: 0.72rem; color: var(--muted); margin-bottom: 1rem; }
-    /* Bonus round */
-    .gq-bonus { margin-top: 1.5rem; border-top: 1px solid var(--border); padding-top: 1.25rem; }
-    .gq-bonus-item {
-      display: grid; grid-template-columns: 6.5rem 1fr auto;
-      gap: 0.5rem; align-items: center;
-      padding: 0.5rem 0; border-bottom: 1px solid var(--border);
+    .gq-guess-tag.wrong {
+      background: rgba(192,57,43,0.12); color: #c0392b;
+      text-decoration: line-through;
     }
-    .gq-bonus-item:last-child { border-bottom: none; }
-    .gq-bonus-label { font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
-    .gq-bonus-input {
-      padding: 0.35rem 0.6rem; border: 1px solid var(--border); border-radius: 4px;
-      font-family: inherit; font-size: 0.78rem;
-      background: var(--surface); color: var(--text); outline: none;
-    }
-    .gq-bonus-input.correct-ans { border-color: #2a6a2a; background: #e8f5e8; }
-    .gq-bonus-input.wrong-ans   { border-color: #b94040; background: #fce8e8; }
-    .gq-bonus-reveal { font-size: 0.75rem; color: var(--muted); white-space: nowrap; }
+    .gq-status { font-size: 0.8rem; margin-bottom: 0.9rem; padding: 0.6rem 0.8rem; border-radius: 3px; }
+    .gq-status.correct { background: rgba(39,174,96,0.12); color: #1a6e3a; border: 1px solid rgba(39,174,96,0.25); }
+    .gq-status.fail    { background: rgba(192,57,43,0.1);  color: #a03028; border: 1px solid rgba(192,57,43,0.2); }
+    .gq-remaining { font-size: 0.65rem; color: rgba(0,0,0,0.4); margin-bottom: 0.75rem; letter-spacing: 0.05em; }
+    .gq-bonus { margin-top: 1rem; border-top: 1px dashed rgba(0,0,0,0.2); padding-top: 0.9rem; }
     @media (max-width: 500px) {
-      .gq-fact-grid { grid-template-columns: 1fr; }
-      .gq-brochure-body { padding: 1rem; }
+      .gq-file-body { padding: 1rem; }
+      .gq-file-header { padding: 1rem; }
+      .gq-file-visuals { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -1945,7 +2005,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       </div>`;
 
     // Scale iframe to fit container width
-    function scaleGame() {
+    const scaleGame = () => {
       const outer = document.getElementById('game-outer');
       const iframe = document.getElementById('game-iframe');
       if (!outer || !iframe) return;
@@ -1953,7 +2013,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       if (!containerWidth) return;
       const scale = containerWidth / game.width;
       iframe.style.transform = `scale(${scale})`;
-    }
+    };
     requestAnimationFrame(() => requestAnimationFrame(scaleGame));
     window._gameResizeHandler = scaleGame;
     window.addEventListener('resize', window._gameResizeHandler);
@@ -2344,112 +2404,183 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     return (country.aliases || []).some(a => gqNormalise(a) === norm);
   }
 
+  function gqMCSeed(country, i) {
+    const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));
+    return (now.getFullYear() * 10000 + (now.getMonth()+1) * 100 + now.getDate()) ^ (country.name.length * 31 + i * 97);
+  }
+
+  function gqGetOptions(country, i) {
+    const pool = GQ_COUNTRIES.filter(c => c.name !== country.name);
+    let s = gqMCSeed(country, i);
+    const shuffled = [...pool];
+    for (let j = shuffled.length - 1; j > 0; j--) {
+      s = (s * 22695477 + 1) & 0xffffffff;
+      const k = Math.abs(s) % (j + 1);
+      [shuffled[j], shuffled[k]] = [shuffled[k], shuffled[j]];
+    }
+    const opts = [country.flag, ...shuffled.slice(0, 3).map(c => c.flag)];
+    let s2 = gqMCSeed(country, i + 100);
+    for (let j = opts.length - 1; j > 0; j--) {
+      s2 = (s2 * 1664525 + 1013904223) & 0xffffffff;
+      const k = Math.abs(s2) % (j + 1);
+      [opts[j], opts[k]] = [opts[k], opts[j]];
+    }
+    return opts;
+  }
+
+  function gqSelectMC(clueIndex, value) {
+    const state = gqLoadState();
+    if (!state.bonusAnswers) state.bonusAnswers = {};
+    state.bonusAnswers[`mc-${clueIndex}`] = value;
+    gqSaveState(state);
+    gqRender();
+  }
+
   function gqRender() {
     const el = document.getElementById('gq-game');
     if (!el) return;
 
-    const country = gqDailyCountry();
-    const state   = gqLoadState();
-    const clues   = gqClues(country);
-    const toShow  = Math.min(state.revealed, clues.length);
-    const won     = state.status === 'won';
-    const lost    = state.status === 'lost';
-    const done    = won || lost;
+    const country    = gqDailyCountry();
+    const state      = gqLoadState();
+    const clues      = gqClues(country);
+    const toShow     = Math.min(state.revealed, clues.length);
+    const won        = state.status === 'won';
+    const lost       = state.status === 'lost';
+    const done       = won || lost;
     const wrongCount = state.guesses.filter(g => !gqMatch(g, country)).length;
 
-    // Build fact grid — all 8 facts, redacted if not yet revealed
-    const factHtml = clues.map((cl, i) => {
+    // Helpers
+    const flagUrl  = c => `https://flagcdn.com/w80/${c}.png`;
+    const shapeUrl = c => `https://raw.githubusercontent.com/djaiss/mapsicon/master/all/${c}/256.png`;
+
+    // Clue indices for shape (5) and flag (7) — pulled into header
+    const SHAPE_I = 5, FLAG_I = 7;
+
+    function visualCell(cl, i) {
+      const revealed = i < toShow;
+      const label = `<div class="gq-visual-label">${cl.label}</div>`;
+      if (revealed) {
+        const src = cl.isFlag ? flagUrl(cl.value) : shapeUrl(cl.value);
+        const sz  = cl.isFlag ? 'width:64px;height:48px;border-radius:2px;object-fit:cover;'
+                              : 'width:64px;height:64px;object-fit:contain;';
+        return `<div class="gq-visual-cell">${label}<img src="${src}" style="${sz}" alt="${cl.label}"></div>`;
+      } else if (done && !state.bonusSubmitted) {
+        const opts = gqGetOptions(country, i);
+        const sz   = cl.isFlag ? 'width:50px;height:38px;border-radius:2px;object-fit:cover;'
+                               : 'width:50px;height:50px;object-fit:contain;';
+        const src  = code => cl.isFlag ? flagUrl(code) : shapeUrl(code);
+        const opts_html = opts.map(opt => {
+          const sel = state.bonusAnswers?.[`mc-${i}`] === opt ? 'selected' : '';
+          return `<button class="gq-visual-mc-opt ${sel}" onclick="gqSelectMC(${i},'${opt}')" type="button">
+            <img src="${src(opt)}" style="${sz}" alt="${opt}">
+          </button>`;
+        }).join('');
+        return `<div class="gq-visual-cell">${label}<div class="gq-visual-mc">${opts_html}</div></div>`;
+      } else if (done && state.bonusSubmitted) {
+        const correct = state.bonusAnswers?.[i];
+        const src = cl.isFlag ? flagUrl(cl.value) : shapeUrl(cl.value);
+        const sz  = cl.isFlag ? 'width:64px;height:48px;border-radius:2px;object-fit:cover;'
+                              : 'width:64px;height:64px;object-fit:contain;';
+        return `<div class="gq-visual-cell">${label}
+          <img src="${src}" style="${sz}" alt="${cl.label}">
+          <span style="font-size:0.9rem;color:${correct ? '#27ae60' : '#c0392b'}">${correct ? '✓' : '✗'}</span>
+        </div>`;
+      } else {
+        const sz = cl.isFlag ? 'width:64px;height:48px;' : 'width:64px;height:64px;';
+        return `<div class="gq-visual-cell">${label}<div class="gq-visual-redact" style="${sz}"></div></div>`;
+      }
+    }
+
+    // Body facts — all except shape and flag
+    const bodyFacts = clues.map((cl, i) => {
+      if (i === SHAPE_I || i === FLAG_I) return '';
       const revealed = i < toShow;
       if (revealed) {
-        const val = cl.isFlag
-          ? `<img src="https://flagcdn.com/w40/${cl.value}.png" alt="flag">`
-          : cl.value;
         return `<div class="gq-fact">
           <span class="gq-fact-label">${cl.label}</span>
-          <span class="gq-fact-value">${val}</span>
+          <span class="gq-fact-value">${cl.value}</span>
         </div>`;
       } else if (done && !state.bonusSubmitted) {
-        // Bonus mode — inline input on the redacted cell
-        const inp = cl.isFlag
-          ? `<input class="gq-bonus-inline" id="gq-bonus-${i}" placeholder="flag code…" autocomplete="off" />`
-          : `<input class="gq-bonus-inline" id="gq-bonus-${i}" placeholder="classified…" autocomplete="off" />`;
         return `<div class="gq-fact unrevealed gq-fact-bonus">
           <span class="gq-fact-label">${cl.label}</span>
-          ${inp}
+          <input class="gq-bonus-inline" id="gq-bonus-${i}" placeholder="[CLASSIFIED]" autocomplete="off" onkeydown="if(event.key==='Enter') gqSubmitBonus(${toShow})" />
         </div>`;
       } else if (done && state.bonusSubmitted) {
-        // Show correct/wrong with answer
-        const correct = state.bonusAnswers[i];
-        const val = cl.isFlag
-          ? `<img src="https://flagcdn.com/w40/${cl.value}.png" alt="flag" style="width:32px;height:24px;border-radius:2px;">`
-          : cl.value;
-        return `<div class="gq-fact" style="border-left:3px solid ${correct ? '#2a6a2a' : '#b94040'};">
-          <span class="gq-fact-label">${cl.label} <span style="color:${correct ? '#2a6a2a' : '#b94040'}">${correct ? '✓' : '✗'}</span></span>
-          <span class="gq-fact-value">${val}</span>
+        const correct = state.bonusAnswers?.[i];
+        return `<div class="gq-fact" style="border-left:3px solid ${correct ? '#27ae60' : '#c0392b'};">
+          <span class="gq-fact-label">${cl.label} <span style="color:${correct ? '#27ae60' : '#c0392b'}">${correct ? '✓' : '✗'}</span></span>
+          <span class="gq-fact-value">${cl.value}</span>
         </div>`;
       } else {
         return `<div class="gq-fact unrevealed">
           <span class="gq-fact-label">${cl.label}</span>
-          <span class="gq-fact-value"><span class="gq-redacted">&nbsp;</span></span>
+          <span class="gq-fact-value"><span class="gq-redacted"></span></span>
         </div>`;
       }
     }).join('');
 
-    // Status banner
+    // Status
     let statusHtml = '';
-    if (done) {
-      const msg = won
-        ? `Destination identified — ${toShow} clue${toShow === 1 ? '' : 's'} used · ${state.guesses.length} guess${state.guesses.length === 1 ? '' : 'es'}`
-        : `Destination was <strong>${country.name}</strong>`;
-      statusHtml = `<div class="gq-status ${won ? 'correct' : 'fail'}">${msg}</div>`;
-    }
+    if (lost) statusHtml = `<div class="gq-status fail">File remains classified. The country was <strong>${country.name}</strong>.</div>`;
+    else if (won) statusHtml = `<div class="gq-status correct">Identified in ${state.guesses.length} guess${state.guesses.length === 1 ? '' : 'es'} · ${toShow} clue${toShow === 1 ? '' : 's'} revealed.</div>`;
 
-    // Wrong guesses
-    let guessesHtml = '';
-    if (state.guesses.length) {
-      guessesHtml = `<div class="gq-guesses">
-        ${state.guesses.map(g => `<span class="gq-guess-tag ${gqMatch(g, country) ? '' : 'wrong'}">${g}</span>`).join('')}
-      </div>`;
-    }
+    // Guesses
+    const guessesHtml = state.guesses.length ? `<div class="gq-guesses">
+      ${state.guesses.map(g => `<span class="gq-guess-tag ${gqMatch(g, country) ? '' : 'wrong'}">${g}</span>`).join('')}
+    </div>` : '';
 
-    // Input or remaining count
+    // Input
     let inputHtml = '';
     if (!done) {
       inputHtml = `
         <div class="gq-input-row">
-          <input id="gq-input" class="gq-input" placeholder="Name this destination…" autocomplete="off" />
-          <button class="gq-btn" onclick="gqGuess()">Guess</button>
+          <input id="gq-input" class="gq-input" placeholder="Identify the country…" autocomplete="off" onkeydown="if(event.key==='Enter') gqGuess()" />
+          <button class="gq-btn" onclick="gqGuess()">Submit</button>
         </div>
-        <p class="gq-remaining">${GQ_MAX - wrongCount} wrong guess${(GQ_MAX - wrongCount) === 1 ? '' : 'es'} before full reveal</p>`;
+        <p class="gq-remaining">${GQ_MAX - wrongCount} incorrect identification${(GQ_MAX - wrongCount) === 1 ? '' : 's'} before full declassification</p>`;
     }
 
-    // Bonus round
+    // Bonus
     let bonusHtml = '';
     const hidden = clues.slice(toShow);
     if (done && hidden.length > 0) {
       if (!state.bonusSubmitted) {
         bonusHtml = `<div class="gq-bonus">
-          <p style="font-size:0.82rem; color:var(--muted); margin-bottom:0.75rem;">The redacted sections are still classified — fill them in above, then submit.</p>
-          <button class="gq-btn" onclick="gqSubmitBonus(${toShow})">Declassify</button>
+          <p style="font-size:0.72rem;color:rgba(0,0,0,0.45);letter-spacing:0.05em;margin-bottom:0.6rem;">REDACTED SECTIONS REMAIN CLASSIFIED. FILL IN ABOVE TO ATTEMPT DECLASSIFICATION.</p>
+          <button class="gq-btn" onclick="gqSubmitBonus(${toShow})">Declassify File</button>
         </div>`;
       } else {
         const score = Object.values(state.bonusAnswers).filter(Boolean).length;
         bonusHtml = `<div class="gq-bonus">
-          <p style="font-size:0.82rem; color:var(--muted);">Bonus complete — <strong>${score}/${hidden.length}</strong> correct.</p>
+          <p style="font-size:0.72rem;color:rgba(0,0,0,0.45);letter-spacing:0.05em;">DECLASSIFICATION COMPLETE — ${score}/${hidden.length} ENTRIES VERIFIED.</p>
         </div>`;
       }
     }
 
+    const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));
+    const dateStr = now.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase();
+
     el.innerHTML = `
-      <div class="gq-brochure">
-        <div class="gq-brochure-header">
-          <div class="gq-eyebrow">Today's Destination</div>
-          <h2 class="${done ? 'revealed' : ''}">${done ? country.name : '???'}</h2>
-          <div class="gq-header-sub">${done ? country.continent : 'Location classified'}</div>
+      <div class="gq-file">
+        <div class="gq-file-header">
+          <div class="gq-file-header-left">
+            <div class="gq-file-stamp">Intelligence File · ${dateStr}</div>
+            <div class="gq-file-title ${done ? 'reveal-anim' : 'mystery'}">${done ? country.name : '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'}</div>
+            <div class="gq-file-subtitle ${done ? 'visible' : ''}">${done ? country.continent : ''}</div>
+          </div>
+          <div class="gq-classified ${done ? 'declassified' : ''}">${done ? 'Declassified' : 'Classified'}</div>
         </div>
-        <div class="gq-brochure-body">
+        <div class="gq-file-visuals">
+          ${visualCell(clues[SHAPE_I], SHAPE_I)}
+          ${visualCell(clues[FLAG_I],  FLAG_I)}
+        </div>
+        <div class="gq-file-body">
+          <div class="gq-file-meta">
+            <span>Subject: Unknown</span>
+            <span>Clearance: Level ${GQ_MAX - wrongCount + 1}</span>
+          </div>
           ${statusHtml}
-          <div class="gq-fact-grid">${factHtml}</div>
+          <div class="gq-fact-grid">${bodyFacts}</div>
           ${guessesHtml}
           ${inputHtml}
           ${bonusHtml}
@@ -2457,10 +2588,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       </div>`;
 
     const inp = document.getElementById('gq-input');
-    if (inp) {
-      inp.addEventListener('keydown', e => { if (e.key === 'Enter') gqGuess(); });
-      inp.focus();
-    }
+    if (inp) inp.focus();
   }
 
   function gqGuess() {
@@ -2499,18 +2627,19 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     const clues   = gqClues(country);
     const hidden  = clues.slice(fromIndex);
     const state   = gqLoadState();
+    const prev    = state.bonusAnswers || {};
 
     state.bonusAnswers   = {};
     state.bonusSubmitted = true;
 
     hidden.forEach((cl, i) => {
       const idx = fromIndex + i;
-      const inp = document.getElementById(`gq-bonus-${idx}`);
-      if (!inp) return;
-      const answer = inp.value.trim().toLowerCase();
-      if (cl.isFlag) {
-        state.bonusAnswers[idx] = answer === cl.value.toLowerCase();
+      if (cl.isMultiChoice) {
+        state.bonusAnswers[idx] = prev[`mc-${idx}`] === cl.value;
       } else {
+        const inp = document.getElementById(`gq-bonus-${idx}`);
+        if (!inp) return;
+        const answer = inp.value.trim().toLowerCase();
         state.bonusAnswers[idx] = answer.length > 1 && cl.value.toLowerCase().includes(answer);
       }
     });
