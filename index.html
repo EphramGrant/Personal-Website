@@ -2774,7 +2774,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       } else if (done && !state.bonusSubmitted) {
         return `<div class="gq-fact unrevealed gq-fact-bonus">
           <span class="gq-fact-label">${cl.label}</span>
-          <input class="gq-bonus-inline" id="gq-bonus-${i}" placeholder="${{'Government':'e.g. Presidential Republic','Major water':'e.g. Amazon River','Neighbor count':'e.g. 5','Currency':'e.g. Euro','Language':'e.g. Spanish','Continent':'e.g. South America','Neighbors':'Country, Country, …','Capital':'e.g. Paris'}[cl.label] || '[CLASSIFIED]'}" autocomplete="off" onkeydown="if(event.key==='Enter') gqSubmitBonus(${toShow})" />
+          <input class="gq-bonus-inline" id="gq-bonus-${i}" placeholder="${{'Government':'e.g. Presidential Republic','Major water':'e.g. Amazon River','Neighbor count':'e.g. 5','Currency':'e.g. Euro','Language':'e.g. Spanish','Continent':'e.g. South America','Neighbors':'e.g. Country, Country, …','Capital':'e.g. Paris'}[cl.label] || '[CLASSIFIED]'}" autocomplete="off" onkeydown="if(event.key==='Enter') gqSubmitBonus(${toShow})" />
         </div>`;
       } else if (done && state.bonusSubmitted) {
         const correct = state.bonusAnswers?.[i];
