@@ -717,19 +717,72 @@
     .gq-remaining { font-size: 0.65rem; color: rgba(0,0,0,0.4); margin-bottom: 0.75rem; letter-spacing: 0.05em; }
     .gq-bonus { margin-top: 1rem; border-top: 1px dashed rgba(0,0,0,0.2); padding-top: 0.9rem; }
     /* TerraFiles dark page extras */
-    #page-terrafiles .page-title {
-      position: relative;
+    @keyframes tf-scan {
+      0%   { transform: translateY(-100%); }
+      100% { transform: translateY(100vh); }
     }
-    #page-terrafiles .page-title::after {
+    @keyframes tf-flicker {
+      0%, 95%, 100% { opacity: 1; }
+      96%            { opacity: 0.85; }
+      97%            { opacity: 1; }
+      98%            { opacity: 0.9; }
+    }
+    @keyframes tf-pulse {
+      0%, 100% { opacity: 0.4; }
+      50%       { opacity: 0.7; }
+    }
+    @keyframes tf-blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0; }
+    }
+    .tf-bg {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      overflow: hidden;
+    }
+    /* Grid */
+    .tf-bg::before {
       content: '';
       position: absolute; inset: 0;
-      background: repeating-linear-gradient(
-        0deg, transparent, transparent 2px, rgba(0,0,0,0.18) 2px, rgba(0,0,0,0.18) 4px
-      );
-      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(80,200,120,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(80,200,120,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      animation: tf-flicker 8s infinite;
     }
+    /* Scanline sweep */
+    .tf-bg::after {
+      content: '';
+      position: absolute; left: 0; right: 0; height: 120px;
+      background: linear-gradient(transparent, rgba(80,200,120,0.06), transparent);
+      animation: tf-scan 6s linear infinite;
+    }
+    /* Corner brackets */
+    .tf-corner {
+      position: fixed; width: 32px; height: 32px;
+      pointer-events: none; z-index: 1;
+    }
+    .tf-corner-tl { top: 80px;  left: 20px;  border-top: 1px solid rgba(80,200,120,0.4); border-left: 1px solid rgba(80,200,120,0.4); }
+    .tf-corner-tr { top: 80px;  right: 20px; border-top: 1px solid rgba(80,200,120,0.4); border-right: 1px solid rgba(80,200,120,0.4); }
+    .tf-corner-bl { bottom: 20px; left: 20px;  border-bottom: 1px solid rgba(80,200,120,0.4); border-left: 1px solid rgba(80,200,120,0.4); }
+    .tf-corner-br { bottom: 20px; right: 20px; border-bottom: 1px solid rgba(80,200,120,0.4); border-right: 1px solid rgba(80,200,120,0.4); }
+    /* Radial vignette */
+    .tf-vignette {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.65) 100%);
+    }
+    /* Status bar */
+    .tf-statusbar {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      font-size: 0.55rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: rgba(80,200,120,0.4); padding: 0.3rem 1rem;
+      display: flex; justify-content: space-between;
+      border-top: 1px solid rgba(80,200,120,0.1);
+      pointer-events: none; z-index: 2;
+      background: rgba(0,0,0,0.4);
+    }
+    .tf-blink { animation: tf-blink 1s step-end infinite; }
     #page-terrafiles .gq-file {
-      box-shadow: 0 0 40px rgba(80,140,80,0.08), 2px 4px 18px rgba(0,0,0,0.5);
+      box-shadow: 0 0 60px rgba(80,200,120,0.07), 0 8px 32px rgba(0,0,0,0.6);
     }
     .gq-stats-panel {
       margin-top: 1.25rem; padding: 1rem 1.25rem;
@@ -1685,20 +1738,25 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
   </div>
 
   <!-- GEOQUIZ -->
-  <div id="page-terrafiles" class="page" style="background:#0d0f0e;">
-    <div style="
-      position:fixed; inset:0; pointer-events:none; z-index:0;
-      background-image:
-        repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(100,140,100,0.04) 40px),
-        repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(100,140,100,0.03) 40px);
-    "></div>
+  <div id="page-terrafiles" class="page" style="background:#0a0d0b; min-height:100vh;">
+    <div class="tf-bg"></div>
+    <div class="tf-vignette"></div>
+    <div class="tf-corner tf-corner-tl"></div>
+    <div class="tf-corner tf-corner-tr"></div>
+    <div class="tf-corner tf-corner-bl"></div>
+    <div class="tf-corner tf-corner-br"></div>
+    <div class="tf-statusbar">
+      <span>SYS: ONLINE · ENC: AES-256</span>
+      <span id="tf-clock"></span>
+      <span>ACCESS: LEVEL 5 <span class="tf-blink">█</span></span>
+    </div>
     <div style="position:relative; z-index:1;" class="container">
-      <span class="eyebrow" style="color:#5a6e58;">Classified · Daily Game</span>
-      <h1 class="page-title" style="color:#c8d4c0; text-shadow: 0 0 40px rgba(100,180,100,0.15);">TerraFiles.</h1>
-      <p style="margin-bottom:1.5rem; color:#5a6e58;">A new country every day. The file starts classified and each wrong guess reveals more. Currently a heavy work in progress with only ~40 countries and a lot of bugs.</p>
+      <span class="eyebrow" style="color:#4daa70; letter-spacing:0.2em;">/// CLASSIFIED · DAILY BRIEFING</span>
+      <h1 class="page-title" style="color:#e8f5ec; text-shadow: 0 0 30px rgba(80,200,120,0.25), 0 0 60px rgba(80,200,120,0.08);">TerraFiles.</h1>
+      <p style="margin-bottom:1.5rem; color:#6ab882; line-height:1.8;">A new country every day. The file starts classified — each wrong guess reveals more. How few clues do you need?</p>
       <div id="gq-game"></div>
       <div style="margin-top:1.5rem; text-align:center;">
-        <button onclick="localStorage.removeItem('terrafiles-state'); gqRender();" style="background:none; border:1px dashed #2a2e2a; border-radius:4px; padding:0.35rem 0.75rem; font-family:inherit; font-size:0.65rem; letter-spacing:0.08em; text-transform:uppercase; color:#5a6e58; cursor:pointer;">⟳ Reset (testing only)</button>
+        <button onclick="localStorage.removeItem('terrafiles-state'); gqRender();" style="background:none; border:1px dashed rgba(80,200,120,0.2); border-radius:2px; padding:0.35rem 0.75rem; font-family:inherit; font-size:0.65rem; letter-spacing:0.1em; text-transform:uppercase; color:rgba(80,200,120,0.35); cursor:pointer;">⟳ Reset (testing only)</button>
       </div>
     </div>
   </div>
@@ -2128,7 +2186,15 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     if (id === 'music')    { loadAlbumsFromSheet(); }
     if (id === 'gaming')   { renderGamesGrid(); }
     if (id === 'passport') { ppLoad(); }
-    if (id === 'terrafiles')  { gqRender(); }
+    if (id === 'terrafiles') {
+      gqRender();
+      const tfClock = () => {
+        const el = document.getElementById('tf-clock');
+        if (el) el.textContent = new Date().toUTCString().slice(17, 25) + ' UTC';
+      };
+      tfClock();
+      if (!window._tfClockInterval) window._tfClockInterval = setInterval(tfClock, 1000);
+    }
     if (id !== 'game-detail' && window._gameResizeHandler) {
       window.removeEventListener('resize', window._gameResizeHandler);
       window._gameResizeHandler = null;
