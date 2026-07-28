@@ -716,7 +716,21 @@
     .gq-status.fail    { background: rgba(192,57,43,0.1);  color: #a03028; border: 1px solid rgba(192,57,43,0.2); }
     .gq-remaining { font-size: 0.65rem; color: rgba(0,0,0,0.4); margin-bottom: 0.75rem; letter-spacing: 0.05em; }
     .gq-bonus { margin-top: 1rem; border-top: 1px dashed rgba(0,0,0,0.2); padding-top: 0.9rem; }
-    /* Stats panel */
+    /* TerraFiles dark page extras */
+    #page-terrafiles .page-title {
+      position: relative;
+    }
+    #page-terrafiles .page-title::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(
+        0deg, transparent, transparent 2px, rgba(0,0,0,0.18) 2px, rgba(0,0,0,0.18) 4px
+      );
+      pointer-events: none;
+    }
+    #page-terrafiles .gq-file {
+      box-shadow: 0 0 40px rgba(80,140,80,0.08), 2px 4px 18px rgba(0,0,0,0.5);
+    }
     .gq-stats-panel {
       margin-top: 1.25rem; padding: 1rem 1.25rem;
       background: rgba(0,0,0,0.06); border-radius: 4px;
@@ -1671,14 +1685,20 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
   </div>
 
   <!-- GEOQUIZ -->
-  <div id="page-terrafiles" class="page">
-    <div class="container">
-      <span class="eyebrow">Daily Game</span>
-      <h1 class="page-title">TerraFiles.</h1>
-      <p style="margin-bottom:1.5rem;">A new country every day. The file starts classified and each wrong guess reveals more. Currently a heavy work in progress with only ~40 countries and a lot of bugs.</p>
+  <div id="page-terrafiles" class="page" style="background:#0d0f0e;">
+    <div style="
+      position:fixed; inset:0; pointer-events:none; z-index:0;
+      background-image:
+        repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(100,140,100,0.04) 40px),
+        repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(100,140,100,0.03) 40px);
+    "></div>
+    <div style="position:relative; z-index:1;" class="container">
+      <span class="eyebrow" style="color:#5a6e58;">Classified · Daily Game</span>
+      <h1 class="page-title" style="color:#c8d4c0; text-shadow: 0 0 40px rgba(100,180,100,0.15);">TerraFiles.</h1>
+      <p style="margin-bottom:1.5rem; color:#5a6e58;">A new country every day. The file starts classified and each wrong guess reveals more. Currently a heavy work in progress with only ~40 countries and a lot of bugs.</p>
       <div id="gq-game"></div>
       <div style="margin-top:1.5rem; text-align:center;">
-        <button onclick="localStorage.removeItem('terrafiles-state'); gqRender();" style="background:none; border:1px dashed var(--border); border-radius:4px; padding:0.35rem 0.75rem; font-family:inherit; font-size:0.65rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); cursor:pointer;">⟳ Reset (testing only)</button>
+        <button onclick="localStorage.removeItem('terrafiles-state'); gqRender();" style="background:none; border:1px dashed #2a2e2a; border-radius:4px; padding:0.35rem 0.75rem; font-family:inherit; font-size:0.65rem; letter-spacing:0.08em; text-transform:uppercase; color:#5a6e58; cursor:pointer;">⟳ Reset (testing only)</button>
       </div>
     </div>
   </div>
@@ -2076,7 +2096,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     books:      { bg: '#f2eddf', surface: '#faf7ee', border: '#d8ccaa', text: '#1e1a0e', muted: '#7a6e48', tagBg: '#e8e0c8' }, // parchment
     games:      { bg: '#e8ecf2', surface: '#f3f5fa', border: '#b8c4d8', text: '#101418', muted: '#4a5468', tagBg: '#d4dae8' }, // grey-blue
     coding:     { bg: '#e4f0ec', surface: '#f0faf6', border: '#a8d4c4', text: '#0a1c14', muted: '#3a6650', tagBg: '#c8e4d8' }, // teal
-    terrafiles:    { bg: '#eaf0e8', surface: '#f4faf2', border: '#b8d4b0', text: '#0e1c0c', muted: '#3e6038', tagBg: '#cce4c8' }, // forest green
+    terrafiles:    { bg: '#0d0f0e', surface: '#141614', border: '#2a2e2a', text: '#c8d4c0', muted: '#5a6e58', tagBg: '#1a1f1a' }, // dark ops
     resume:     { bg: '#f9f8f5', surface: '#ffffff', border: '#e8e5de', text: '#1a1916', muted: '#7a7870', tagBg: '#efeee9' },
   };
 
