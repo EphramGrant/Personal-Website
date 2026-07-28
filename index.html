@@ -770,6 +770,47 @@
       position: fixed; inset: 0; pointer-events: none; z-index: 0;
       background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.65) 100%);
     }
+    /* Glowing drifting wave blobs (cyber gradient effect) */
+    @keyframes tf-drift1 {
+      0%, 100% { transform: translate(0,0) rotate(0deg); }
+      50%       { transform: translate(70px,-50px) rotate(12deg); }
+    }
+    @keyframes tf-drift2 {
+      0%, 100% { transform: translate(0,0) rotate(0deg); }
+      50%       { transform: translate(-90px,60px) rotate(-10deg); }
+    }
+    @keyframes tf-drift3 {
+      0%, 100% { transform: translate(0,0) rotate(-8deg) scale(1); }
+      50%       { transform: translate(50px,35px) rotate(-8deg) scale(1.15); }
+    }
+    .tf-waves {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      overflow: hidden; opacity: 0.8;
+    }
+    .tf-wave {
+      position: absolute;
+      filter: blur(70px);
+      mix-blend-mode: screen;
+    }
+    .tf-wave-1 {
+      width: 900px; height: 500px;
+      top: -150px; left: -220px;
+      background: radial-gradient(ellipse at center, rgba(80,200,120,0.38), transparent 70%);
+      animation: tf-drift1 19s ease-in-out infinite;
+    }
+    .tf-wave-2 {
+      width: 700px; height: 700px;
+      bottom: -220px; right: -160px;
+      background: radial-gradient(circle, rgba(140,235,190,0.3), transparent 70%);
+      animation: tf-drift2 23s ease-in-out infinite;
+    }
+    .tf-wave-3 {
+      width: 1050px; height: 320px;
+      top: 38%; left: 15%;
+      background: radial-gradient(ellipse at center, rgba(60,180,140,0.26), transparent 75%);
+      animation: tf-drift3 27s ease-in-out infinite;
+      transform: rotate(-8deg);
+    }
     /* Status bar */
     .tf-statusbar {
       position: fixed; bottom: 0; left: 0; right: 0;
@@ -1740,6 +1781,11 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
   <!-- GEOQUIZ -->
   <div id="page-terrafiles" class="page" style="background:#0a0d0b; min-height:100vh;">
     <div class="tf-bg"></div>
+    <div class="tf-waves">
+      <span class="tf-wave tf-wave-1"></span>
+      <span class="tf-wave tf-wave-2"></span>
+      <span class="tf-wave tf-wave-3"></span>
+    </div>
     <div class="tf-vignette"></div>
     <div class="tf-corner tf-corner-tl"></div>
     <div class="tf-corner tf-corner-tr"></div>
