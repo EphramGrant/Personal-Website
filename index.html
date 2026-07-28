@@ -2470,9 +2470,9 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       { label: "Major water",     value: c.water },
       { label: "Neighbor count",  value: `${c.neighborCount} neighboring countr${c.neighborCount === 1 ? 'y' : 'ies'}` },
       { label: "Currency",        value: c.currency },
-      { label: "Language",        value: c.language },
       { label: "Continent",       value: c.continent },
       { label: "Neighbors",       value: c.neighbors },
+      { label: "Language",        value: c.language },
       { label: "Capital",         value: c.capital },
       { label: "Shape",           value: c.shape, isShape: true, isMultiChoice: true },
       { label: "Flag",            value: c.flag,  isFlag: true,  isMultiChoice: true },
@@ -2774,7 +2774,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       } else if (done && !state.bonusSubmitted) {
         return `<div class="gq-fact unrevealed gq-fact-bonus">
           <span class="gq-fact-label">${cl.label}</span>
-          <input class="gq-bonus-inline" id="gq-bonus-${i}" placeholder="${cl.label === 'Neighbors' ? 'Country, Country, …' : '[CLASSIFIED]'}" autocomplete="off" onkeydown="if(event.key==='Enter') gqSubmitBonus(${toShow})" />
+          <input class="gq-bonus-inline" id="gq-bonus-${i}" placeholder="${{'Government':'e.g. Presidential Republic','Major water':'e.g. Amazon River','Neighbor count':'e.g. 5','Currency':'e.g. Euro','Language':'e.g. Spanish','Continent':'e.g. South America','Neighbors':'Country, Country, …','Capital':'e.g. Paris'}[cl.label] || '[CLASSIFIED]'}" autocomplete="off" onkeydown="if(event.key==='Enter') gqSubmitBonus(${toShow})" />
         </div>`;
       } else if (done && state.bonusSubmitted) {
         const correct = state.bonusAnswers?.[i];
@@ -3004,12 +3004,6 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
         if (!answer || answer.length < 1) { state.bonusAnswers[idx] = false; return; }
         if (cl.label === 'Population') {
           state.bonusAnswers[idx] = gqCheckPopulation(answer, cl.value);
-        } else if (cl.label === 'Neighbors') {
-          // Split both into sets and check every entered country is in the correct list
-          const correct = cl.value.toLowerCase().split(',').map(s => s.trim());
-          const entered = answer.split(',').map(s => s.trim()).filter(Boolean);
-          state.bonusAnswers[idx] = entered.length > 0 &&
-            entered.every(e => correct.some(c => c.includes(e) || e.includes(c)));
         } else {
           state.bonusAnswers[idx] = cl.value.toLowerCase().includes(answer);
         }
