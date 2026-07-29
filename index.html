@@ -853,6 +853,64 @@
       font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase;
       color: rgba(0,0,0,0.35); text-align: center; margin-top: 0.4rem;
     }
+    /* Stats popup modal */
+    @keyframes gq-modal-fade-in { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes gq-modal-pop-in {
+      from { opacity: 0; transform: translateY(14px) scale(0.96); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .gq-stats-backdrop {
+      position: fixed; inset: 0; z-index: 50;
+      background: rgba(0,0,0,0.6);
+      display: flex; align-items: center; justify-content: center;
+      padding: 1.25rem;
+      animation: gq-modal-fade-in 0.25s ease;
+    }
+    .gq-stats-modal {
+      position: relative;
+      width: 100%; max-width: 380px;
+      background: #d4c89a;
+      background-image: repeating-linear-gradient(
+        0deg, transparent, transparent 27px, rgba(0,0,0,0.04) 27px, rgba(0,0,0,0.04) 28px
+      );
+      border-radius: 2px 2px 4px 4px;
+      box-shadow: 2px 10px 40px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(0,0,0,0.08);
+      font-family: 'DM Mono', monospace;
+      animation: gq-modal-pop-in 0.3s cubic-bezier(0.22,1,0.36,1);
+    }
+    .gq-stats-modal::before {
+      content: '';
+      position: absolute; top: -18px; left: 28px;
+      width: 90px; height: 20px;
+      background: #c4b888;
+      border-radius: 4px 4px 0 0;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1);
+    }
+    .gq-stats-modal-header {
+      background: #b8a86e;
+      border-bottom: 2px solid rgba(0,0,0,0.15);
+      padding: 1rem 1.25rem;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .gq-stats-modal-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.15rem; color: #1a1208; letter-spacing: 0.02em;
+    }
+    .gq-stats-modal-eyebrow {
+      font-size: 0.58rem; letter-spacing: 0.16em; text-transform: uppercase;
+      color: rgba(0,0,0,0.45); margin-bottom: 0.25rem;
+    }
+    .gq-stats-modal-close {
+      background: none; border: 1px solid rgba(0,0,0,0.25); border-radius: 50%;
+      width: 26px; height: 26px; line-height: 1;
+      font-family: inherit; font-size: 0.85rem; color: rgba(0,0,0,0.5);
+      cursor: pointer; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s, color 0.15s;
+    }
+    .gq-stats-modal-close:hover { background: rgba(0,0,0,0.08); color: #1a1208; }
+    .gq-stats-modal-body { padding: 1.25rem 1.25rem 1.5rem; }
+    .gq-stats-panel { margin-top: 0; padding: 0; background: none; border: none; }
     @media (max-width: 500px) {
       .gq-file-body { padding: 1rem; }
       .gq-file-header { padding: 1rem; }
@@ -1801,9 +1859,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       <h1 class="page-title" style="color:#e8f5ec; text-shadow: 0 0 30px rgba(80,200,120,0.25), 0 0 60px rgba(80,200,120,0.08);">TerraFiles.</h1>
       <p style="margin-bottom:1.5rem; color:#6ab882; line-height:1.8;">A new country every day. The file starts classified — each wrong guess reveals more. How few clues do you need?</p>
       <div id="gq-game"></div>
-      <div style="margin-top:1.5rem; text-align:center;">
-        <button onclick="localStorage.removeItem('terrafiles-state'); gqRender();" style="background:none; border:1px dashed rgba(80,200,120,0.2); border-radius:2px; padding:0.35rem 0.75rem; font-family:inherit; font-size:0.65rem; letter-spacing:0.1em; text-transform:uppercase; color:rgba(80,200,120,0.35); cursor:pointer;">⟳ Reset (testing only)</button>
-      </div>
+      <div id="gq-stats-modal-root"></div>
     </div>
   </div>
 
@@ -2880,24 +2936,42 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       gqRecordResult(won, toShow);
     }
 
-    // Stats panel (daily only)
-    let statsHtml = '';
-    if (done && !_gqInfMode) {
-      const st = gqLoadStats();
-      const winRate = st.played > 0 ? Math.round((st.wins / st.played) * 100) : 0;
-      const avgClues = st.wins > 0 ? (st.totalClues / st.wins).toFixed(1) : '—';
-      statsHtml = `<div class="gq-stats-panel">
-        <div class="gq-stats-title">Your Stats</div>
-        <div class="gq-stats-grid">
-          <div class="gq-stat-cell"><span class="gq-stat-val">${st.played}</span><span class="gq-stat-lbl">Played</span></div>
-          <div class="gq-stat-cell"><span class="gq-stat-val">${winRate}%</span><span class="gq-stat-lbl">Win rate</span></div>
-          <div class="gq-stat-cell"><span class="gq-stat-val">${st.streak}</span><span class="gq-stat-lbl">Streak</span></div>
-          <div class="gq-stat-cell"><span class="gq-stat-val">${st.bestStreak}</span><span class="gq-stat-lbl">Best</span></div>
-          <div class="gq-stat-cell"><span class="gq-stat-val">${avgClues}</span><span class="gq-stat-lbl">Avg clues</span></div>
-        </div>
-        <button class="gq-infinite-btn" onclick="gqStartInfinite()">▶ Play Infinite Mode</button>
-        <div class="gq-infinite-label">Practice with another random country</div>
-      </div>`;
+    // Stats popup — shown once the bonus round (if any) is finished
+    const statsReady = done && !_gqInfMode && (hidden.length === 0 || state.bonusSubmitted);
+    const statsModalEl = document.getElementById('gq-stats-modal-root');
+    if (statsModalEl) {
+      if (statsReady && !state.statsDismissed) {
+        const st = gqLoadStats();
+        const winRate = st.played > 0 ? Math.round((st.wins / st.played) * 100) : 0;
+        const avgClues = st.wins > 0 ? (st.totalClues / st.wins).toFixed(1) : '—';
+        statsModalEl.innerHTML = `
+          <div class="gq-stats-backdrop" onclick="if(event.target===this) gqDismissStats()">
+            <div class="gq-stats-modal">
+              <div class="gq-stats-modal-header">
+                <div>
+                  <div class="gq-stats-modal-eyebrow">/// Debrief Complete</div>
+                  <div class="gq-stats-modal-title">Your Stats</div>
+                </div>
+                <button class="gq-stats-modal-close" onclick="gqDismissStats()" aria-label="Dismiss">✕</button>
+              </div>
+              <div class="gq-stats-modal-body">
+                <div class="gq-stats-panel">
+                  <div class="gq-stats-grid">
+                    <div class="gq-stat-cell"><span class="gq-stat-val">${st.played}</span><span class="gq-stat-lbl">Played</span></div>
+                    <div class="gq-stat-cell"><span class="gq-stat-val">${winRate}%</span><span class="gq-stat-lbl">Win rate</span></div>
+                    <div class="gq-stat-cell"><span class="gq-stat-val">${st.streak}</span><span class="gq-stat-lbl">Streak</span></div>
+                    <div class="gq-stat-cell"><span class="gq-stat-val">${st.bestStreak}</span><span class="gq-stat-lbl">Best</span></div>
+                    <div class="gq-stat-cell"><span class="gq-stat-val">${avgClues}</span><span class="gq-stat-lbl">Avg clues</span></div>
+                  </div>
+                  <button class="gq-infinite-btn" onclick="gqDismissStats(); gqStartInfinite()">▶ Play Infinite Mode</button>
+                  <div class="gq-infinite-label">Practice with another random country</div>
+                </div>
+              </div>
+            </div>
+          </div>`;
+      } else {
+        statsModalEl.innerHTML = '';
+      }
     }
 
     // Infinite mode — next file button
@@ -2938,7 +3012,6 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
           ${guessesHtml}
           ${inputHtml}
           ${bonusHtml}
-          ${statsHtml}
           ${infNextHtml}
         </div>
       </div>`;
@@ -3056,6 +3129,13 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       }
     });
 
+    gqSaveState(state);
+    gqRender();
+  }
+
+  function gqDismissStats() {
+    const state = gqLoadState();
+    state.statsDismissed = true;
     gqSaveState(state);
     gqRender();
   }
