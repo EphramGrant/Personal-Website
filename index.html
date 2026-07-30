@@ -2098,6 +2098,41 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
   }
 
   // ── LIVERPOOL (ESPN Premier League: eng.1, team id 379) ──
+  // Fetches recent + upcoming games for a team. If the default schedule has no
+  // upcoming fixture left (e.g. the season just ended and the new one's fixtures
+  // aren't loaded under the default season yet), retries against the season
+  // labeled by the current calendar year, which is usually the new one.
+  async function fetchTeamSchedule(sport, league, teamId) {
+    const now = Date.now();
+    const isCompleted = e => !!e.competitions?.[0]?.status?.type?.completed;
+    const isUpcoming  = e => !isCompleted(e) && new Date(e.date) > now;
+
+    async function getEvents(season) {
+      const url = `https://site.api.espn.com/apis/site/v2/sports/${sport}/${league}/teams/${teamId}/schedule${season ? `?season=${season}` : ''}`;
+      const res  = await fetch(url);
+      const data = await res.json();
+      return data?.events || [];
+    }
+
+    let events = await getEvents();
+    let completed = events.filter(isCompleted).slice(-2);
+    let upcoming  = events.filter(isUpcoming).slice(0, 1);
+    console.debug(`[sports] ${sport}/${league} team ${teamId} — default schedule: ${completed.length} completed, ${upcoming.length} upcoming`);
+
+    if (upcoming.length === 0) {
+      const guessSeason = new Date().getFullYear();
+      try {
+        const events2 = await getEvents(guessSeason);
+        const upcoming2 = events2.filter(isUpcoming).slice(0, 1);
+        console.debug(`[sports] ${sport}/${league} team ${teamId} — season=${guessSeason} fallback: ${upcoming2.length} upcoming`);
+        if (upcoming2.length) upcoming = upcoming2;
+      } catch (e) {}
+    }
+
+    return [...completed, ...upcoming];
+  }
+
+
   async function loadLiverpool() {
     try {
       const TEAM_ID = '364';
@@ -2120,15 +2155,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       } catch(e) {}
 
       // Events
-      const eRes = await fetch(`https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/teams/${TEAM_ID}/schedule`);
-      const eData = await eRes.json();
-      const events = eData?.events || [];
-      const now = Date.now();
-
-      // Last 2 completed + next 1 upcoming
-      const completed = events.filter(e => e.competitions?.[0]?.status?.type?.completed).slice(-2);
-      const upcoming  = events.filter(e => !e.competitions?.[0]?.status?.type?.completed && new Date(e.date) > now).slice(0, 1);
-      const shown = [...completed, ...upcoming];
+      const shown = await fetchTeamSchedule('soccer', 'eng.1', TEAM_ID);
 
       const games = shown.map(e => {
         const comp = e.competitions[0];
@@ -2189,14 +2216,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       } catch(e) {}
 
       // Events
-      const eRes = await fetch(`https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/${TEAM_ID}/schedule`);
-      const eData = await eRes.json();
-      const events = eData?.events || [];
-      const now = Date.now();
-
-      const completed = events.filter(e => e.competitions?.[0]?.status?.type?.completed).slice(-2);
-      const upcoming  = events.filter(e => !e.competitions?.[0]?.status?.type?.completed && new Date(e.date) > now).slice(0, 1);
-      const shown = [...completed, ...upcoming];
+      const shown = await fetchTeamSchedule('football', 'nfl', TEAM_ID);
 
       const games = shown.map(e => {
         const comp = e.competitions[0];
