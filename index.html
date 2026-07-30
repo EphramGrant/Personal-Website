@@ -2139,10 +2139,13 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     const hasData = cats => cats.some(c => (c.leaders || []).length > 0);
 
     try {
-      const res  = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${sport}/${league}/teams/${teamId}`);
+      const url  = `https://site.api.espn.com/apis/site/v2/sports/${sport}/${league}/teams/${teamId}`;
+      const res  = await fetch(url);
+      console.debug(`[sports] GET ${url} → HTTP ${res.status}`);
       const data = await res.json();
       let cats = data?.team?.leaders || [];
-      console.debug(`[sports] ${sport}/${league} team ${teamId} — current-season leader categories:`, cats.length);
+      console.debug(`[sports] ${sport}/${league} team ${teamId} — current-season leader categories:`, cats.length,
+        '| team object keys:', data?.team ? Object.keys(data.team) : '(no team object — keys at root:)', Object.keys(data || {}));
       if (hasData(cats)) return { cats, stale: false };
 
       // No current-season data — try last season's final numbers instead
@@ -2156,6 +2159,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       } catch (e) {}
       return { cats, stale: false };
     } catch (e) {
+      console.debug(`[sports] ${sport}/${league} team ${teamId} — fetchTeamLeadersRaw threw:`, e);
       return { cats: [], stale: false };
     }
   }
@@ -2208,23 +2212,33 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     async function getEvents(season) {
       const url = `https://site.api.espn.com/apis/site/v2/sports/${sport}/${league}/teams/${teamId}/schedule${season ? `?season=${season}` : ''}`;
       const res  = await fetch(url);
+      console.debug(`[sports] GET ${url} → HTTP ${res.status}`);
       const data = await res.json();
-      return data?.events || [];
+      const events = data?.events || [];
+      if (events.length === 0) {
+        console.debug(`[sports] ${sport}/${league} team ${teamId} — empty events array. Top-level response keys:`, Object.keys(data || {}));
+      } else {
+        const sample = events[0];
+        console.debug(`[sports] ${sport}/${league} team ${teamId} — sample event:`, sample?.date, sample?.competitions?.[0]?.status?.type);
+      }
+      return events;
     }
 
     let events = await getEvents();
     let completedAll = events.filter(isCompleted);
     let upcoming     = events.filter(isUpcoming).slice(0, 1);
-    console.debug(`[sports] ${sport}/${league} team ${teamId} — default schedule: ${completedAll.length} completed, ${upcoming.length} upcoming`);
+    console.debug(`[sports] ${sport}/${league} team ${teamId} — default schedule: ${events.length} total events, ${completedAll.length} completed, ${upcoming.length} upcoming`);
 
     if (upcoming.length === 0) {
       const guessSeason = new Date().getFullYear();
       try {
         const events2 = await getEvents(guessSeason);
         const upcoming2 = events2.filter(isUpcoming).slice(0, 1);
-        console.debug(`[sports] ${sport}/${league} team ${teamId} — season=${guessSeason} fallback: ${upcoming2.length} upcoming`);
+        console.debug(`[sports] ${sport}/${league} team ${teamId} — season=${guessSeason} fallback: ${events2.length} total events, ${upcoming2.length} upcoming`);
         if (upcoming2.length) upcoming = upcoming2;
-      } catch (e) {}
+      } catch (e) {
+        console.debug(`[sports] ${sport}/${league} team ${teamId} — season=${guessSeason} fallback fetch threw:`, e);
+      }
     }
 
     return { completedAll, upcoming };
@@ -2255,6 +2269,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
           ga   = entry.stats?.find(s => s.name === 'goalsAgainst' || s.abbreviation === 'GA')?.value ?? null;
           gaGP = entry.stats?.find(s => s.name === 'gamesPlayed')?.value ?? null;
           console.debug('[sports] soccer/eng.1 — current-season GA:', ga, 'over', gaGP, 'games');
+          console.debug('[sports] soccer/eng.1 — all available stat names/abbrevs:', entry.stats?.map(s => `${s.name}(${s.abbreviation})=${s.value}`));
         }
       } catch(e) {}
 
@@ -2270,6 +2285,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
           lastGA   = lsEntry.stats?.find(s => s.name === 'goalsAgainst' || s.abbreviation === 'GA')?.value ?? null;
           lastGaGP = lsEntry.stats?.find(s => s.name === 'gamesPlayed')?.value ?? null;
           console.debug('[sports] soccer/eng.1 — last-season GA:', lastGA, 'over', lastGaGP, 'games');
+          console.debug('[sports] soccer/eng.1 — last-season all available stat names/abbrevs:', lsEntry.stats?.map(s => `${s.name}(${s.abbreviation})=${s.value}`));
         }
       } catch(e) {}
 
