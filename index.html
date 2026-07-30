@@ -308,6 +308,10 @@
       margin-left: auto; font-family: 'DM Serif Display', serif;
       font-size: 1rem; color: var(--text); white-space: nowrap; padding-left: 0.5rem;
     }
+    .sport-stale-tag {
+      font-style: italic; color: var(--muted); font-weight: 400;
+      letter-spacing: 0.06em;
+    }
     /* ── ALBUM TABLE ── */
     #album-table tr:hover td { background: var(--tag-bg); }
     #album-table td {
@@ -2005,7 +2009,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   }
 
-  function renderWidget(containerId, standing, games, leaders) {
+  function renderWidget(containerId, standing, games, leaders, leadersStale) {
     const el = document.getElementById(containerId);
     if (!el) return;
 
@@ -2030,7 +2034,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
 
     const leadersHTML = (leaders && leaders.length) ? `
       <hr class="sport-divider" />
-      <div class="sport-label">Player Stats</div>
+      <div class="sport-label">Player Stats${leadersStale ? ' <span class="sport-stale-tag">Last Season</span>' : ''}</div>
       <div class="sport-leaders">
         ${leaders.map(l => `
           <div class="sport-leader">
@@ -2041,7 +2045,10 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
             </div>
             <div class="sport-leader-val">${l.value}</div>
           </div>`).join('')}
-      </div>` : '';
+      </div>` : `
+      <hr class="sport-divider" />
+      <div class="sport-label">Player Stats</div>
+      <div class="sport-error">No stats yet — check back once the season is underway.</div>`;
 
     el.innerHTML = `<div class="sport-widget">${standingHTML}${gamesHTML}${leadersHTML}</div>`;
   }
@@ -2051,11 +2058,11 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     if (el) el.innerHTML = `<div class="sport-error">${msg}</div>`;
   }
 
-  // Fetches each stat category's top player for a team (works across ESPN sports)
+  // Fetches each stat category's top player for a team (works across ESPN sports).
+  // Falls back to last season's final stats if the current season hasn't started yet
+  // (ESPN resets leader stats to empty right after a new season begins on their end).
   async function fetchTeamLeaders(sport, league, teamId, max = 3) {
-    try {
-      const res  = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${sport}/${league}/teams/${teamId}`);
-      const data = await res.json();
+    const parse = (data) => {
       const cats = data?.team?.leaders || [];
       return cats.slice(0, max).map(cat => {
         const top = cat.leaders?.[0];
@@ -2067,8 +2074,26 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
           headshot: top.athlete?.headshot?.href || null,
         };
       }).filter(Boolean);
+    };
+
+    try {
+      const res  = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${sport}/${league}/teams/${teamId}`);
+      const data = await res.json();
+      let leaders = parse(data);
+      console.debug(`[sports] ${sport}/${league} team ${teamId} — current-season leader categories:`, data?.team?.leaders?.length ?? 0);
+      if (leaders.length) return { leaders, stale: false };
+
+      // No current-season data — try last season's final numbers instead
+      const lastYear = new Date().getFullYear() - 1;
+      try {
+        const res2  = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${sport}/${league}/teams/${teamId}?season=${lastYear}`);
+        const data2 = await res2.json();
+        leaders = parse(data2);
+        console.debug(`[sports] ${sport}/${league} team ${teamId} — season=${lastYear} fallback leader categories:`, data2?.team?.leaders?.length ?? 0);
+      } catch (e) {}
+      return { leaders, stale: leaders.length > 0 };
     } catch (e) {
-      return [];
+      return { leaders: [], stale: false };
     }
   }
 
@@ -2125,9 +2150,9 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       });
 
       // Player stats — top leader per category (goals, assists, etc.)
-      const leaders = await fetchTeamLeaders('soccer', 'eng.1', TEAM_ID, 3);
+      const { leaders, stale } = await fetchTeamLeaders('soccer', 'eng.1', TEAM_ID, 3);
 
-      renderWidget('lfc-widget', standing, games, leaders);
+      renderWidget('lfc-widget', standing, games, leaders, stale);
     } catch(err) {
       renderError('lfc-widget', 'Could not load Liverpool data.');
     }
@@ -2193,9 +2218,9 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       });
 
       // Player stats — top leader per category (passing, rushing, receiving)
-      const leaders = await fetchTeamLeaders('football', 'nfl', TEAM_ID, 3);
+      const { leaders, stale } = await fetchTeamLeaders('football', 'nfl', TEAM_ID, 3);
 
-      renderWidget('eagles-widget', standing, games, leaders);
+      renderWidget('eagles-widget', standing, games, leaders, stale);
     } catch(err) {
       renderError('eagles-widget', 'Could not load Eagles data.');
     }
