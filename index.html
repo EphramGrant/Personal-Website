@@ -2996,6 +2996,15 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       </div>`;
     }
 
+    // Infinite mode — standalone option in the file itself (independent of the stats popup)
+    let infOptionHtml = '';
+    if (statsReady) {
+      infOptionHtml = `<div class="gq-bonus" style="text-align:center;">
+        <button class="gq-infinite-btn" onclick="gqStartInfinite()">▶ Play Infinite Mode</button>
+        <div class="gq-infinite-label">Practice with another random country</div>
+      </div>`;
+    }
+
     const playAnim = done && !state.animPlayed;
     if (playAnim) { state.animPlayed = true; gqSaveState(state); }
 
@@ -3026,6 +3035,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
           ${guessesHtml}
           ${inputHtml}
           ${bonusHtml}
+          ${infOptionHtml}
           ${infNextHtml}
         </div>
       </div>`;
