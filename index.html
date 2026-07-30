@@ -287,31 +287,6 @@
     .sport-game .loss { color: #b94040; }
     .sport-game .draw { color: var(--muted); }
     .sport-error { font-size: 0.75rem; color: var(--muted); font-style: italic; }
-    .sport-leaders { display: flex; flex-direction: column; gap: 0.55rem; }
-    .sport-leader {
-      display: flex; align-items: center; gap: 0.6rem; font-size: 0.75rem;
-    }
-    .sport-leader img {
-      width: 32px; height: 32px; border-radius: 50%; object-fit: cover;
-      background: var(--tag-bg); flex-shrink: 0;
-    }
-    .sport-leader-info { display: flex; flex-direction: column; min-width: 0; }
-    .sport-leader-cat {
-      font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase;
-      color: var(--muted);
-    }
-    .sport-leader-name {
-      font-weight: 500; color: var(--text);
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .sport-leader-val {
-      margin-left: auto; font-family: 'DM Serif Display', serif;
-      font-size: 1rem; color: var(--text); white-space: nowrap; padding-left: 0.5rem;
-    }
-    .sport-stale-tag {
-      font-style: italic; color: var(--muted); font-weight: 400;
-      letter-spacing: 0.06em;
-    }
     /* Recent form dots */
     .sport-form { display: flex; gap: 0.3rem; margin-top: 0.5rem; }
     .form-dot {
@@ -2067,7 +2042,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   }
 
-  function renderWidget(containerId, standing, games, leaders, leadersStale, form, headToHead) {
+  function renderWidget(containerId, standing, games, form, headToHead) {
     const el = document.getElementById(containerId);
     if (!el) return;
 
@@ -2106,25 +2081,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
         ${headToHead.result ? `<div class="game-result ${headToHead.resultClass}">${headToHead.result}</div>` : ''}
       </div>` : '';
 
-    const leadersHTML = (leaders && leaders.length) ? `
-      <hr class="sport-divider" />
-      <div class="sport-label">Player Stats${leadersStale ? ' <span class="sport-stale-tag">Last Season</span>' : ''}</div>
-      <div class="sport-leaders">
-        ${leaders.map(l => `
-          <div class="sport-leader">
-            ${l.headshot ? `<img src="${l.headshot}" alt="${l.name}" onerror="this.style.display='none'">` : ''}
-            <div class="sport-leader-info">
-              <div class="sport-leader-cat">${l.category}</div>
-              <div class="sport-leader-name">${l.name}</div>
-            </div>
-            <div class="sport-leader-val">${l.value}</div>
-          </div>`).join('')}
-      </div>` : `
-      <hr class="sport-divider" />
-      <div class="sport-label">Player Stats</div>
-      <div class="sport-error">No stats yet — check back once the season is underway.</div>`;
-
-    el.innerHTML = `<div class="sport-widget">${standingHTML}${gamesHTML}${h2hHTML}${leadersHTML}</div>`;
+    el.innerHTML = `<div class="sport-widget">${standingHTML}${gamesHTML}${h2hHTML}</div>`;
   }
 
   function renderError(containerId, msg) {
@@ -2164,20 +2121,6 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       console.debug(`[sports] ${sport}/${league} team ${teamId} — fetchTeamLeadersRaw threw:`, e);
       return { cats: [], stale: false };
     }
-  }
-
-  // Top leader per category, for the general "Player Stats" panel
-  function topLeaders(cats, max = 3) {
-    return cats.slice(0, max).map(cat => {
-      const top = cat.leaders?.[0];
-      if (!top) return null;
-      return {
-        category: cat.displayName || cat.shortDisplayName || cat.name || '',
-        name:     top.athlete?.shortName || top.athlete?.displayName || '—',
-        value:    top.displayValue ?? top.value ?? '',
-        headshot: top.athlete?.headshot?.href || null,
-      };
-    }).filter(Boolean);
   }
 
   // Searches every category's full leader list (not just the top spot) for a
@@ -2334,11 +2277,10 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       }
 
       // Player stats — top leader per category (goals, assists, etc.)
-      const { cats: leaderCats, stale } = await fetchTeamLeadersRaw('soccer', 'eng.1', TEAM_ID);
-      const leaders = topLeaders(leaderCats, 3);
+      const { cats: leaderCats } = await fetchTeamLeadersRaw('soccer', 'eng.1', TEAM_ID);
       const szoboStats = findPlayerInLeaders(leaderCats, 'szoboszlai');
 
-      renderWidget('lfc-widget', standing, games, leaders, stale, form, headToHead);
+      renderWidget('lfc-widget', standing, games, form, headToHead);
       renderPredictionTrack('lfc-prediction', rawPos);
       renderDefenseTrack('lfc-defense-track', ga, gaGP, lastGA, lastGaGP);
       renderPlayerPrediction('lfc-player-track', szoboStats, 'Szoboszlai');
@@ -2422,11 +2364,10 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       }
 
       // Player stats — top leader per category (passing, rushing, receiving)
-      const { cats: leaderCats, stale } = await fetchTeamLeadersRaw('football', 'nfl', TEAM_ID);
-      const leaders = topLeaders(leaderCats, 3);
+      const { cats: leaderCats } = await fetchTeamLeadersRaw('football', 'nfl', TEAM_ID);
       const goedertStats = findPlayerInLeaders(leaderCats, 'goedert');
 
-      renderWidget('eagles-widget', standing, games, leaders, stale, form, headToHead);
+      renderWidget('eagles-widget', standing, games, form, headToHead);
       renderPredictionTrack('eagles-prediction', rawPos);
       renderPlayerPrediction('eagles-player-track', goedertStats, 'Goedert', {
         statPattern: /touchdown/i,
