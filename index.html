@@ -342,6 +342,17 @@
     .prediction-verdict.ahead  { color: #3a7d44; }
     .prediction-verdict.behind { color: #b94040; }
     .prediction-verdict.even   { color: var(--muted); }
+    .prediction-sub {
+      font-weight: 400; text-transform: none; letter-spacing: 0.02em; font-style: italic;
+    }
+    .player-track-stats { display: flex; flex-wrap: wrap; gap: 0.5rem 0.9rem; margin-top: 0.3rem; }
+    .player-track-stat { font-size: 0.72rem; color: var(--text); }
+    .player-track-stat strong {
+      font-family: 'DM Serif Display', serif; font-size: 0.95rem; margin-right: 0.2rem;
+    }
+    .pred-verdict { margin-top: 0.45rem; font-size: 0.72rem; font-weight: 500; }
+    .pred-verdict.pred-hit  { color: #3a7d44; }
+    .pred-verdict.pred-miss { color: #b94040; }
     /* ── ALBUM TABLE ── */
     #album-table tr:hover td { background: var(--tag-bg); }
     #album-table td {
@@ -1365,11 +1376,14 @@
           <h3>Liverpool FC</h3>
           <p class="prediction-text">I'm predicting a 3rd place finish in the Premier League with a Champions League quarterfinal run. I think the defense is weaker this season and they'll concede more goals than last year, but Szoboszlai has a great year and puts up huge stats.</p>
           <div id="lfc-prediction" class="prediction-track" data-predicted-pos="3"><div class="sport-loading">Loading…</div></div>
+          <div id="lfc-defense-track" class="prediction-track"><div class="sport-loading">Loading…</div></div>
+          <div id="lfc-player-track" class="prediction-track"><div class="sport-loading">Loading…</div></div>
         </div>
         <div class="item-card">
           <h3>Philadelphia Eagles</h3>
           <p class="prediction-text">I'm predicting a 12-5 record, topping the NFC East, and a loss in the NFC Championship. I think Dallas Goedert has a strong year with 15+ touchdowns.</p>
           <div id="eagles-prediction" class="prediction-track" data-predicted-pos="1"><div class="sport-loading">Loading…</div></div>
+          <div id="eagles-player-track" class="prediction-track"><div class="sport-loading">Loading…</div></div>
         </div>
       </div>
     </div>
@@ -2118,43 +2132,67 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     if (el) el.innerHTML = `<div class="sport-error">${msg}</div>`;
   }
 
-  // Fetches each stat category's top player for a team (works across ESPN sports).
+  // Fetches the full team-leaders payload for a team (works across ESPN sports).
   // Falls back to last season's final stats if the current season hasn't started yet
   // (ESPN resets leader stats to empty right after a new season begins on their end).
-  async function fetchTeamLeaders(sport, league, teamId, max = 3) {
-    const parse = (data) => {
-      const cats = data?.team?.leaders || [];
-      return cats.slice(0, max).map(cat => {
-        const top = cat.leaders?.[0];
-        if (!top) return null;
-        return {
-          category: cat.displayName || cat.shortDisplayName || cat.name || '',
-          name:     top.athlete?.shortName || top.athlete?.displayName || '—',
-          value:    top.displayValue ?? top.value ?? '',
-          headshot: top.athlete?.headshot?.href || null,
-        };
-      }).filter(Boolean);
-    };
+  async function fetchTeamLeadersRaw(sport, league, teamId) {
+    const hasData = cats => cats.some(c => (c.leaders || []).length > 0);
 
     try {
       const res  = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${sport}/${league}/teams/${teamId}`);
       const data = await res.json();
-      let leaders = parse(data);
-      console.debug(`[sports] ${sport}/${league} team ${teamId} — current-season leader categories:`, data?.team?.leaders?.length ?? 0);
-      if (leaders.length) return { leaders, stale: false };
+      let cats = data?.team?.leaders || [];
+      console.debug(`[sports] ${sport}/${league} team ${teamId} — current-season leader categories:`, cats.length);
+      if (hasData(cats)) return { cats, stale: false };
 
       // No current-season data — try last season's final numbers instead
       const lastYear = new Date().getFullYear() - 1;
       try {
         const res2  = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${sport}/${league}/teams/${teamId}?season=${lastYear}`);
         const data2 = await res2.json();
-        leaders = parse(data2);
-        console.debug(`[sports] ${sport}/${league} team ${teamId} — season=${lastYear} fallback leader categories:`, data2?.team?.leaders?.length ?? 0);
+        const cats2 = data2?.team?.leaders || [];
+        console.debug(`[sports] ${sport}/${league} team ${teamId} — season=${lastYear} fallback leader categories:`, cats2.length);
+        if (hasData(cats2)) return { cats: cats2, stale: true };
       } catch (e) {}
-      return { leaders, stale: leaders.length > 0 };
+      return { cats, stale: false };
     } catch (e) {
-      return { leaders: [], stale: false };
+      return { cats: [], stale: false };
     }
+  }
+
+  // Top leader per category, for the general "Player Stats" panel
+  function topLeaders(cats, max = 3) {
+    return cats.slice(0, max).map(cat => {
+      const top = cat.leaders?.[0];
+      if (!top) return null;
+      return {
+        category: cat.displayName || cat.shortDisplayName || cat.name || '',
+        name:     top.athlete?.shortName || top.athlete?.displayName || '—',
+        value:    top.displayValue ?? top.value ?? '',
+        headshot: top.athlete?.headshot?.href || null,
+      };
+    }).filter(Boolean);
+  }
+
+  // Searches every category's full leader list (not just the top spot) for a
+  // specific named player, so we can track a prediction about one player
+  // even if they aren't the single top leader in any category.
+  function findPlayerInLeaders(cats, nameSubstr) {
+    const needle = nameSubstr.toLowerCase();
+    const found = [];
+    for (const cat of cats) {
+      const match = (cat.leaders || []).find(l => {
+        const n = (l.athlete?.displayName || l.athlete?.shortName || '').toLowerCase();
+        return n.includes(needle);
+      });
+      if (match) {
+        found.push({
+          category: cat.displayName || cat.shortDisplayName || cat.name || '',
+          value:    match.displayValue ?? match.value ?? '',
+        });
+      }
+    }
+    return found;
   }
 
   // ── LIVERPOOL (ESPN Premier League: eng.1, team id 379) ──
@@ -2200,6 +2238,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       // Standings
       let standing = null;
       let rawPos = NaN;
+      let ga = null, gaGP = null;
       try {
         const sRes = await fetch('https://site.api.espn.com/apis/v2/sports/soccer/eng.1/standings');
         const sData = await sRes.json();
@@ -2213,6 +2252,24 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
           const l   = entry.stats?.find(s => s.name === 'losses')?.value ?? '–';
           standing = { pos: `${pos}${ordinal(pos)}`, record: `${pts} pts · ${w}W ${d}D ${l}L` };
           rawPos = Number(pos);
+          ga   = entry.stats?.find(s => s.name === 'goalsAgainst' || s.abbreviation === 'GA')?.value ?? null;
+          gaGP = entry.stats?.find(s => s.name === 'gamesPlayed')?.value ?? null;
+          console.debug('[sports] soccer/eng.1 — current-season GA:', ga, 'over', gaGP, 'games');
+        }
+      } catch(e) {}
+
+      // Last season's GA, for the "weaker defense than last year" prediction
+      let lastGA = null, lastGaGP = null;
+      try {
+        const lastYear = new Date().getFullYear() - 1;
+        const lsRes = await fetch(`https://site.api.espn.com/apis/v2/sports/soccer/eng.1/standings?season=${lastYear}`);
+        const lsData = await lsRes.json();
+        const lsEntries = lsData?.children?.[0]?.standings?.entries || [];
+        const lsEntry = lsEntries.find(e => e.team?.id === TEAM_ID);
+        if (lsEntry) {
+          lastGA   = lsEntry.stats?.find(s => s.name === 'goalsAgainst' || s.abbreviation === 'GA')?.value ?? null;
+          lastGaGP = lsEntry.stats?.find(s => s.name === 'gamesPlayed')?.value ?? null;
+          console.debug('[sports] soccer/eng.1 — last-season GA:', lastGA, 'over', lastGaGP, 'games');
         }
       } catch(e) {}
 
@@ -2259,10 +2316,14 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       }
 
       // Player stats — top leader per category (goals, assists, etc.)
-      const { leaders, stale } = await fetchTeamLeaders('soccer', 'eng.1', TEAM_ID, 3);
+      const { cats: leaderCats, stale } = await fetchTeamLeadersRaw('soccer', 'eng.1', TEAM_ID);
+      const leaders = topLeaders(leaderCats, 3);
+      const szoboStats = findPlayerInLeaders(leaderCats, 'szoboszlai');
 
       renderWidget('lfc-widget', standing, games, leaders, stale, form, headToHead);
       renderPredictionTrack('lfc-prediction', rawPos);
+      renderDefenseTrack('lfc-defense-track', ga, gaGP, lastGA, lastGaGP);
+      renderPlayerPrediction('lfc-player-track', szoboStats, 'Szoboszlai');
     } catch(err) {
       renderError('lfc-widget', 'Could not load Liverpool data.');
     }
@@ -2343,10 +2404,19 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       }
 
       // Player stats — top leader per category (passing, rushing, receiving)
-      const { leaders, stale } = await fetchTeamLeaders('football', 'nfl', TEAM_ID, 3);
+      const { cats: leaderCats, stale } = await fetchTeamLeadersRaw('football', 'nfl', TEAM_ID);
+      const leaders = topLeaders(leaderCats, 3);
+      const goedertStats = findPlayerInLeaders(leaderCats, 'goedert');
 
       renderWidget('eagles-widget', standing, games, leaders, stale, form, headToHead);
       renderPredictionTrack('eagles-prediction', rawPos);
+      renderPlayerPrediction('eagles-player-track', goedertStats, 'Goedert', {
+        statPattern: /touchdown/i,
+        target: 15,
+        gamesPlayedSoFar: completedAll.length,
+        seasonLength: 17,
+        unit: 'TDs',
+      });
     } catch(err) {
       renderError('eagles-widget', 'Could not load Eagles data.');
     }
@@ -2387,6 +2457,65 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       <span class="prediction-sep">→</span>
       <span class="prediction-label">Currently</span> <span class="prediction-num">${actualPos}${ordinal(actualPos)}</span>
       <span class="prediction-verdict ${cls}">${verdict}</span>`;
+  }
+
+  // Tracks a "weaker/stronger defense than last season" prediction using
+  // goals-against per game, since raw totals aren't comparable mid-season.
+  function renderDefenseTrack(containerId, ga, gaGP, lastGA, lastGaGP) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    const gaNum = Number(ga), gpNum = Number(gaGP), lastGaNum = Number(lastGA), lastGpNum = Number(lastGaGP);
+    if (!gaNum || !gpNum || !lastGaNum || !lastGpNum) {
+      el.innerHTML = `<div class="sport-error">Not enough data yet to compare defense to last season.</div>`;
+      return;
+    }
+    const rate     = gaNum / gpNum;
+    const lastRate = lastGaNum / lastGpNum;
+    const diff     = rate - lastRate;
+    const matches  = diff > 0; // predicted: weaker defense / higher GA than last season
+    const cls      = matches ? 'pred-hit' : 'pred-miss';
+    const verdict  = matches
+      ? `Conceding ${diff.toFixed(2)} more per game than last season — prediction on track`
+      : `Conceding ${Math.abs(diff).toFixed(2)} fewer per game than last season — defense holding up better than predicted`;
+    el.innerHTML = `
+      <div class="prediction-label">Defense Watch <span class="prediction-sub">(predicted: higher GA)</span></div>
+      <div class="player-track-stats">
+        <span class="player-track-stat"><strong>${lastRate.toFixed(2)}</strong> GA/game last season</span>
+        <span class="player-track-stat"><strong>${rate.toFixed(2)}</strong> GA/game this season</span>
+      </div>
+      <div class="pred-verdict ${cls}">${verdict}</div>`;
+  }
+
+  // Tracks a prediction about a specific named player, using whatever stat
+  // categories that player turned up in from the team-leaders search.
+  // Pass paceOpts to also project a season-long pace against a numeric target
+  // (e.g. Goedert's 15+ touchdown call).
+  function renderPlayerPrediction(containerId, found, playerLabel, paceOpts) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    if (!found || !found.length) {
+      el.innerHTML = `<div class="sport-error">${playerLabel} — not enough stat data yet to track.</div>`;
+      return;
+    }
+    const statsHTML = found.map(f => `<span class="player-track-stat"><strong>${f.value}</strong> ${f.category}</span>`).join('');
+
+    let paceHTML = '';
+    if (paceOpts) {
+      const statEntry = found.find(f => paceOpts.statPattern.test(f.category));
+      const val = statEntry ? parseFloat(statEntry.value) : NaN;
+      const gp  = paceOpts.gamesPlayedSoFar || 0;
+      if (!isNaN(val) && gp > 0) {
+        const pace   = val / gp * paceOpts.seasonLength;
+        const onPace = pace >= paceOpts.target;
+        const cls    = onPace ? 'pred-hit' : 'pred-miss';
+        paceHTML = `<div class="pred-verdict ${cls}">On pace for ~${pace.toFixed(1)} ${paceOpts.unit} — target ${paceOpts.target}</div>`;
+      }
+    }
+
+    el.innerHTML = `
+      <div class="prediction-label">${playerLabel} Tracker</div>
+      <div class="player-track-stats">${statsHTML}</div>
+      ${paceHTML}`;
   }
 
   // ── SHOW PAGE ──
