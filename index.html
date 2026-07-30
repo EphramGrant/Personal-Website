@@ -287,6 +287,10 @@
     .sport-game .loss { color: #b94040; }
     .sport-game .draw { color: var(--muted); }
     .sport-error { font-size: 0.75rem; color: var(--muted); font-style: italic; }
+    .sport-stale-tag {
+      font-style: italic; color: var(--muted); font-weight: 400;
+      letter-spacing: 0.06em; font-size: 0.62rem; text-transform: none;
+    }
     /* Recent form dots */
     .sport-form { display: flex; gap: 0.3rem; margin-top: 0.5rem; }
     .form-dot {
@@ -2042,6 +2046,18 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   }
 
+  // Manual fixture fallback — only used if the live schedule API comes back
+  // empty (which happens when ESPN's public API lags their own website).
+  // Update these from espn.com when needed; once the live API catches up,
+  // it takes priority automatically and these are ignored.
+  const MANUAL_FIXTURES = {
+    lfc: [
+      { date: '2026-08-23T15:30:00Z', teams: 'Liverpool @ Newcastle United', venue: 'St. James\' Park' },
+      { date: '2026-08-29T11:30:00Z', teams: 'Nottingham Forest @ Liverpool', venue: 'Anfield' },
+    ],
+    eagles: [],
+  };
+
   function renderWidget(containerId, standing, games, form, headToHead) {
     const el = document.getElementById(containerId);
     if (!el) return;
@@ -2065,7 +2081,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       <div class="sport-widget">
         ${games.map(g => `
           <div class="sport-game">
-            <div class="game-teams">${g.teams}</div>
+            <div class="game-teams">${g.teams}${g.manual ? ' <span class="sport-stale-tag">Confirmed Fixture</span>' : ''}</div>
             <div class="game-meta">${g.date}${g.venue ? ' · ' + g.venue : ''}</div>
             ${g.result ? `<div class="game-result ${g.resultClass}">${g.result}</div>` : ''}
             ${g.countdown ? `<div class="game-countdown">${g.countdown}</div>` : ''}
@@ -2265,6 +2281,24 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
         if (lastGame && !lastGame.result) lastGame.countdown = countdownLabel(upcoming[0].date);
       }
 
+      // Manual fixture fallback — if ESPN's live schedule API hasn't caught up
+      // yet, show the next known fixture from MANUAL_FIXTURES instead of nothing.
+      if (upcoming.length === 0) {
+        const now = Date.now();
+        const nextManual = MANUAL_FIXTURES.lfc.find(f => new Date(f.date) > now);
+        if (nextManual) {
+          games.push({
+            teams: nextManual.teams,
+            date: fmtDate(nextManual.date),
+            venue: nextManual.venue,
+            result: null,
+            resultClass: '',
+            countdown: countdownLabel(nextManual.date),
+            manual: true,
+          });
+        }
+      }
+
       // Recent form — last 5 completed results
       const form = completedAll.slice(-5).map(e => mapGame(e).resultClass || 'unknown');
 
@@ -2350,6 +2384,24 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       if (upcoming.length) {
         const lastGame = games[games.length - 1];
         if (lastGame && !lastGame.result) lastGame.countdown = countdownLabel(upcoming[0].date);
+      }
+
+      // Manual fixture fallback — if ESPN's live schedule API hasn't caught up
+      // yet, show the next known fixture from MANUAL_FIXTURES instead of nothing.
+      if (upcoming.length === 0) {
+        const now = Date.now();
+        const nextManual = MANUAL_FIXTURES.eagles.find(f => new Date(f.date) > now);
+        if (nextManual) {
+          games.push({
+            teams: nextManual.teams,
+            date: fmtDate(nextManual.date),
+            venue: nextManual.venue,
+            result: null,
+            resultClass: '',
+            countdown: countdownLabel(nextManual.date),
+            manual: true,
+          });
+        }
       }
 
       // Recent form — last 5 completed results
