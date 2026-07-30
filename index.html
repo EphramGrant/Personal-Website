@@ -312,6 +312,36 @@
       font-style: italic; color: var(--muted); font-weight: 400;
       letter-spacing: 0.06em;
     }
+    /* Recent form dots */
+    .sport-form { display: flex; gap: 0.3rem; margin-top: 0.5rem; }
+    .form-dot {
+      width: 9px; height: 9px; border-radius: 50%; background: var(--border);
+      flex-shrink: 0;
+    }
+    .form-dot.win  { background: #3a7d44; }
+    .form-dot.loss { background: #b94040; }
+    .form-dot.draw { background: var(--muted); }
+    /* Next-match countdown badge */
+    .game-countdown {
+      font-size: 0.62rem; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--muted); font-weight: 500; margin-top: 0.1rem;
+    }
+    /* Season predictions */
+    .prediction-text { margin-top: 0.5rem; }
+    .prediction-track {
+      margin-top: 1rem; padding-top: 0.8rem; border-top: 1px dashed var(--border);
+      font-size: 0.75rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem;
+    }
+    .prediction-label {
+      font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--muted);
+    }
+    .prediction-num { font-family: 'DM Serif Display', serif; font-size: 1rem; }
+    .prediction-sep { color: var(--muted); }
+    .prediction-verdict { margin-left: auto; font-size: 0.7rem; }
+    .prediction-verdict.ahead  { color: #3a7d44; }
+    .prediction-verdict.behind { color: #b94040; }
+    .prediction-verdict.even   { color: var(--muted); }
     /* ── ALBUM TABLE ── */
     #album-table tr:hover td { background: var(--tag-bg); }
     #album-table td {
@@ -1328,6 +1358,20 @@
           <div id="eagles-widget" style="margin-top:1.25rem;"><div class="sport-loading">Loading latest data…</div></div>
         </div>
 	</div>
+      <hr />
+      <h2>Season Predictions</h2>
+      <div class="item-grid" style="margin-top:1.5rem">
+        <div class="item-card">
+          <h3>Liverpool FC</h3>
+          <p class="prediction-text">I'm predicting a 3rd place finish this season, with a strong Champions League run.</p>
+          <div id="lfc-prediction" class="prediction-track" data-predicted-pos="3"><div class="sport-loading">Loading…</div></div>
+        </div>
+        <div class="item-card">
+          <h3>Philadelphia Eagles</h3>
+          <p class="prediction-text">I'm predicting an 11-6 record and a return to the playoffs.</p>
+          <div id="eagles-prediction" class="prediction-track" data-predicted-pos="4"><div class="sport-loading">Loading…</div></div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -2009,9 +2053,14 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   }
 
-  function renderWidget(containerId, standing, games, leaders, leadersStale) {
+  function renderWidget(containerId, standing, games, leaders, leadersStale, form, headToHead) {
     const el = document.getElementById(containerId);
     if (!el) return;
+
+    const formHTML = (form && form.length) ? `
+      <div class="sport-form">
+        ${form.map(cls => `<span class="form-dot ${cls}"></span>`).join('')}
+      </div>` : '';
 
     const standingHTML = standing ? `
       <div class="sport-label">Standing</div>
@@ -2019,6 +2068,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
         <span class="pos">${standing.pos}</span>
         <span class="record">${standing.record}</span>
       </div>
+      ${formHTML}
       <hr class="sport-divider" />` : '';
 
     const gamesHTML = games.length ? `
@@ -2029,7 +2079,17 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
             <div class="game-teams">${g.teams}</div>
             <div class="game-meta">${g.date}${g.venue ? ' · ' + g.venue : ''}</div>
             ${g.result ? `<div class="game-result ${g.resultClass}">${g.result}</div>` : ''}
+            ${g.countdown ? `<div class="game-countdown">${g.countdown}</div>` : ''}
           </div>`).join('')}
+      </div>` : '';
+
+    const h2hHTML = headToHead ? `
+      <hr class="sport-divider" />
+      <div class="sport-label">Last Meeting</div>
+      <div class="sport-game">
+        <div class="game-teams">vs ${headToHead.oppName}</div>
+        <div class="game-meta">${headToHead.date}</div>
+        ${headToHead.result ? `<div class="game-result ${headToHead.resultClass}">${headToHead.result}</div>` : ''}
       </div>` : '';
 
     const leadersHTML = (leaders && leaders.length) ? `
@@ -2050,7 +2110,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       <div class="sport-label">Player Stats</div>
       <div class="sport-error">No stats yet — check back once the season is underway.</div>`;
 
-    el.innerHTML = `<div class="sport-widget">${standingHTML}${gamesHTML}${leadersHTML}</div>`;
+    el.innerHTML = `<div class="sport-widget">${standingHTML}${gamesHTML}${h2hHTML}${leadersHTML}</div>`;
   }
 
   function renderError(containerId, msg) {
@@ -2115,9 +2175,9 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     }
 
     let events = await getEvents();
-    let completed = events.filter(isCompleted).slice(-2);
-    let upcoming  = events.filter(isUpcoming).slice(0, 1);
-    console.debug(`[sports] ${sport}/${league} team ${teamId} — default schedule: ${completed.length} completed, ${upcoming.length} upcoming`);
+    let completedAll = events.filter(isCompleted);
+    let upcoming     = events.filter(isUpcoming).slice(0, 1);
+    console.debug(`[sports] ${sport}/${league} team ${teamId} — default schedule: ${completedAll.length} completed, ${upcoming.length} upcoming`);
 
     if (upcoming.length === 0) {
       const guessSeason = new Date().getFullYear();
@@ -2129,7 +2189,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       } catch (e) {}
     }
 
-    return [...completed, ...upcoming];
+    return { completedAll, upcoming };
   }
 
 
@@ -2139,6 +2199,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
 
       // Standings
       let standing = null;
+      let rawPos = NaN;
       try {
         const sRes = await fetch('https://site.api.espn.com/apis/v2/sports/soccer/eng.1/standings');
         const sData = await sRes.json();
@@ -2151,13 +2212,14 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
           const d   = entry.stats?.find(s => s.name === 'ties')?.value ?? '–';
           const l   = entry.stats?.find(s => s.name === 'losses')?.value ?? '–';
           standing = { pos: `${pos}${ordinal(pos)}`, record: `${pts} pts · ${w}W ${d}D ${l}L` };
+          rawPos = Number(pos);
         }
       } catch(e) {}
 
       // Events
-      const shown = await fetchTeamSchedule('soccer', 'eng.1', TEAM_ID);
+      const { completedAll, upcoming } = await fetchTeamSchedule('soccer', 'eng.1', TEAM_ID);
 
-      const games = shown.map(e => {
+      const mapGame = (e) => {
         const comp = e.competitions[0];
         const home = comp.competitors.find(c => c.homeAway === 'home');
         const away = comp.competitors.find(c => c.homeAway === 'away');
@@ -2173,13 +2235,34 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
           resultClass = label === 'W' ? 'win' : label === 'L' ? 'loss' : 'draw';
           result = `${label} ${myScore}–${oppScore}`;
         }
-        return { teams, date: fmtDate(e.date), venue: home.team.shortDisplayName, result, resultClass };
-      });
+        return { teams, date: fmtDate(e.date), venue: home.team.shortDisplayName, result, resultClass, oppId: oppTeam.team.id, oppName: oppTeam.team.shortDisplayName };
+      };
+
+      const shown = [...completedAll.slice(-2), ...upcoming];
+      const games = shown.map(mapGame);
+
+      // Countdown badge on the upcoming game
+      if (upcoming.length) {
+        const lastGame = games[games.length - 1];
+        if (lastGame && !lastGame.result) lastGame.countdown = countdownLabel(upcoming[0].date);
+      }
+
+      // Recent form — last 5 completed results
+      const form = completedAll.slice(-5).map(e => mapGame(e).resultClass || 'unknown');
+
+      // Head-to-head — most recent completed meeting vs the upcoming opponent
+      let headToHead = null;
+      if (upcoming.length) {
+        const oppId = mapGame(upcoming[0]).oppId;
+        const past = completedAll.map(mapGame).filter(g => g.oppId === oppId);
+        if (past.length) headToHead = past[past.length - 1];
+      }
 
       // Player stats — top leader per category (goals, assists, etc.)
       const { leaders, stale } = await fetchTeamLeaders('soccer', 'eng.1', TEAM_ID, 3);
 
-      renderWidget('lfc-widget', standing, games, leaders, stale);
+      renderWidget('lfc-widget', standing, games, leaders, stale, form, headToHead);
+      renderPredictionTrack('lfc-prediction', rawPos);
     } catch(err) {
       renderError('lfc-widget', 'Could not load Liverpool data.');
     }
@@ -2192,6 +2275,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
 
       // Standings
       let standing = null;
+      let rawPos = NaN;
       try {
         const sRes = await fetch('https://site.api.espn.com/apis/v2/sports/football/nfl/standings');
         const sData = await sRes.json();
@@ -2212,13 +2296,14 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
           const record = t && t > 0 ? `${w}-${l}-${t}` : `${w}-${l}`;
           const pct = entry.stats?.find(s => s.name === 'winPercent')?.displayValue ?? '';
           standing = { pos: `${pos}${ordinal(pos)}`, record: `${record}${pct ? ' · ' + pct : ''}` };
+          rawPos = Number(pos);
         }
       } catch(e) {}
 
       // Events
-      const shown = await fetchTeamSchedule('football', 'nfl', TEAM_ID);
+      const { completedAll, upcoming } = await fetchTeamSchedule('football', 'nfl', TEAM_ID);
 
-      const games = shown.map(e => {
+      const mapGame = (e) => {
         const comp = e.competitions[0];
         const home = comp.competitors.find(c => c.homeAway === 'home');
         const away = comp.competitors.find(c => c.homeAway === 'away');
@@ -2234,13 +2319,34 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
           resultClass = label === 'W' ? 'win' : label === 'L' ? 'loss' : 'draw';
           result = `${label} ${myScore}–${oppScore}`;
         }
-        return { teams, date: fmtDate(e.date), venue: null, result, resultClass };
-      });
+        return { teams, date: fmtDate(e.date), venue: null, result, resultClass, oppId: oppTeam.team.id, oppName: oppTeam.team.shortDisplayName };
+      };
+
+      const shown = [...completedAll.slice(-2), ...upcoming];
+      const games = shown.map(mapGame);
+
+      // Countdown badge on the upcoming game
+      if (upcoming.length) {
+        const lastGame = games[games.length - 1];
+        if (lastGame && !lastGame.result) lastGame.countdown = countdownLabel(upcoming[0].date);
+      }
+
+      // Recent form — last 5 completed results
+      const form = completedAll.slice(-5).map(e => mapGame(e).resultClass || 'unknown');
+
+      // Head-to-head — most recent completed meeting vs the upcoming opponent
+      let headToHead = null;
+      if (upcoming.length) {
+        const oppId = mapGame(upcoming[0]).oppId;
+        const past = completedAll.map(mapGame).filter(g => g.oppId === oppId);
+        if (past.length) headToHead = past[past.length - 1];
+      }
 
       // Player stats — top leader per category (passing, rushing, receiving)
       const { leaders, stale } = await fetchTeamLeaders('football', 'nfl', TEAM_ID, 3);
 
-      renderWidget('eagles-widget', standing, games, leaders, stale);
+      renderWidget('eagles-widget', standing, games, leaders, stale, form, headToHead);
+      renderPredictionTrack('eagles-prediction', rawPos);
     } catch(err) {
       renderError('eagles-widget', 'Could not load Eagles data.');
     }
@@ -2251,6 +2357,36 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     if (isNaN(v)) return '';
     const s = ['th','st','nd','rd'], x = v % 100;
     return (s[(x-20)%10] || s[x] || s[0]);
+  }
+
+  function countdownLabel(dateStr) {
+    const diffMs = new Date(dateStr) - Date.now();
+    if (diffMs <= 0) return null;
+    const days  = Math.floor(diffMs / 86400000);
+    const hours = Math.floor((diffMs % 86400000) / 3600000);
+    if (days === 0) return hours <= 1 ? 'Kicks off soon' : `In ${hours}h`;
+    if (days === 1) return 'Tomorrow';
+    return `In ${days} days`;
+  }
+
+  function renderPredictionTrack(containerId, actualPos) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    const predicted = parseInt(el.dataset.predictedPos, 10);
+    if (!actualPos || isNaN(actualPos) || isNaN(predicted)) {
+      el.innerHTML = `<div class="sport-error">Season hasn't started yet — check back once it kicks off.</div>`;
+      return;
+    }
+    const diff = predicted - actualPos;
+    let verdict, cls;
+    if (diff === 0)      { verdict = 'Right on target';                                       cls = 'even'; }
+    else if (diff > 0)   { verdict = `${diff} spot${diff === 1 ? '' : 's'} ahead of prediction`; cls = 'ahead'; }
+    else                 { verdict = `${Math.abs(diff)} spot${Math.abs(diff) === 1 ? '' : 's'} behind prediction`; cls = 'behind'; }
+    el.innerHTML = `
+      <span class="prediction-label">Predicted</span> <span class="prediction-num">${predicted}${ordinal(predicted)}</span>
+      <span class="prediction-sep">→</span>
+      <span class="prediction-label">Currently</span> <span class="prediction-num">${actualPos}${ordinal(actualPos)}</span>
+      <span class="prediction-verdict ${cls}">${verdict}</span>`;
   }
 
   // ── SHOW PAGE ──
