@@ -3666,6 +3666,18 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     return Math.abs(correct - guess) / correct <= 0.15;
   }
 
+  // Compares comma-separated lists (e.g. "German, French, Italian" or
+  // "Germany, Czech Republic, Slovakia") without caring what order the player
+  // typed them in. Each item the player entered just needs to match one of
+  // the correct items. Used for Language and Neighbors.
+  function gqCheckMultiValue(answer, value) {
+    const norm = s => s.split(',').map(x => x.trim().toLowerCase()).filter(Boolean);
+    const correctParts = norm(value);
+    const answerParts  = norm(answer);
+    if (!answerParts.length) return false;
+    return answerParts.every(a => correctParts.some(c => c.includes(a) || a.includes(c)));
+  }
+
   function gqSubmitBonus(fromIndex) {
     const country = _gqInfMode ? gqInfCountry() : gqDailyCountry();
     const clues   = gqClues(country);
@@ -3687,6 +3699,8 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
         if (!answer || answer.length < 1) { state.bonusAnswers[idx] = false; return; }
         if (cl.label === 'Population') {
           state.bonusAnswers[idx] = gqCheckPopulation(answer, cl.value);
+        } else if (cl.label === 'Language' || cl.label === 'Neighbors') {
+          state.bonusAnswers[idx] = gqCheckMultiValue(answer, cl.value);
         } else {
           state.bonusAnswers[idx] = cl.value.toLowerCase().includes(answer);
         }
