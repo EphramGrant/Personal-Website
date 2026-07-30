@@ -2139,22 +2139,24 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     const hasData = cats => cats.some(c => (c.leaders || []).length > 0);
 
     try {
-      const url  = `https://site.api.espn.com/apis/site/v2/sports/${sport}/${league}/teams/${teamId}`;
+      const url  = `https://site.api.espn.com/apis/site/v2/sports/${sport}/${league}/teams/${teamId}?enable=leaders`;
       const res  = await fetch(url);
       console.debug(`[sports] GET ${url} → HTTP ${res.status}`);
       const data = await res.json();
       let cats = data?.team?.leaders || [];
       console.debug(`[sports] ${sport}/${league} team ${teamId} — current-season leader categories:`, cats.length,
+        '| team name:', data?.team?.displayName,
         '| team object keys:', data?.team ? Object.keys(data.team) : '(no team object — keys at root:)', Object.keys(data || {}));
       if (hasData(cats)) return { cats, stale: false };
 
       // No current-season data — try last season's final numbers instead
       const lastYear = new Date().getFullYear() - 1;
       try {
-        const res2  = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${sport}/${league}/teams/${teamId}?season=${lastYear}`);
+        const res2  = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${sport}/${league}/teams/${teamId}?enable=leaders&season=${lastYear}`);
         const data2 = await res2.json();
         const cats2 = data2?.team?.leaders || [];
-        console.debug(`[sports] ${sport}/${league} team ${teamId} — season=${lastYear} fallback leader categories:`, cats2.length);
+        console.debug(`[sports] ${sport}/${league} team ${teamId} — season=${lastYear} fallback leader categories:`, cats2.length,
+          '| team object keys:', data2?.team ? Object.keys(data2.team) : '(no team object)');
         if (hasData(cats2)) return { cats: cats2, stale: true };
       } catch (e) {}
       return { cats, stale: false };
@@ -2216,7 +2218,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       const data = await res.json();
       const events = data?.events || [];
       if (events.length === 0) {
-        console.debug(`[sports] ${sport}/${league} team ${teamId} — empty events array. Top-level response keys:`, Object.keys(data || {}));
+        console.debug(`[sports] ${sport}/${league} team ${teamId} — empty events array. team name:`, data?.team?.displayName, '| season object:', data?.season, '| status object:', data?.status);
       } else {
         const sample = events[0];
         console.debug(`[sports] ${sport}/${league} team ${teamId} — sample event:`, sample?.date, sample?.competitions?.[0]?.status?.type);
@@ -2266,9 +2268,9 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
           const l   = entry.stats?.find(s => s.name === 'losses')?.value ?? '–';
           standing = { pos: `${pos}${ordinal(pos)}`, record: `${pts} pts · ${w}W ${d}D ${l}L` };
           rawPos = Number(pos);
-          ga   = entry.stats?.find(s => s.name === 'goalsAgainst' || s.abbreviation === 'GA')?.value ?? null;
+          ga   = entry.stats?.find(s => s.name === 'pointsAgainst' || s.abbreviation === 'A')?.value ?? null;
           gaGP = entry.stats?.find(s => s.name === 'gamesPlayed')?.value ?? null;
-          console.debug('[sports] soccer/eng.1 — current-season GA:', ga, 'over', gaGP, 'games');
+          console.debug('[sports] soccer/eng.1 — current-season GA:', ga, 'over', gaGP, 'games', '| team name:', entry.team?.displayName);
           console.debug('[sports] soccer/eng.1 — all available stat names/abbrevs:', entry.stats?.map(s => `${s.name}(${s.abbreviation})=${s.value}`));
         }
       } catch(e) {}
@@ -2282,9 +2284,9 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
         const lsEntries = lsData?.children?.[0]?.standings?.entries || [];
         const lsEntry = lsEntries.find(e => e.team?.id === TEAM_ID);
         if (lsEntry) {
-          lastGA   = lsEntry.stats?.find(s => s.name === 'goalsAgainst' || s.abbreviation === 'GA')?.value ?? null;
+          lastGA   = lsEntry.stats?.find(s => s.name === 'pointsAgainst' || s.abbreviation === 'A')?.value ?? null;
           lastGaGP = lsEntry.stats?.find(s => s.name === 'gamesPlayed')?.value ?? null;
-          console.debug('[sports] soccer/eng.1 — last-season GA:', lastGA, 'over', lastGaGP, 'games');
+          console.debug('[sports] soccer/eng.1 — last-season GA:', lastGA, 'over', lastGaGP, 'games', '| team name:', lsEntry.team?.displayName);
           console.debug('[sports] soccer/eng.1 — last-season all available stat names/abbrevs:', lsEntry.stats?.map(s => `${s.name}(${s.abbreviation})=${s.value}`));
         }
       } catch(e) {}
