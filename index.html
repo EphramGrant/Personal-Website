@@ -246,6 +246,67 @@
     }
     .stat-cell .lbl { font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
 
+    /* ── CUBE TIMER & SCRAMBLE ── */
+    .cube-tool { margin-top: 1.25rem; }
+    .cube-tool-row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
+    .cube-event-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+    #cube-event {
+      font-family: inherit; font-size: 0.85rem; padding: 0.35rem 0.6rem; border-radius: 4px;
+      border: 1px solid var(--border); background: var(--surface); color: var(--text);
+    }
+    .cube-scramble-btn {
+      font-family: inherit; font-size: 0.75rem; letter-spacing: 0.04em;
+      background: none; border: 1px solid var(--border); border-radius: 4px;
+      padding: 0.35rem 0.75rem; cursor: pointer; color: var(--text);
+    }
+    .cube-scramble-btn:hover { background: var(--tag-bg); }
+    .cube-scramble-text {
+      font-family: 'DM Mono', monospace; font-size: 1rem; letter-spacing: 0.02em;
+      padding: 1rem; background: var(--tag-bg); border-radius: 6px; text-align: center;
+      line-height: 1.6; margin-bottom: 1.25rem;
+    }
+    .cube-timer-display {
+      font-family: 'DM Mono', monospace; font-size: 3.2rem; text-align: center;
+      padding: 1.5rem 0; color: var(--text); transition: color 0.15s; user-select: none;
+    }
+    .cube-timer-display.cube-timer-holding { color: #b94040; }
+    .cube-timer-display.cube-timer-ready   { color: #3a7d44; }
+    .cube-timer-hint { text-align: center; font-size: 0.72rem; color: var(--muted); margin-bottom: 1rem; }
+    .cube-timer-hint kbd {
+      font-family: 'DM Mono', monospace; border: 1px solid var(--border); border-radius: 3px;
+      padding: 0.05rem 0.4rem; background: var(--surface);
+    }
+    .cube-touch-btn {
+      display: none;
+      width: 100%; padding: 1rem; margin-bottom: 1rem;
+      font-family: inherit; font-size: 0.85rem; letter-spacing: 0.04em;
+      background: var(--tag-bg); border: 1px solid var(--border); border-radius: 6px;
+      color: var(--text); cursor: pointer; user-select: none;
+    }
+    @media (hover: none) and (pointer: coarse) {
+      .cube-touch-btn { display: block; }
+    }
+    .cube-solve-list {
+      display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 1rem;
+      max-height: 220px; overflow-y: auto;
+    }
+    .cube-solve-row {
+      display: flex; align-items: center; gap: 0.6rem; font-size: 0.78rem;
+      padding: 0.35rem 0.6rem; border: 1px solid var(--border); border-radius: 4px;
+    }
+    .cube-solve-num { color: var(--muted); width: 1.8rem; }
+    .cube-solve-time { font-family: 'DM Mono', monospace; flex: 1; }
+    .cube-solve-del {
+      background: none; border: none; color: var(--muted); cursor: pointer;
+      font-size: 0.75rem; padding: 0.1rem 0.4rem;
+    }
+    .cube-solve-del:hover { color: #b94040; }
+    .cube-clear-btn {
+      font-family: inherit; font-size: 0.72rem; letter-spacing: 0.04em;
+      background: none; border: 1px dashed var(--border); border-radius: 4px;
+      padding: 0.35rem 0.75rem; cursor: pointer; color: var(--muted);
+    }
+
     /* ── FOOTER ── */
     footer {
       border-top: 1px solid var(--border);
@@ -1288,6 +1349,36 @@
       <div class="hobby-intro">
         <p>I've been solving twisty puzzles for over 10 years, although I've never entered a competition. I love developing algorithms and solving new puzzles.</p>
       </div>
+      <hr />
+      <h2>Timer &amp; Scramble</h2>
+      <div class="cube-tool">
+        <div class="cube-tool-row">
+          <label for="cube-event" class="cube-event-label">Event</label>
+          <select id="cube-event">
+            <option value="333">3×3</option>
+            <option value="222">2×2</option>
+            <option value="pyra">Pyraminx</option>
+          </select>
+          <button class="cube-scramble-btn" onclick="cubeNewScramble()">⟳ New Scramble</button>
+        </div>
+        <div id="cube-scramble-text" class="cube-scramble-text">Loading…</div>
+
+        <div id="cube-timer-display" class="cube-timer-display">0.00</div>
+        <div class="cube-timer-hint">Hold <kbd>Space</kbd> to prep, release to start, press to stop</div>
+        <button id="cube-touch-btn" class="cube-touch-btn">Hold to prep (touch)</button>
+
+        <div class="stats-row" style="margin: 1.5rem 0 1rem;">
+          <div class="stat-cell"><span class="val" id="cube-stat-best">—</span><span class="lbl">Best</span></div>
+          <div class="stat-cell"><span class="val" id="cube-stat-ao5">—</span><span class="lbl">Ao5</span></div>
+          <div class="stat-cell"><span class="val" id="cube-stat-ao12">—</span><span class="lbl">Ao12</span></div>
+          <div class="stat-cell"><span class="val" id="cube-stat-mean">—</span><span class="lbl">Session Mean</span></div>
+          <div class="stat-cell"><span class="val" id="cube-stat-count">0</span><span class="lbl">Solves</span></div>
+        </div>
+
+        <div id="cube-solve-list" class="cube-solve-list"></div>
+        <button class="cube-clear-btn" onclick="cubeClearSession()">Clear session</button>
+      </div>
+      <hr />
       <div class="stats-row">
         <div class="stat-cell"><span class="val">17.89 sec</span><span class="lbl">3×3 PB</span></div>
         <div class="stat-cell"><span class="val">3:90 sec</span><span class="lbl">2x2 PB</span></div>
@@ -2686,6 +2777,8 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     if (id === 'music')    { loadAlbumsFromSheet(); }
     if (id === 'gaming')   { renderGamesGrid(); }
     if (id === 'passport') { ppLoad(); }
+    if (id === 'cubing')   { cubeInit(); }
+    else if (window._cubeActive) { cubeTeardown(); }
     if (id === 'terrafiles') {
       gqRender();
       const tfClock = () => {
@@ -2700,6 +2793,257 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       window._gameResizeHandler = null;
     }
     return false;
+  }
+
+  // ── CUBING: TIMER & SCRAMBLE ──
+  const CUBE_EVENTS = {
+    '333': { label: '3×3',      gen: () => cubeScrambleNxN(['U','D','L','R','F','B'], ['','\'','2'], 20, true) },
+    '222': { label: '2×2',      gen: () => cubeScrambleNxN(['U','R','F'], ['','\'','2'], 9, false) },
+    'pyra': { label: 'Pyraminx', gen: () => cubeScramblePyraminx() },
+  };
+  const CUBE_AXES = { U: 0, D: 0, L: 1, R: 1, F: 2, B: 2 };
+
+  function cubeScrambleNxN(faces, mods, len, avoidSameAxis) {
+    const seq = [];
+    let lastAxis = -1, lastFace = null;
+    for (let i = 0; i < len; i++) {
+      let face;
+      do {
+        face = faces[Math.floor(Math.random() * faces.length)];
+      } while (avoidSameAxis ? CUBE_AXES[face] === lastAxis : face === lastFace);
+      lastAxis = CUBE_AXES[face];
+      lastFace = face;
+      seq.push(face + mods[Math.floor(Math.random() * mods.length)]);
+    }
+    return seq.join(' ');
+  }
+
+  function cubeScramblePyraminx() {
+    const faces = ['U', 'L', 'R', 'B'];
+    const mods  = ['', '\''];
+    const seq = [];
+    let last = null;
+    for (let i = 0; i < 11; i++) {
+      let face;
+      do { face = faces[Math.floor(Math.random() * faces.length)]; } while (face === last);
+      last = face;
+      seq.push(face + mods[Math.floor(Math.random() * mods.length)]);
+    }
+    ['u', 'l', 'r', 'b'].forEach(tip => {
+      const r = Math.random();
+      if (r < 1 / 3) return; // tip already aligned — no move to show
+      seq.push(tip + (r < 2 / 3 ? '' : '\''));
+    });
+    return seq.join(' ');
+  }
+
+  let cubeCurrentScramble = null;
+  let cubeTimerState = 'idle'; // idle | holding | ready | running
+  let cubeHoldTimeout = null;
+  let cubeStartTime = 0;
+  let cubeRAF = null;
+  const CUBE_HOLD_MS = 300;
+
+  function cubeCurrentEvent() {
+    const sel = document.getElementById('cube-event');
+    return sel ? sel.value : '333';
+  }
+
+  function cubeNewScramble() {
+    const ev = cubeCurrentEvent();
+    const scramble = CUBE_EVENTS[ev].gen();
+    cubeCurrentScramble = scramble;
+    const el = document.getElementById('cube-scramble-text');
+    if (el) el.textContent = scramble;
+  }
+
+  function cubeFormatTime(ms) {
+    return (ms / 1000).toFixed(2);
+  }
+
+  function cubeSetTimerClass(state) {
+    const el = document.getElementById('cube-timer-display');
+    if (!el) return;
+    el.classList.remove('cube-timer-holding', 'cube-timer-ready');
+    if (state === 'holding') el.classList.add('cube-timer-holding');
+    if (state === 'ready')   el.classList.add('cube-timer-ready');
+  }
+
+  function cubeUpdateDisplay() {
+    const el = document.getElementById('cube-timer-display');
+    if (!el || cubeTimerState !== 'running') return;
+    el.textContent = cubeFormatTime(performance.now() - cubeStartTime);
+    cubeRAF = requestAnimationFrame(cubeUpdateDisplay);
+  }
+
+  function cubeHandleDown() {
+    if (cubeTimerState === 'running') {
+      cancelAnimationFrame(cubeRAF);
+      const elapsed = performance.now() - cubeStartTime;
+      cubeTimerState = 'idle';
+      cubeSetTimerClass('idle');
+      const el = document.getElementById('cube-timer-display');
+      if (el) el.textContent = cubeFormatTime(elapsed);
+      cubeRecordSolve(elapsed);
+    } else if (cubeTimerState === 'idle') {
+      cubeTimerState = 'holding';
+      cubeSetTimerClass('holding');
+      cubeHoldTimeout = setTimeout(() => {
+        if (cubeTimerState === 'holding') {
+          cubeTimerState = 'ready';
+          cubeSetTimerClass('ready');
+        }
+      }, CUBE_HOLD_MS);
+    }
+  }
+
+  function cubeHandleUp() {
+    clearTimeout(cubeHoldTimeout);
+    if (cubeTimerState === 'ready') {
+      cubeStartTime = performance.now();
+      cubeTimerState = 'running';
+      cubeSetTimerClass('running');
+      const el = document.getElementById('cube-timer-display');
+      if (el) el.textContent = '0.00';
+      cubeUpdateDisplay();
+    } else if (cubeTimerState === 'holding') {
+      cubeTimerState = 'idle';
+      cubeSetTimerClass('idle');
+    }
+  }
+
+  function cubeKeyDown(e) {
+    if (e.code !== 'Space' || e.repeat) return;
+    if (document.activeElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
+    e.preventDefault();
+    cubeHandleDown();
+  }
+  function cubeKeyUp(e) {
+    if (e.code !== 'Space') return;
+    if (document.activeElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
+    e.preventDefault();
+    cubeHandleUp();
+  }
+
+  function cubeStorageKey(ev) { return `cubing-solves-${ev}`; }
+
+  function cubeLoadSolves(ev) {
+    try {
+      const raw = localStorage.getItem(cubeStorageKey(ev));
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) { return []; }
+  }
+
+  function cubeSaveSolves(ev, arr) {
+    try { localStorage.setItem(cubeStorageKey(ev), JSON.stringify(arr)); } catch (e) {}
+  }
+
+  function cubeAvgTrimmed(times) {
+    if (!times.length) return null;
+    const sorted = [...times].sort((a, b) => a - b);
+    const trimmed = sorted.slice(1, -1);
+    if (!trimmed.length) return null;
+    return trimmed.reduce((a, b) => a + b, 0) / trimmed.length;
+  }
+
+  function cubeStats(solves) {
+    const times = solves.map(s => s.time);
+    const count = times.length;
+    const best  = count ? Math.min(...times) : null;
+    const last5  = times.slice(-5);
+    const last12 = times.slice(-12);
+    const ao5  = last5.length === 5   ? cubeAvgTrimmed(last5)  : null;
+    const ao12 = last12.length === 12 ? cubeAvgTrimmed(last12) : null;
+    const mean = count ? times.reduce((a, b) => a + b, 0) / count : null;
+    return { count, best, ao5, ao12, mean };
+  }
+
+  function cubeRecordSolve(ms) {
+    const ev = cubeCurrentEvent();
+    const solves = cubeLoadSolves(ev);
+    solves.push({ time: ms, scramble: cubeCurrentScramble, date: Date.now() });
+    cubeSaveSolves(ev, solves);
+    cubeRenderSession(ev);
+    cubeNewScramble();
+  }
+
+  function cubeDeleteSolve(idx) {
+    const ev = cubeCurrentEvent();
+    const solves = cubeLoadSolves(ev);
+    solves.splice(idx, 1);
+    cubeSaveSolves(ev, solves);
+    cubeRenderSession(ev);
+  }
+
+  function cubeClearSession() {
+    const ev = cubeCurrentEvent();
+    if (!confirm(`Clear all logged ${CUBE_EVENTS[ev].label} solves for this session?`)) return;
+    cubeSaveSolves(ev, []);
+    cubeRenderSession(ev);
+  }
+
+  function cubeRenderSession(ev) {
+    const solves = cubeLoadSolves(ev);
+    const stats  = cubeStats(solves);
+    const fmt = v => v == null ? '—' : cubeFormatTime(v) + 's';
+
+    const setText = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    setText('cube-stat-best',  fmt(stats.best));
+    setText('cube-stat-ao5',   fmt(stats.ao5));
+    setText('cube-stat-ao12',  fmt(stats.ao12));
+    setText('cube-stat-mean',  fmt(stats.mean));
+    setText('cube-stat-count', stats.count);
+
+    const listEl = document.getElementById('cube-solve-list');
+    if (!listEl) return;
+    if (!solves.length) {
+      listEl.innerHTML = `<div class="sport-error">No solves logged yet — hold space to start.</div>`;
+      return;
+    }
+    const recent = solves.slice(-10);
+    listEl.innerHTML = recent.map((s) => {
+      const realIdx = solves.indexOf(s);
+      return `<div class="cube-solve-row">
+        <span class="cube-solve-num">${realIdx + 1}</span>
+        <span class="cube-solve-time">${cubeFormatTime(s.time)}s</span>
+        <button class="cube-solve-del" onclick="cubeDeleteSolve(${realIdx})" aria-label="Delete solve">✕</button>
+      </div>`;
+    }).reverse().join('');
+  }
+
+  function cubeInit() {
+    window._cubeActive = true;
+    document.addEventListener('keydown', cubeKeyDown);
+    document.addEventListener('keyup', cubeKeyUp);
+
+    const sel = document.getElementById('cube-event');
+    if (sel && !sel.dataset.bound) {
+      sel.addEventListener('change', () => {
+        cubeNewScramble();
+        cubeRenderSession(cubeCurrentEvent());
+      });
+      sel.dataset.bound = '1';
+    }
+    const touchBtn = document.getElementById('cube-touch-btn');
+    if (touchBtn && !touchBtn.dataset.bound) {
+      touchBtn.addEventListener('pointerdown', (e) => { e.preventDefault(); cubeHandleDown(); });
+      touchBtn.addEventListener('pointerup',   (e) => { e.preventDefault(); cubeHandleUp(); });
+      touchBtn.addEventListener('pointerleave', () => { if (cubeTimerState === 'holding') { cubeTimerState = 'idle'; cubeSetTimerClass('idle'); } });
+      touchBtn.dataset.bound = '1';
+    }
+
+    if (!cubeCurrentScramble) cubeNewScramble();
+    cubeRenderSession(cubeCurrentEvent());
+  }
+
+  function cubeTeardown() {
+    window._cubeActive = false;
+    document.removeEventListener('keydown', cubeKeyDown);
+    document.removeEventListener('keyup', cubeKeyUp);
+    clearTimeout(cubeHoldTimeout);
+    if (cubeRAF) cancelAnimationFrame(cubeRAF);
+    cubeTimerState = 'idle';
+    cubeSetTimerClass('idle');
   }
 
   // ── LISTENING MAP ──
