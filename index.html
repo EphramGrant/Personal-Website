@@ -276,15 +276,29 @@
       font-family: 'DM Mono', monospace; border: 1px solid var(--border); border-radius: 3px;
       padding: 0.05rem 0.4rem; background: var(--surface);
     }
+    .cube-timer-hint-touch { display: none; }
     .cube-touch-btn {
       display: none;
       width: 100%; padding: 1rem; margin-bottom: 1rem;
       font-family: inherit; font-size: 0.85rem; letter-spacing: 0.04em;
       background: var(--tag-bg); border: 1px solid var(--border); border-radius: 6px;
-      color: var(--text); cursor: pointer; user-select: none;
+      color: var(--text); cursor: pointer;
+      user-select: none; -webkit-user-select: none;
+      -webkit-touch-callout: none; touch-action: manipulation;
     }
     @media (hover: none) and (pointer: coarse) {
-      .cube-touch-btn { display: block; }
+      .cube-touch-btn { display: block; font-size: 1rem; padding: 1.25rem; }
+      .cube-timer-hint-desktop { display: none; }
+      .cube-timer-hint-touch { display: block; }
+      .cube-tool-row { flex-direction: column; align-items: stretch; }
+      .cube-tool-row #cube-event,
+      .cube-tool-row .cube-scramble-btn { width: 100%; font-size: 0.95rem; padding: 0.7rem; }
+      .cube-scramble-text { font-size: 0.85rem; word-break: break-word; }
+      .cube-timer-display {
+        font-size: 2.6rem; user-select: none; -webkit-user-select: none;
+        -webkit-touch-callout: none; touch-action: manipulation;
+      }
+      .cube-solve-del { padding: 0.3rem 0.6rem; font-size: 0.9rem; }
     }
     .cube-solve-list {
       display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 1rem;
@@ -1375,8 +1389,9 @@
         <div id="cube-scramble-text" class="cube-scramble-text">Loading…</div>
 
         <div id="cube-timer-display" class="cube-timer-display">0.00</div>
-        <div class="cube-timer-hint">Hold <kbd>Space</kbd> to prep, release to start, press to stop</div>
-        <button id="cube-touch-btn" class="cube-touch-btn">Hold to prep (touch)</button>
+        <div class="cube-timer-hint cube-timer-hint-desktop">Hold <kbd>Space</kbd> to prep, release to start, press to stop</div>
+        <div class="cube-timer-hint cube-timer-hint-touch">Tap and hold the button below to prep — release to start, tap again to stop</div>
+        <button id="cube-touch-btn" class="cube-touch-btn">Hold to prep</button>
 
         <div class="stats-row" style="margin: 1.5rem 0 1rem;">
           <div class="stat-cell"><span class="val" id="cube-stat-best">—</span><span class="lbl">Best</span></div>
@@ -3147,6 +3162,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       touchBtn.addEventListener('pointerdown', (e) => { e.preventDefault(); cubeHandleDown(); });
       touchBtn.addEventListener('pointerup',   (e) => { e.preventDefault(); cubeHandleUp(); });
       touchBtn.addEventListener('pointerleave', () => { if (cubeTimerState === 'holding') { cubeTimerState = 'idle'; cubeSetTimerClass('idle'); } });
+      touchBtn.addEventListener('pointercancel', () => { if (cubeTimerState === 'holding') { cubeTimerState = 'idle'; cubeSetTimerClass('idle'); } });
       touchBtn.dataset.bound = '1';
     }
 
