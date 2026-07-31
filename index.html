@@ -1243,8 +1243,9 @@
           <table id="album-table" style="width:100%; border-collapse:collapse; font-size:0.82rem;">
             <thead>
               <tr style="border-bottom:2px solid var(--border); text-align:left;">
-                <th class="tbl-th sortable" data-col="album"  onclick="tblSort('album')"  style="width:22%;">Album</th>
-                <th class="tbl-th sortable" data-col="artist" onclick="tblSort('artist')" style="width:16%;">Artist</th>
+                <th class="tbl-th sortable" data-col="album"  onclick="tblSort('album')"  style="width:20%;">Album</th>
+                <th class="tbl-th sortable" data-col="artist" onclick="tblSort('artist')" style="width:14%;">Artist</th>
+                <th class="tbl-th sortable" data-col="year"   onclick="tblSort('year')"   style="width:8%;">Year</th>
                 <th class="tbl-th sortable" data-col="genre"  onclick="tblSort('genre')"  style="width:14%;">Genre</th>
                 <th class="tbl-th sortable" data-col="rating" onclick="tblSort('rating')" style="width:10%;">Rating</th>
                 <th class="tbl-th tbl-th-notes">Notes</th>
@@ -4212,7 +4213,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     const url   = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${range}?key=${API_KEY}`;
     const tbody = document.getElementById('album-tbody');
 
-    if (tbody) tbody.innerHTML = `<tr><td colspan="5" style="padding:1.5rem 0.75rem; color:var(--muted); font-size:0.82rem;">Loading…</td></tr>`;
+    if (tbody) tbody.innerHTML = `<tr><td colspan="6" style="padding:1.5rem 0.75rem; color:var(--muted); font-size:0.82rem;">Loading…</td></tr>`;
 
     try {
       const res  = await fetch(url);
@@ -4226,7 +4227,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
         rating: parseFloat(row[4]) || 0,
         notes:    row[5] || '',
         location: row[6] || '',
-        year:     parseInt(row[7]) || null,
+        year:     parseInt(row[7]) || 0,
       }));
       tblRender();
       renderStats();
@@ -4234,7 +4235,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       scheduleMidnightRefresh();
       renderMap();
     } catch (err) {
-      if (tbody) tbody.innerHTML = `<tr><td colspan="5" style="padding:1.5rem 0.75rem; color:var(--muted); font-size:0.82rem;">Could not load albums — check your API key and sheet permissions.</td></tr>`;
+      if (tbody) tbody.innerHTML = `<tr><td colspan="6" style="padding:1.5rem 0.75rem; color:var(--muted); font-size:0.82rem;">Could not load albums — check your API key and sheet permissions.</td></tr>`;
       console.error('Sheet load error:', err);
     }
   }
@@ -4497,11 +4498,12 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       <tr>
         <td style="font-weight:500;">${a.album}</td>
         <td style="color:var(--muted);">${a.artist.join(', ')}</td>
+        <td style="color:var(--muted);">${a.year || '—'}</td>
         <td style="color:var(--muted);">${a.genre.map(g => `<span class="tag" style="display:inline-block;margin:0.1rem 0.15rem 0.1rem 0;">${g}</span>`).join('')}</td>
         <td><div class="star-display">${starsHTML(a.rating)}</div></td>
         <td class="notes-cell">${a.notes}</td>
       </tr>`).join('')
-    : `<tr><td colspan="5" style="padding:1.5rem 0.75rem; color:var(--muted); font-size:0.82rem;">No albums match.</td></tr>`;
+    : `<tr><td colspan="6" style="padding:1.5rem 0.75rem; color:var(--muted); font-size:0.82rem;">No albums match.</td></tr>`;
 
     // Info
     const info = document.getElementById('tbl-info');
