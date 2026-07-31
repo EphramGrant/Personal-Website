@@ -417,6 +417,44 @@
       color: var(--text);
     }
     #album-table td.notes-cell { color: var(--muted); font-size: 0.78rem; line-height: 1.5; }
+    .notes-btn {
+      font-family: inherit; font-size: 0.75rem; letter-spacing: 0.02em;
+      background: none; border: 1px solid var(--border); border-radius: 4px;
+      padding: 0.3rem 0.65rem; color: var(--muted); cursor: pointer;
+      white-space: nowrap;
+    }
+    .notes-btn:hover { background: var(--tag-bg); color: var(--text); }
+    .notes-modal-backdrop {
+      position: fixed; inset: 0; z-index: 50;
+      background: rgba(0,0,0,0.5);
+      display: flex; align-items: center; justify-content: center;
+      padding: 1.25rem;
+      animation: gq-modal-fade-in 0.2s ease;
+    }
+    .notes-modal {
+      width: 100%; max-width: 480px; max-height: 80vh;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      display: flex; flex-direction: column;
+      animation: gq-modal-pop-in 0.25s cubic-bezier(0.22,1,0.36,1);
+    }
+    .notes-modal-header {
+      display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;
+      padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border);
+    }
+    .notes-modal-title { font-family: 'DM Serif Display', serif; font-size: 1.25rem; color: var(--text); }
+    .notes-modal-artist { font-size: 0.78rem; color: var(--muted); margin-top: 0.2rem; }
+    .notes-modal-close {
+      background: none; border: 1px solid var(--border); border-radius: 50%;
+      width: 28px; height: 28px; line-height: 1; flex-shrink: 0;
+      font-family: inherit; font-size: 0.85rem; color: var(--muted); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .notes-modal-close:hover { background: var(--tag-bg); color: var(--text); }
+    .notes-modal-body {
+      padding: 1.25rem 1.5rem; overflow-y: auto;
+      font-size: 0.85rem; line-height: 1.7; color: var(--text);
+    }
     .del-btn {
       background: none; border: none; cursor: pointer;
       color: var(--border); font-size: 0.9rem; padding: 0; line-height: 1;
@@ -1262,6 +1300,7 @@
         </div>
 
       </div>
+      <div id="notes-modal-root"></div>
 
       <hr />
       <h2>Listening Stats</h2>
@@ -4501,7 +4540,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
         <td style="color:var(--muted);">${a.year || '—'}</td>
         <td style="color:var(--muted);">${a.genre.map(g => `<span class="tag" style="display:inline-block;margin:0.1rem 0.15rem 0.1rem 0;">${g}</span>`).join('')}</td>
         <td><div class="star-display">${starsHTML(a.rating)}</div></td>
-        <td class="notes-cell">${a.notes}</td>
+        <td class="notes-cell">${a.notes ? `<button class="notes-btn" onclick="notesOpen(${a.id})">Click for review</button>` : '—'}</td>
       </tr>`).join('')
     : `<tr><td colspan="6" style="padding:1.5rem 0.75rem; color:var(--muted); font-size:0.82rem;">No albums match.</td></tr>`;
 
@@ -4727,6 +4766,33 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
   }
 
   function tblGoPage(n) { TBL.page = n; tblRender(); }
+
+  function notesOpen(id) {
+    const a = ALBUMS.find(al => al.id === id);
+    const root = document.getElementById('notes-modal-root');
+    if (!a || !root) return;
+    root.innerHTML = `
+      <div class="notes-modal-backdrop" onclick="if(event.target===this) notesClose()">
+        <div class="notes-modal">
+          <div class="notes-modal-header">
+            <div>
+              <div class="notes-modal-title">${a.album}</div>
+              <div class="notes-modal-artist">${a.artist.join(', ')}${a.year ? ' · ' + a.year : ''}</div>
+            </div>
+            <button class="notes-modal-close" onclick="notesClose()" aria-label="Close">✕</button>
+          </div>
+          <div class="notes-modal-body">${a.notes}</div>
+        </div>
+      </div>`;
+  }
+
+  function notesClose() {
+    const root = document.getElementById('notes-modal-root');
+    if (root) root.innerHTML = '';
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') notesClose();
+  });
 
   // Init album table if music page is active on load
   if (document.getElementById('page-music')?.classList.contains('active')) {
