@@ -472,7 +472,7 @@
       .tbl-th, #album-table td { padding: 0.5rem 0.4rem; font-size: 0.75rem; }
       .tbl-th { min-height: 2.5rem; vertical-align: middle; }
       #tbl-search { font-size: 1rem; }
-      #tbl-genre, #tbl-rating, #tbl-sort-year { font-size: 1rem; width: 100%; }
+      #tbl-genre, #tbl-rating, #tbl-year { font-size: 1rem; width: 100%; }
       .tbl-controls { flex-direction: column; }
     }
     .pg-btn {
@@ -1270,12 +1270,8 @@
             <option value="e1">★</option>
             <option value="e0.5">⯨</option>
           </select>
-          <select id="tbl-sort-year" onchange="tblRender()"
-            style="padding:0.55rem 0.65rem; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:0.78rem; background:var(--surface); color:var(--text); outline:none; cursor:pointer;">
-            <option value="">Sort by year</option>
-            <option value="desc">Year: Newest first</option>
-            <option value="asc">Year: Oldest first</option>
-          </select>
+          <input id="tbl-year" oninput="tblRender()" placeholder="Search year…" inputmode="numeric"
+            style="width:110px; padding:0.55rem 0.65rem; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:0.78rem; background:var(--surface); color:var(--text); outline:none;" />
         </div>
 
         <!-- Table -->
@@ -4479,11 +4475,13 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     const q       = (document.getElementById('tbl-search')?.value || '').toLowerCase();
     const genre   =  document.getElementById('tbl-genre')?.value  || '';
     const ratVal  =  document.getElementById('tbl-rating')?.value || '';
+    const yearQ   = (document.getElementById('tbl-year')?.value   || '').trim();
     const exact   = ratVal.startsWith('e') ? parseFloat(ratVal.slice(1)) : null;
     const minRat  = ratVal.startsWith('m') ? parseFloat(ratVal.slice(1)) : 0;
     return ALBUMS.filter(a =>
       (!q      || a.album.toLowerCase().includes(q) || a.artist.some(ar => ar.toLowerCase().includes(q)) || a.notes.toLowerCase().includes(q)) &&
       (!genre  || a.genre.includes(genre)) &&
+      (!yearQ  || String(a.year).includes(yearQ)) &&
       (exact !== null ? a.rating === exact : a.rating >= minRat)
     );
   }
@@ -4502,13 +4500,6 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     }
 
     let rows = tblFiltered();
-
-    // Sort by year, if selected
-    const yearSort = document.getElementById('tbl-sort-year')?.value || '';
-    if (yearSort) {
-      const dir = yearSort === 'asc' ? 1 : -1;
-      rows = [...rows].sort((a, b) => (a.year - b.year) * dir);
-    }
 
     // Pagination
     const total = rows.length;
