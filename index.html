@@ -463,6 +463,18 @@
     .del-btn:hover { color: #b94040; }
     .star-display { display:flex; gap:0.15rem; }
     .star-display span { font-size: 0.8rem; }
+    .tbl-select {
+      appearance: none; -webkit-appearance: none; -moz-appearance: none;
+      padding: 0.55rem 2rem 0.55rem 0.65rem;
+      border: 1px solid var(--border); border-radius: 4px;
+      font-family: inherit; font-size: 0.78rem;
+      background-color: var(--surface); color: var(--text);
+      outline: none; cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%236b6080' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.65rem center;
+      background-size: 10px 7px;
+    }
     .tbl-th {
       padding: 0.6rem 0.75rem;
       font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
@@ -1252,12 +1264,10 @@
         <div class="tbl-controls" style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem; align-items:center;">
           <input id="tbl-search" oninput="tblRender()" placeholder="Search albums, artists…"
             style="flex:1; min-width:160px; padding:0.55rem 0.65rem; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:0.78rem; background:var(--surface); color:var(--text); outline:none;" />
-          <select id="tbl-genre" onchange="tblRender()"
-            style="padding:0.55rem 0.65rem; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:0.78rem; background:var(--surface); color:var(--text); outline:none; cursor:pointer;">
+          <select id="tbl-genre" class="tbl-select" onchange="tblRender()">
             <option value="">All genres</option>
           </select>
-          <select id="tbl-rating" onchange="tblRender()"
-            style="padding:0.55rem 0.65rem; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:0.78rem; background:var(--surface); color:var(--text); outline:none; cursor:pointer;">
+          <select id="tbl-rating" class="tbl-select" onchange="tblRender()">
             <option value="">All ratings</option>
             <option value="e5">★★★★★</option>
             <option value="e4.5">★★★★⯨</option>
