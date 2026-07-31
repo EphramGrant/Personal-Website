@@ -1355,9 +1355,20 @@
         <div class="cube-tool-row">
           <label for="cube-event" class="cube-event-label">Event</label>
           <select id="cube-event">
-            <option value="333">3×3</option>
-            <option value="222">2×2</option>
-            <option value="pyra">Pyraminx</option>
+            <optgroup label="Cubes">
+              <option value="222">2×2</option>
+              <option value="333">3×3</option>
+              <option value="444">4×4</option>
+              <option value="555">5×5</option>
+              <option value="666">6×6</option>
+              <option value="777">7×7</option>
+            </optgroup>
+            <optgroup label="Other WCA Events">
+              <option value="pyra">Pyraminx</option>
+              <option value="skewb">Skewb</option>
+              <option value="sq1">Square-1</option>
+              <option value="minx">Megaminx</option>
+            </optgroup>
           </select>
           <button class="cube-scramble-btn" onclick="cubeNewScramble()">⟳ New Scramble</button>
         </div>
@@ -2797,9 +2808,16 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
 
   // ── CUBING: TIMER & SCRAMBLE ──
   const CUBE_EVENTS = {
-    '333': { label: '3×3',      gen: () => cubeScrambleNxN(['U','D','L','R','F','B'], ['','\'','2'], 20, true) },
-    '222': { label: '2×2',      gen: () => cubeScrambleNxN(['U','R','F'], ['','\'','2'], 9, false) },
-    'pyra': { label: 'Pyraminx', gen: () => cubeScramblePyraminx() },
+    '222':  { label: '2×2',      gen: () => cubeScrambleNxN(['U','R','F'], ['','\'','2'], 9, false) },
+    '333':  { label: '3×3',      gen: () => cubeScrambleNxN(['U','D','L','R','F','B'], ['','\'','2'], 20, true) },
+    '444':  { label: '4×4',      gen: () => cubeScrambleBigCube(40, 2) },
+    '555':  { label: '5×5',      gen: () => cubeScrambleBigCube(60, 2) },
+    '666':  { label: '6×6',      gen: () => cubeScrambleBigCube(80, 3) },
+    '777':  { label: '7×7',      gen: () => cubeScrambleBigCube(100, 3) },
+    'pyra':  { label: 'Pyraminx', gen: () => cubeScramblePyraminx() },
+    'skewb': { label: 'Skewb',    gen: () => cubeScrambleSkewb() },
+    'sq1':   { label: 'Square-1', gen: () => cubeScrambleSquare1() },
+    'minx':  { label: 'Megaminx', gen: () => cubeScrambleMegaminx() },
   };
   const CUBE_AXES = { U: 0, D: 0, L: 1, R: 1, F: 2, B: 2 };
 
@@ -2835,6 +2853,105 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       seq.push(tip + (r < 2 / 3 ? '' : '\''));
     });
     return seq.join(' ');
+  }
+
+  // Big cubes (4×4–7×7): mixes outer, wide (2-layer), and — for 6×6/7×7 — 3-layer
+  // wide moves (e.g. "3Rw"), same axis-avoidance heuristic as the 3×3 generator.
+  function cubeScrambleBigCube(len, maxLayer) {
+    const faces = ['U', 'D', 'L', 'R', 'F', 'B'];
+    const mods  = ['', '\'', '2'];
+    const seq = [];
+    let lastAxis = -1;
+    for (let i = 0; i < len; i++) {
+      let face;
+      do { face = faces[Math.floor(Math.random() * faces.length)]; } while (CUBE_AXES[face] === lastAxis);
+      lastAxis = CUBE_AXES[face];
+      const mod = mods[Math.floor(Math.random() * mods.length)];
+      const roll = Math.random();
+      let move;
+      if (maxLayer >= 3 && roll < 0.25)      move = `3${face}w${mod}`;
+      else if (maxLayer >= 2 && roll < 0.65) move = `${face}w${mod}`;
+      else                                    move = `${face}${mod}`;
+      seq.push(move);
+    }
+    return seq.join(' ');
+  }
+
+  // Skewb: 4 corner turns, no half-turn (only 120° either direction exists).
+  function cubeScrambleSkewb() {
+    const faces = ['R', 'L', 'U', 'B'];
+    const mods  = ['', '\''];
+    const seq = [];
+    let last = null;
+    for (let i = 0; i < 11; i++) {
+      let face;
+      do { face = faces[Math.floor(Math.random() * faces.length)]; } while (face === last);
+      last = face;
+      seq.push(face + mods[Math.floor(Math.random() * mods.length)]);
+    }
+    return seq.join(' ');
+  }
+
+  // Megaminx: repeated (R++/R-- D++/D--) pair blocks separated by a U/U' turn —
+  // matches the standard practice-scramble shape, though official WCA scrambles
+  // use a specific random-state generator with slightly different move counts.
+  function cubeScrambleMegaminx() {
+    const seq = [];
+    for (let line = 0; line < 7; line++) {
+      for (let pair = 0; pair < 7; pair++) {
+        seq.push('R' + (Math.random() < 0.5 ? '++' : '--'));
+        seq.push('D' + (Math.random() < 0.5 ? '++' : '--'));
+      }
+      if (line < 6) seq.push(Math.random() < 0.5 ? 'U' : "U'");
+    }
+    return seq.join(' ');
+  }
+
+  // Square-1: proper state simulation so every generated slice ("/") is
+  // actually physically legal — twists are tracked as boundary-position sets
+  // for the top/bottom layers (8 piece boundaries out of 12 slots each), and
+  // a slice is only offered when both layers have a boundary at positions
+  // 0 and 6 after the chosen twist.
+  function cubeScrambleSquare1() {
+    const SOLVED = [0, 2, 3, 5, 6, 8, 9, 11];
+    let top = new Set(SOLVED), bot = new Set(SOLVED);
+
+    const shift = (set, t) => new Set([...set].map(x => (x + t + 12) % 12));
+    const validTwists = (set) => {
+      const out = [];
+      for (let t = 0; t < 12; t++) {
+        const s = shift(set, t);
+        if (s.has(0) && s.has(6)) out.push(t);
+      }
+      return out.length ? out : [0];
+    };
+    const toSigned = t => (t <= 6 ? t : t - 12);
+    const slice = (top, bot) => {
+      const newTop = new Set(), newBot = new Set();
+      for (let i = 0; i < 12; i++) {
+        if (i < 6) {
+          if (bot.has(i)) newTop.add(i);
+          if (top.has(i)) newBot.add(i);
+        } else {
+          if (top.has(i)) newTop.add(i);
+          if (bot.has(i)) newBot.add(i);
+        }
+      }
+      return [newTop, newBot];
+    };
+
+    const groups = [];
+    for (let i = 0; i < 12; i++) {
+      const tOpts = validTwists(top);
+      const bOpts = validTwists(bot);
+      const t = tOpts[Math.floor(Math.random() * tOpts.length)];
+      const b = bOpts[Math.floor(Math.random() * bOpts.length)];
+      top = shift(top, t);
+      bot = shift(bot, b);
+      groups.push(`(${toSigned(t)},${toSigned(b)})`);
+      [top, bot] = slice(top, bot);
+    }
+    return groups.join('/') + '/';
   }
 
   let cubeCurrentScramble = null;
