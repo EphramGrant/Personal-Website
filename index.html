@@ -264,6 +264,7 @@
       font-family: 'DM Mono', monospace; font-size: 1rem; letter-spacing: 0.02em;
       padding: 1rem; background: var(--tag-bg); border-radius: 6px; text-align: center;
       line-height: 1.6; margin-bottom: 1.25rem;
+      overflow-wrap: break-word; word-break: break-word;
     }
     .cube-timer-display {
       font-family: 'DM Mono', monospace; font-size: 3.2rem; text-align: center;
@@ -2966,7 +2967,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       groups.push(`(${toSigned(t)},${toSigned(b)})`);
       [top, bot] = slice(top, bot);
     }
-    return groups.join('/') + '/';
+    return groups.join(' / ') + ' /';
   }
 
   let cubeCurrentScramble = null;
