@@ -468,15 +468,11 @@
       font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
       color: var(--muted); font-weight: 400; user-select: none;
     }
-    .tbl-th.sortable { cursor: pointer; }
-    .tbl-th.sortable:hover { color: var(--text); }
-    .tbl-th.sort-asc::after  { content: ' ↑'; }
-    .tbl-th.sort-desc::after { content: ' ↓'; }
     @media (max-width: 600px) {
       .tbl-th, #album-table td { padding: 0.5rem 0.4rem; font-size: 0.75rem; }
       .tbl-th { min-height: 2.5rem; vertical-align: middle; }
       #tbl-search { font-size: 1rem; }
-      #tbl-genre, #tbl-rating { font-size: 1rem; width: 100%; }
+      #tbl-genre, #tbl-rating, #tbl-sort-year { font-size: 1rem; width: 100%; }
       .tbl-controls { flex-direction: column; }
     }
     .pg-btn {
@@ -1274,6 +1270,12 @@
             <option value="e1">★</option>
             <option value="e0.5">⯨</option>
           </select>
+          <select id="tbl-sort-year" onchange="tblRender()"
+            style="padding:0.55rem 0.65rem; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:0.78rem; background:var(--surface); color:var(--text); outline:none; cursor:pointer;">
+            <option value="">Sort by year</option>
+            <option value="desc">Year: Newest first</option>
+            <option value="asc">Year: Oldest first</option>
+          </select>
         </div>
 
         <!-- Table -->
@@ -1281,11 +1283,11 @@
           <table id="album-table" style="width:100%; border-collapse:collapse; font-size:0.82rem;">
             <thead>
               <tr style="border-bottom:2px solid var(--border); text-align:left;">
-                <th class="tbl-th sortable" data-col="album"  onclick="tblSort('album')"  style="width:20%;">Album</th>
-                <th class="tbl-th sortable" data-col="artist" onclick="tblSort('artist')" style="width:14%;">Artist</th>
-                <th class="tbl-th sortable" data-col="year"   onclick="tblSort('year')"   style="width:8%;">Year</th>
-                <th class="tbl-th sortable" data-col="genre"  onclick="tblSort('genre')"  style="width:14%;">Genre</th>
-                <th class="tbl-th sortable" data-col="rating" onclick="tblSort('rating')" style="width:10%;">Rating</th>
+                <th class="tbl-th" style="width:20%;">Album</th>
+                <th class="tbl-th" style="width:14%;">Artist</th>
+                <th class="tbl-th" style="width:8%;">Year</th>
+                <th class="tbl-th" style="width:14%;">Genre</th>
+                <th class="tbl-th" style="width:10%;">Rating</th>
                 <th class="tbl-th tbl-th-notes">Notes</th>
               </tr>
             </thead>
@@ -4453,7 +4455,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     }
   }
 
-  const TBL = { sortCol: null, sortDir: 1, page: 1, perPage: 5 };
+  const TBL = { page: 1, perPage: 5 };
 
   let _starCount = 0;
   function starsHTML(rating) {
@@ -4486,13 +4488,6 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     );
   }
 
-  function tblSort(col) {
-    if (TBL.sortCol === col) TBL.sortDir *= -1;
-    else { TBL.sortCol = col; TBL.sortDir = 1; }
-    TBL.page = 1;
-    tblRender();
-  }
-
   function tblRender() {
     const tbody = document.getElementById('album-tbody');
     if (!tbody) return;
@@ -4508,22 +4503,12 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
 
     let rows = tblFiltered();
 
-    // Sort
-    if (TBL.sortCol) {
-      rows = [...rows].sort((a, b) => {
-        const av = TBL.sortCol === 'genre' ? a.genre.join(', ') : a[TBL.sortCol];
-        const bv = TBL.sortCol === 'genre' ? b.genre.join(', ') : b[TBL.sortCol];
-        return typeof av === 'number' ? (av - bv) * TBL.sortDir
-          : av.localeCompare(bv) * TBL.sortDir;
-      });
+    // Sort by year, if selected
+    const yearSort = document.getElementById('tbl-sort-year')?.value || '';
+    if (yearSort) {
+      const dir = yearSort === 'asc' ? 1 : -1;
+      rows = [...rows].sort((a, b) => (a.year - b.year) * dir);
     }
-
-    // Update header indicators
-    document.querySelectorAll('.tbl-th.sortable').forEach(th => {
-      th.classList.remove('sort-asc','sort-desc');
-      if (th.dataset.col === TBL.sortCol)
-        th.classList.add(TBL.sortDir === 1 ? 'sort-asc' : 'sort-desc');
-    });
 
     // Pagination
     const total = rows.length;
