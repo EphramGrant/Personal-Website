@@ -1293,9 +1293,9 @@
             style="width:110px; padding:0.55rem 0.65rem; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:0.78rem; background:var(--surface); color:var(--text); outline:none;" />
           <select id="tbl-tag" class="tbl-select" onchange="tblRender()">
             <option value="">All superlatives</option>
-            <option value="fav">⭐ Favorite of the year</option>
-            <option value="least">💔 Least favorite of the year</option>
-            <option value="only">🎯 Only album of the year</option>
+            <option value="fav">Favorite of the year</option>
+            <option value="least">Least favorite of the year</option>
+            <option value="only">Only album of the year</option>
           </select>
         </div>
 
@@ -4274,13 +4274,13 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
   // comma-separated list per cell in case an album ever earns more than one.
   function parseYearTags(raw) {
     const MAP = {
-      'favorite':       { cls: 'fav',   icon: '⭐' },
-      'fav':            { cls: 'fav',   icon: '⭐' },
-      'least favorite': { cls: 'least', icon: '💔' },
-      'least':          { cls: 'least', icon: '💔' },
-      'worst':          { cls: 'least', icon: '💔' },
-      'only':           { cls: 'only',  icon: '🎯' },
-      'only album':     { cls: 'only',  icon: '🎯' },
+      'favorite':       { cls: 'fav' },
+      'fav':            { cls: 'fav' },
+      'least favorite': { cls: 'least' },
+      'least':          { cls: 'least' },
+      'worst':          { cls: 'least' },
+      'only':           { cls: 'only' },
+      'only album':     { cls: 'only' },
     };
     const seen = new Set();
     return (raw || '').toLowerCase().split(',')
@@ -4289,10 +4289,10 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
   }
 
   function yearTagLabel(tag, year) {
-    if (tag.cls === 'fav')   return `${tag.icon} Favorite of ${year}`;
-    if (tag.cls === 'least') return `${tag.icon} Least Favorite of ${year}`;
-    if (tag.cls === 'only')  return `${tag.icon} Only Album of ${year}`;
-    return tag.icon;
+    if (tag.cls === 'fav')   return `Favorite of ${year}`;
+    if (tag.cls === 'least') return `Least Favorite of ${year}`;
+    if (tag.cls === 'only')  return `Only Album of ${year}`;
+    return '';
   }
 
   async function loadAlbumsFromSheet() {
