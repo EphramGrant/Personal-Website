@@ -119,6 +119,15 @@
       padding: 0.3rem 0.65rem;
       border-radius: 3px;
     }
+    .year-tags { margin-top: 0.3rem; display: flex; flex-wrap: wrap; gap: 0.25rem; }
+    .year-tag {
+      display: inline-block; font-size: 0.62rem; letter-spacing: 0.02em;
+      padding: 0.15rem 0.45rem; border-radius: 3px; font-weight: 400;
+      white-space: nowrap;
+    }
+    .year-tag.fav   { background: #fdf0c9; color: #8a6d1a; }
+    .year-tag.least { background: #f7dede; color: #a13d3d; }
+    .year-tag.only  { background: #dbe6f7; color: #2f5a8a; }
 
     /* ── HOME ── */
     .home-hero {
@@ -484,7 +493,7 @@
       .tbl-th, #album-table td { padding: 0.5rem 0.4rem; font-size: 0.75rem; }
       .tbl-th { min-height: 2.5rem; vertical-align: middle; }
       #tbl-search { font-size: 1rem; }
-      #tbl-genre, #tbl-rating, #tbl-year { font-size: 1rem; width: 100%; }
+      #tbl-genre, #tbl-rating, #tbl-year, #tbl-tag { font-size: 1rem; width: 100%; }
       .tbl-controls { flex-direction: column; }
     }
     .pg-btn {
@@ -1282,6 +1291,12 @@
           </select>
           <input id="tbl-year" oninput="tblRender()" placeholder="Search year…" inputmode="numeric"
             style="width:110px; padding:0.55rem 0.65rem; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:0.78rem; background:var(--surface); color:var(--text); outline:none;" />
+          <select id="tbl-tag" class="tbl-select" onchange="tblRender()">
+            <option value="">All superlatives</option>
+            <option value="fav">⭐ Favorite of the year</option>
+            <option value="least">💔 Least favorite of the year</option>
+            <option value="only">🎯 Only album of the year</option>
+          </select>
         </div>
 
         <!-- Table -->
@@ -4255,8 +4270,33 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
 
   let ALBUMS = [];
 
+  // Maps a raw sheet keyword (column I) to a badge definition. Accepts a
+  // comma-separated list per cell in case an album ever earns more than one.
+  function parseYearTags(raw) {
+    const MAP = {
+      'favorite':       { cls: 'fav',   icon: '⭐' },
+      'fav':            { cls: 'fav',   icon: '⭐' },
+      'least favorite': { cls: 'least', icon: '💔' },
+      'least':          { cls: 'least', icon: '💔' },
+      'worst':          { cls: 'least', icon: '💔' },
+      'only':           { cls: 'only',  icon: '🎯' },
+      'only album':     { cls: 'only',  icon: '🎯' },
+    };
+    const seen = new Set();
+    return (raw || '').toLowerCase().split(',')
+      .map(s => MAP[s.trim()])
+      .filter(t => t && !seen.has(t.cls) && seen.add(t.cls));
+  }
+
+  function yearTagLabel(tag, year) {
+    if (tag.cls === 'fav')   return `${tag.icon} Favorite of ${year}`;
+    if (tag.cls === 'least') return `${tag.icon} Least Favorite of ${year}`;
+    if (tag.cls === 'only')  return `${tag.icon} Only Album of ${year}`;
+    return tag.icon;
+  }
+
   async function loadAlbumsFromSheet() {
-    const range = 'Sheet1!A2:H';
+    const range = 'Sheet1!A2:I';
     const url   = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${range}?key=${API_KEY}`;
     const tbody = document.getElementById('album-tbody');
 
@@ -4275,6 +4315,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
         notes:    row[5] || '',
         location: row[6] || '',
         year:     parseInt(row[7]) || 0,
+        yearTags: parseYearTags(row[8]),
       }));
       tblRender();
       renderStats();
@@ -4486,12 +4527,14 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     const genre   =  document.getElementById('tbl-genre')?.value  || '';
     const ratVal  =  document.getElementById('tbl-rating')?.value || '';
     const yearQ   = (document.getElementById('tbl-year')?.value   || '').trim();
+    const tagVal  =  document.getElementById('tbl-tag')?.value    || '';
     const exact   = ratVal.startsWith('e') ? parseFloat(ratVal.slice(1)) : null;
     const minRat  = ratVal.startsWith('m') ? parseFloat(ratVal.slice(1)) : 0;
     return ALBUMS.filter(a =>
       (!q      || a.album.toLowerCase().includes(q) || a.artist.some(ar => ar.toLowerCase().includes(q)) || a.notes.toLowerCase().includes(q)) &&
       (!genre  || a.genre.includes(genre)) &&
       (!yearQ  || String(a.year).includes(yearQ)) &&
+      (!tagVal || a.yearTags.some(t => t.cls === tagVal)) &&
       (exact !== null ? a.rating === exact : a.rating >= minRat)
     );
   }
@@ -4521,7 +4564,10 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     // Rows
     tbody.innerHTML = slice.length ? slice.map(a => `
       <tr>
-        <td style="font-weight:500;">${a.album}</td>
+        <td style="font-weight:500;">
+          ${a.album}
+          ${a.yearTags.length ? `<div class="year-tags">${a.yearTags.map(t => `<span class="year-tag ${t.cls}">${yearTagLabel(t, a.year)}</span>`).join('')}</div>` : ''}
+        </td>
         <td style="color:var(--muted);">${a.artist.join(', ')}</td>
         <td style="color:var(--muted);">${a.year || '—'}</td>
         <td style="color:var(--muted);">${a.genre.map(g => `<span class="tag" style="display:inline-block;margin:0.1rem 0.15rem 0.1rem 0;">${g}</span>`).join('')}</td>
