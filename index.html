@@ -490,12 +490,13 @@
       font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
       color: var(--muted); font-weight: 400; user-select: none;
     }
+    #tbl-year { width: 200px; flex-shrink: 0; }
     @media (max-width: 600px) {
       .tbl-th, #album-table td { padding: 0.5rem 0.4rem; font-size: 0.75rem; }
       .tbl-th { min-height: 2.5rem; vertical-align: middle; }
       #tbl-search { font-size: 1rem; }
       #tbl-genre, #tbl-rating, #tbl-year, #tbl-tag { font-size: 1rem; width: 100%; }
-      .tbl-controls { flex-direction: column; }
+      .tbl-controls > div { flex-direction: column; }
     }
     .pg-btn {
       padding: 0.3rem 0.6rem; border: 1px solid var(--border); border-radius: 3px;
@@ -1271,33 +1272,37 @@
       <div id="album-log" style="margin-top:1.5rem;">
 
         <!-- Controls -->
-        <div class="tbl-controls" style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem; align-items:center;">
-          <input id="tbl-search" oninput="tblRender()" placeholder="Search albums, artists…"
-            style="flex:1; min-width:160px; padding:0.55rem 0.65rem; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:0.78rem; background:var(--surface); color:var(--text); outline:none;" />
-          <select id="tbl-genre" class="tbl-select" onchange="tblRender()">
-            <option value="">All genres</option>
-          </select>
-          <select id="tbl-rating" class="tbl-select" onchange="tblRender()">
-            <option value="">All ratings</option>
-            <option value="e5">★★★★★</option>
-            <option value="e4.5">★★★★⯨</option>
-            <option value="e4">★★★★</option>
-            <option value="e3.5">★★★⯨</option>
-            <option value="e3">★★★</option>
-            <option value="e2.5">★★⯨</option>
-            <option value="e2">★★</option>
-            <option value="e1.5">★⯨</option>
-            <option value="e1">★</option>
-            <option value="e0.5">⯨</option>
-          </select>
-          <input id="tbl-year" oninput="tblRender()" placeholder="Search year…" inputmode="numeric"
-            style="width:110px; padding:0.55rem 0.65rem; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:0.78rem; background:var(--surface); color:var(--text); outline:none;" />
-          <select id="tbl-tag" class="tbl-select" onchange="tblRender()">
-            <option value="">All Labels</option>
-            <option value="fav">Favorite of the year</option>
-            <option value="least">Least favorite of the year</option>
-            <option value="only">Only album of the year</option>
-          </select>
+        <div class="tbl-controls" style="margin-bottom:1rem;">
+          <div style="display:flex; gap:0.5rem; width:100%; margin-bottom:0.5rem;">
+            <input id="tbl-search" oninput="tblRender()" placeholder="Search albums, artists…"
+              style="flex:1; min-width:0; padding:0.55rem 0.65rem; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:0.78rem; background:var(--surface); color:var(--text); outline:none;" />
+            <input id="tbl-year" oninput="tblRender()" placeholder="Search year…" inputmode="numeric"
+              style="padding:0.55rem 0.65rem; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:0.78rem; background:var(--surface); color:var(--text); outline:none;" />
+          </div>
+          <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+            <select id="tbl-genre" class="tbl-select" onchange="tblRender()">
+              <option value="">All genres</option>
+            </select>
+            <select id="tbl-rating" class="tbl-select" onchange="tblRender()">
+              <option value="">All ratings</option>
+              <option value="e5">★★★★★</option>
+              <option value="e4.5">★★★★⯨</option>
+              <option value="e4">★★★★</option>
+              <option value="e3.5">★★★⯨</option>
+              <option value="e3">★★★</option>
+              <option value="e2.5">★★⯨</option>
+              <option value="e2">★★</option>
+              <option value="e1.5">★⯨</option>
+              <option value="e1">★</option>
+              <option value="e0.5">⯨</option>
+            </select>
+            <select id="tbl-tag" class="tbl-select" onchange="tblRender()">
+              <option value="">All Labels</option>
+              <option value="fav">Favorite of the year</option>
+              <option value="least">Least favorite of the year</option>
+              <option value="only">Only album of the year</option>
+            </select>
+          </div>
         </div>
 
         <!-- Table -->
