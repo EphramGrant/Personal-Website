@@ -478,13 +478,13 @@
       padding: 0.2rem 0.55rem; border-radius: 3px; font-weight: 500;
       white-space: nowrap;
     }
-    .gd-diff-easy    { background: #ddd4f7; color: #4a2a8a; }
-    .gd-diff-medium  { background: #f7d4ea; color: #8a1a5a; }
-    .gd-diff-hard    { background: #f7d4d4; color: #8a1a1a; }
-    .gd-diff-insane  { background: #f7e8d4; color: #8a5a1a; }
-    .gd-diff-extreme { background: #241414; color: #f0c8c8; }
-    .gd-diff-star    { background: #f7f0c4; color: #8a7a1a; }
-    .gd-diff-na      { background: #e5e3dc; color: #5a584f; }
+    .gd-diff-easy    { background: #ddd4f7 !important; color: #4a2a8a !important; }
+    .gd-diff-medium  { background: #f7d4ea !important; color: #8a1a5a !important; }
+    .gd-diff-hard    { background: #f7d4d4 !important; color: #8a1a1a !important; }
+    .gd-diff-insane  { background: #f7e8d4 !important; color: #8a5a1a !important; }
+    .gd-diff-extreme { background: #241414 !important; color: #f0c8c8 !important; }
+    .gd-diff-star    { background: #f7f0c4 !important; color: #8a7a1a !important; }
+    .gd-diff-na      { background: #e5e3dc !important; color: #5a584f !important; }
     .gd-fav-card {
       position: relative;
       min-height: 180px;
@@ -4784,23 +4784,23 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     setText('gd-stat-total-attempts', totalAttempts.toLocaleString());
     setText('gd-stat-avg-attempts', Math.round(totalAttempts / GD_LEVELS.length).toLocaleString());
 
-    // Difficulty Distribution — grouped by in-game tier, plus a Non-Demon catch-all
+    // Difficulty Distribution — grouped by in-game tier (Demon tiers only)
     const diffEl = document.getElementById('gd-diff-dist');
     if (diffEl) {
-      const tierLabels = ['Easy Demon', 'Medium Demon', 'Hard Demon', 'Insane Demon', 'Extreme Demon', 'Non-Demon'];
+      const tierLabels = ['Easy Demon', 'Medium Demon', 'Hard Demon', 'Insane Demon', 'Extreme Demon'];
       const diffCounts = {};
       tierLabels.forEach(t => diffCounts[t] = 0);
       GD_LEVELS.forEach(g => {
-        const tier = gdIsNonDemon(g.inGameDiff) ? 'Non-Demon' : g.inGameDiff;
-        if (diffCounts[tier] !== undefined) diffCounts[tier]++;
+        if (diffCounts[g.inGameDiff] !== undefined) diffCounts[g.inGameDiff]++;
       });
+      const demonTotal = tierLabels.reduce((sum, t) => sum + diffCounts[t], 0) || 1;
       diffEl.innerHTML = tierLabels.map(tier => {
         const count = diffCounts[tier];
-        const pct = Math.round((count / GD_LEVELS.length) * 100);
+        const pct = Math.round((count / demonTotal) * 100);
         return `
           <div class="genre-bar-row">
             <div class="genre-bar-label">
-              <span><span class="gd-diff-tag ${gdDiffClass(tier === 'Non-Demon' ? 'unrated' : tier)}" style="margin-right:0.4rem;">${tier}</span></span>
+              <span><span class="gd-diff-tag ${gdDiffClass(tier)}" style="margin-right:0.4rem;">${tier}</span></span>
               <span>${pct}% (${count} level${count !== 1 ? 's' : ''})</span>
             </div>
             <div class="genre-bar-track">
