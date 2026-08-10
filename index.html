@@ -485,6 +485,7 @@
     .gd-diff-extreme { background: #241414; color: #f0c8c8; }
     .gd-diff-star    { background: #f7f0c4; color: #8a7a1a; }
     .gd-diff-na      { background: #e5e3dc; color: #5a584f; }
+    .gd-diff-unrated { background: var(--tag-bg); color: var(--muted); }
     #gd-table th, #gd-table td {
       border: 1px solid var(--border);
       text-align: center;
@@ -4540,6 +4541,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     if (GD_DIFF_CLASS[d]) return GD_DIFF_CLASS[d];
     if (GD_NA_VALUES.includes(d)) return 'gd-diff-na';
     if (d.includes('star')) return 'gd-diff-star';
+    if (d.includes('unrated')) return 'gd-diff-unrated';
     return '';
   }
 
