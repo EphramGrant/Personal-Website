@@ -485,6 +485,14 @@
     .gd-diff-extreme { background: #241414; color: #f0c8c8; }
     .gd-my-diff { margin-top: 0.3rem; font-size: 0.68rem; color: var(--muted); }
     .gd-my-diff .gd-diff-tag { margin-left: 0.2rem; }
+    #gd-table th, #gd-table td {
+      border: 1px solid var(--border);
+      text-align: center;
+      vertical-align: middle;
+      padding: 0.65rem 0.6rem;
+    }
+    #gd-table .tbl-th { text-align: center; }
+    #gd-table .gd-my-diff { text-align: center; }
     .map-marker { cursor: pointer; }
     .del-btn {
       background: none; border: none; cursor: pointer;
@@ -1490,12 +1498,13 @@
       <div style="overflow-x:auto;">
         <table id="gd-table" style="width:100%; border-collapse:collapse; font-size:0.82rem;">
           <thead>
-            <tr style="border-bottom:2px solid var(--border); text-align:left;">
-              <th class="tbl-th" style="width:24%;">Level</th>
-              <th class="tbl-th" style="width:20%;">Difficulty</th>
-              <th class="tbl-th" style="width:10%;">Mode</th>
-              <th class="tbl-th" style="width:18%;">Attempts / Best</th>
-              <th class="tbl-th" style="width:10%;">Rating</th>
+            <tr style="border-bottom:2px solid var(--border); text-align:center;">
+              <th class="tbl-th" style="width:18%;">Level</th>
+              <th class="tbl-th" style="width:14%;">Creator</th>
+              <th class="tbl-th" style="width:18%;">Difficulty</th>
+              <th class="tbl-th" style="width:9%;">Mode</th>
+              <th class="tbl-th" style="width:15%;">Attempts / Best</th>
+              <th class="tbl-th" style="width:9%;">Rating</th>
               <th class="tbl-th tbl-th-notes">Notes</th>
             </tr>
           </thead>
@@ -4533,7 +4542,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     const url   = `https://sheets.googleapis.com/v4/spreadsheets/${GD_SHEET_ID}/values/${encodeURIComponent(range)}?key=${API_KEY}`;
     const tbody = document.getElementById('gd-tbody');
 
-    if (tbody) tbody.innerHTML = `<tr><td colspan="6" style="padding:1.5rem 0.75rem; color:var(--muted); font-size:0.82rem;">Loading…</td></tr>`;
+    if (tbody) tbody.innerHTML = `<tr><td colspan="7" style="padding:1.5rem 0.75rem; color:var(--muted); font-size:0.82rem;">Loading…</td></tr>`;
 
     try {
       const res  = await fetch(url);
@@ -4553,7 +4562,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       }));
       gdRender();
     } catch (err) {
-      if (tbody) tbody.innerHTML = `<tr><td colspan="6" style="padding:1.5rem 0.75rem; color:var(--muted); font-size:0.82rem;">Could not load levels — ${err.message || 'unknown error'}</td></tr>`;
+      if (tbody) tbody.innerHTML = `<tr><td colspan="7" style="padding:1.5rem 0.75rem; color:var(--muted); font-size:0.82rem;">Could not load levels — ${err.message || 'unknown error'}</td></tr>`;
       console.error('Sheet load error:', err);
     }
   }
@@ -4595,17 +4604,15 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
 
     tbody.innerHTML = slice.length ? slice.map(g => `
       <tr>
-        <td style="font-weight:500;">
-          ${g.level}
-          <div class="map-album-meta">${g.creator}</div>
-        </td>
+        <td style="font-weight:500;">${g.level}</td>
+        <td style="color:var(--muted);">${g.creator || '—'}</td>
         <td>${diffCell(g)}</td>
         <td style="color:var(--muted);">${g.mode || '—'}</td>
         <td style="color:var(--muted); font-size:0.78rem;">${g.attempts ? `${g.attempts} attempts` : '—'}${g.bestPct != null ? `<br>${g.bestPct}% best before` : ''}</td>
         <td style="font-family:'DM Serif Display', serif; font-size:1rem;">${g.rating || '—'}${g.rating ? '/100' : ''}</td>
         <td class="notes-cell">${g.notes ? `<button class="notes-btn" onclick="gdNotesOpen(${g.id})">Click for review</button>` : '—'}</td>
       </tr>`).join('')
-    : `<tr><td colspan="6" style="padding:1.5rem 0.75rem; color:var(--muted); font-size:0.82rem;">No levels match.</td></tr>`;
+    : `<tr><td colspan="7" style="padding:1.5rem 0.75rem; color:var(--muted); font-size:0.82rem;">No levels match.</td></tr>`;
 
     // Info
     const info = document.getElementById('gd-info');
