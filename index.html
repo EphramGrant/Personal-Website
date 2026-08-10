@@ -1521,10 +1521,10 @@
           </select>
           <select id="gd-rating" class="tbl-select" onchange="gdRender()">
             <option value="">All ratings</option>
-            <option value="90">90+</option>
-            <option value="80">80+</option>
-            <option value="70">70+</option>
-            <option value="60">60+</option>
+            <option value="90">90-100</option>
+            <option value="80">80-89</option>
+            <option value="70">70-79</option>
+            <option value="60">60-69</option>
             <option value="0">Below 60</option>
           </select>
         </div>
@@ -4766,7 +4766,10 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       gdMatchesDiffFilter(g.inGameDiff, diffIn) &&
       gdMatchesDiffFilter(g.myDiff, diffImo) &&
       (!mode || g.mode === mode) &&
-      (ratSel === ''  ? true : ratSel === '0' ? g.rating < 60 : g.rating >= ratMin)
+      (ratSel === ''  ? true
+        : ratSel === '0'  ? g.rating < 60
+        : ratSel === '90' ? g.rating >= 90
+        : (g.rating >= ratMin && g.rating < ratMin + 10))
     );
   }
 
@@ -4895,11 +4898,12 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     const g = GD_LEVELS.find(l => l.id === id);
     const root = document.getElementById('gd-notes-modal-root');
     if (!g || !root) return;
+    const isPlatformer = (g.mode || '').toLowerCase() === 'platformer';
     const stat = (label, val) => val ? `<span class="player-track-stat"><strong>${val}</strong> ${label}</span>` : '';
     const stats = [
       stat('mode', g.mode),
       stat('attempts', g.attempts ? g.attempts.toLocaleString() : ''),
-      stat('worst fail before completion', g.bestPct != null ? g.bestPct + '%' : ''),
+      isPlatformer ? '' : stat('worst fail before completion', g.bestPct != null ? g.bestPct + '%' : ''),
     ].filter(Boolean).join('');
     root.innerHTML = `
       <div class="notes-modal-backdrop" onclick="if(event.target===this) gdNotesClose()">
