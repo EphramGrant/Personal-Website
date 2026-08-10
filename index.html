@@ -3305,17 +3305,38 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     const el = document.getElementById('album-map');
     if (!el) return;
 
-    // Count albums per location
-    const locationCounts = {};
+    // Count albums per location, and capture any manually-entered coordinates
+    // (sheet columns J/K) so we don't have to geocode locations that already
+    // have known coordinates — Nominatim's browser CORS access is unreliable
+    // and shouldn't be depended on for every visitor's page load.
+    const locationData = {};
     ALBUMS.forEach(a => {
       if (!a.location) return;
-      locationCounts[a.location] = (locationCounts[a.location] || 0) + 1;
+      if (!locationData[a.location]) locationData[a.location] = { count: 0, lat: null, lng: null };
+      locationData[a.location].count++;
+      if (locationData[a.location].lat == null && a.lat != null && a.lng != null) {
+        locationData[a.location].lat = a.lat;
+        locationData[a.location].lng = a.lng;
+      }
     });
 
-    const locations = Object.entries(locationCounts);
+    const locations = Object.entries(locationData);
     if (!locations.length) {
       el.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);font-size:0.82rem;">No location data yet — add a location column to your sheet.</div>';
       return;
+    }
+
+    // Safety net: warn if two location strings look identical but aren't —
+    // catches case differences or stray lookalike/invisible characters that
+    // the whitespace normalization above wouldn't catch on its own.
+    const seenNorm = new Map();
+    for (const key of Object.keys(locationData)) {
+      const norm = key.toLowerCase();
+      if (seenNorm.has(norm) && seenNorm.get(norm) !== key) {
+        console.warn(`[map] "${seenNorm.get(norm)}" and "${key}" look like the same place but are different strings.`,
+          'Char codes:', [...seenNorm.get(norm)].map(c => c.codePointAt(0)), 'vs', [...key].map(c => c.codePointAt(0)));
+      }
+      seenNorm.set(norm, key);
     }
 
     await loadLeaflet();
@@ -3331,19 +3352,14 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       _map.eachLayer(l => { if (l instanceof L.CircleMarker) _map.removeLayer(l); });
     }
 
-    const maxCount = Math.max(...locations.map(([, c]) => c));
+    const maxCount = Math.max(...locations.map(([, d]) => d.count));
     const statusEl = document.getElementById('album-map-status');
     const failed = [];
+    const needsGeocode = locations.filter(([, d]) => d.lat == null).length;
 
-    // Geocode and plot — sequential to respect rate limit
-    let done = 0;
-    for (const [location, count] of locations) {
-      if (statusEl) statusEl.textContent = `Placing locations on the map… (${done}/${locations.length})`;
-      const coords = await geocode(location);
-      done++;
-      if (!coords) { failed.push(location); continue; }
+    const plot = (location, count, lat, lng) => {
       const radius = 6 + (count / maxCount) * 18;
-      L.circleMarker([coords.lat, coords.lng], {
+      L.circleMarker([lat, lng], {
         radius,
         fillColor: getComputedStyle(document.documentElement).getPropertyValue('--text').trim() || '#1a1916',
         fillOpacity: 0.7,
@@ -3352,13 +3368,31 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       }).bindTooltip(`<strong>${location}</strong><br>${count} album${count !== 1 ? 's' : ''}`, {
         direction: 'top', offset: [0, -4]
       }).addTo(_map);
+    };
+
+    // Plot everything with known coordinates immediately — no waiting.
+    let pending = 0;
+    for (const [location, d] of locations) {
+      if (d.lat != null) plot(location, d.count, d.lat, d.lng);
+      else pending++;
+    }
+
+    // Only geocode locations that don't have coordinates in the sheet yet.
+    let done = 0;
+    for (const [location, d] of locations) {
+      if (d.lat != null) continue;
+      if (statusEl) statusEl.textContent = `Looking up ${pending - done} location${pending - done !== 1 ? 's' : ''} without saved coordinates… (${done}/${pending})`;
+      const coords = await geocode(location);
+      done++;
+      if (!coords) { failed.push(location); continue; }
+      plot(location, d.count, coords.lat, coords.lng);
     }
 
     if (statusEl) {
       statusEl.textContent = failed.length
-        ? `Couldn't place: ${failed.join(', ')} — check console for details.`
+        ? `Couldn't place: ${failed.join(', ')} — add Lat/Lng columns to your sheet for these, or check console for details.`
         : '';
-      console.debug(`[map] done — ${locations.length - failed.length}/${locations.length} locations placed.`, failed.length ? { failed } : '');
+      console.debug(`[map] done — ${locations.length - failed.length}/${locations.length} locations placed (${locations.length - needsGeocode} from sheet, ${needsGeocode - failed.length} geocoded).`, failed.length ? { failed } : '');
     }
   }
 
@@ -4329,7 +4363,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
   }
 
   async function loadAlbumsFromSheet() {
-    const range = 'Sheet1!A2:I';
+    const range = 'Sheet1!A2:K';
     const url   = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${range}?key=${API_KEY}`;
     const tbody = document.getElementById('album-tbody');
 
@@ -4346,9 +4380,11 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
         genre:  (row[3] || '').split(',').map(g => g.trim()).filter(Boolean),
         rating: parseFloat(row[4]) || 0,
         notes:    row[5] || '',
-        location: row[6] || '',
+        location: (row[6] || '').replace(/\s+/g, ' ').trim(),
         year:     parseInt(row[7]) || 0,
         yearTags: parseYearTags(row[8]),
+        lat:      row[9]  !== undefined && row[9]  !== '' ? parseFloat(row[9])  : null,
+        lng:      row[10] !== undefined && row[10] !== '' ? parseFloat(row[10]) : null,
       }));
       tblRender();
       renderStats();
