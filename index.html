@@ -464,6 +464,16 @@
       padding: 1.25rem 1.5rem; overflow-y: auto;
       font-size: 0.85rem; line-height: 1.7; color: var(--text);
     }
+    .map-album-list { display: flex; flex-direction: column; gap: 0.75rem; }
+    .map-album-row {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding-bottom: 0.75rem; border-bottom: 1px solid var(--border);
+    }
+    .map-album-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .map-album-info { flex: 1; min-width: 0; }
+    .map-album-title { font-weight: 500; color: var(--text); font-size: 0.85rem; }
+    .map-album-meta { font-size: 0.72rem; color: var(--muted); margin-top: 0.15rem; }
+    .map-marker { cursor: pointer; }
     .del-btn {
       background: none; border: none; cursor: pointer;
       color: var(--border); font-size: 0.9rem; padding: 0; line-height: 1;
@@ -3365,9 +3375,11 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
         fillOpacity: 0.7,
         color: 'transparent',
         weight: 0,
-      }).bindTooltip(`<strong>${location}</strong><br>${count} album${count !== 1 ? 's' : ''}`, {
+        className: 'map-marker',
+      }).bindTooltip(`<strong>${location}</strong><br>${count} album${count !== 1 ? 's' : ''} — click to view`, {
         direction: 'top', offset: [0, -4]
-      }).addTo(_map);
+      }).on('click', () => mapOpenLocation(location))
+        .addTo(_map);
     };
 
     // Plot everything with known coordinates immediately — no waiting.
@@ -4890,6 +4902,40 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
   function notesClose() {
     const root = document.getElementById('notes-modal-root');
     if (root) root.innerHTML = '';
+  }
+
+  // Shows every album tagged with a given location, from clicking a map marker.
+  // Reuses the same modal root/close logic as the review popup — clicking an
+  // album's "Review" button here just swaps this modal's content for that one.
+  function mapOpenLocation(location) {
+    const albums = ALBUMS.filter(a => a.location === location);
+    const root = document.getElementById('notes-modal-root');
+    if (!root || !albums.length) return;
+    root.innerHTML = `
+      <div class="notes-modal-backdrop" onclick="if(event.target===this) notesClose()">
+        <div class="notes-modal">
+          <div class="notes-modal-header">
+            <div>
+              <div class="notes-modal-title">${location}</div>
+              <div class="notes-modal-artist">${albums.length} album${albums.length !== 1 ? 's' : ''}</div>
+            </div>
+            <button class="notes-modal-close" onclick="notesClose()" aria-label="Close">✕</button>
+          </div>
+          <div class="notes-modal-body">
+            <div class="map-album-list">
+              ${albums.map(a => `
+                <div class="map-album-row">
+                  <div class="map-album-info">
+                    <div class="map-album-title">${a.album}</div>
+                    <div class="map-album-meta">${a.artist.join(', ')}${a.year ? ' · ' + a.year : ''}</div>
+                  </div>
+                  <div class="star-display">${starsHTML(a.rating)}</div>
+                  ${a.notes ? `<button class="notes-btn" onclick="notesOpen(${a.id})">Review</button>` : ''}
+                </div>`).join('')}
+            </div>
+          </div>
+        </div>
+      </div>`;
   }
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') notesClose();
