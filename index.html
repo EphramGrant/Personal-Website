@@ -487,7 +487,6 @@
     .gd-diff-na      { background: #e5e3dc; color: #5a584f; }
     .gd-diff-unrated { background: var(--tag-bg); color: var(--muted); }
     #gd-table th, #gd-table td {
-      border: 1px solid var(--border);
       text-align: center;
       vertical-align: middle;
       padding: 0.65rem 0.6rem;
@@ -1470,13 +1469,23 @@
             style="flex:1; min-width:0; padding:0.55rem 0.65rem; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:0.78rem; background:var(--surface); color:var(--text); outline:none;" />
         </div>
         <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
-          <select id="gd-diff" class="tbl-select" onchange="gdRender()">
+          <select id="gd-diff-ingame" class="tbl-select" onchange="gdRender()">
             <option value="">All in-game difficulties</option>
             <option value="Easy Demon">Easy Demon</option>
             <option value="Medium Demon">Medium Demon</option>
             <option value="Hard Demon">Hard Demon</option>
             <option value="Insane Demon">Insane Demon</option>
             <option value="Extreme Demon">Extreme Demon</option>
+            <option value="__nondemon__">Non-Demon</option>
+          </select>
+          <select id="gd-diff-imo" class="tbl-select" onchange="gdRender()">
+            <option value="">All IMO difficulties</option>
+            <option value="Easy Demon">Easy Demon</option>
+            <option value="Medium Demon">Medium Demon</option>
+            <option value="Hard Demon">Hard Demon</option>
+            <option value="Insane Demon">Insane Demon</option>
+            <option value="Extreme Demon">Extreme Demon</option>
+            <option value="__nondemon__">Non-Demon</option>
           </select>
           <select id="gd-mode" class="tbl-select" onchange="gdRender()">
             <option value="">All modes</option>
@@ -1499,15 +1508,12 @@
         <table id="gd-table" style="width:100%; border-collapse:collapse; font-size:0.82rem;">
           <thead>
             <tr style="border-bottom:2px solid var(--border); text-align:center;">
-              <th class="tbl-th" style="width:14%;">Level</th>
-              <th class="tbl-th" style="width:11%;">Creator</th>
-              <th class="tbl-th" style="width:12%;">In-Game Difficulty</th>
-              <th class="tbl-th" style="width:12%;">IMO Difficulty</th>
-              <th class="tbl-th" style="width:8%;">Mode</th>
-              <th class="tbl-th" style="width:9%;">Attempts</th>
-              <th class="tbl-th" style="width:8%;">Best %</th>
-              <th class="tbl-th" style="width:8%;">Rating</th>
-              <th class="tbl-th tbl-th-notes">Notes</th>
+              <th class="tbl-th" style="width:20%;">Level</th>
+              <th class="tbl-th" style="width:15%;">Creator</th>
+              <th class="tbl-th" style="width:17%;">In-Game Difficulty</th>
+              <th class="tbl-th" style="width:17%;">IMO Difficulty</th>
+              <th class="tbl-th" style="width:11%;">Rating</th>
+              <th class="tbl-th tbl-th-notes">Info</th>
             </tr>
           </thead>
           <tbody id="gd-tbody"></tbody>
@@ -4550,7 +4556,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     const url   = `https://sheets.googleapis.com/v4/spreadsheets/${GD_SHEET_ID}/values/${encodeURIComponent(range)}?key=${API_KEY}`;
     const tbody = document.getElementById('gd-tbody');
 
-    if (tbody) tbody.innerHTML = `<tr><td colspan="9" style="padding:1.5rem 0.75rem; color:var(--muted); font-size:0.82rem;">Loading…</td></tr>`;
+    if (tbody) tbody.innerHTML = `<tr><td colspan="6" style="padding:1.5rem 0.75rem; color:var(--muted); font-size:0.82rem;">Loading…</td></tr>`;
 
     try {
       const res  = await fetch(url);
@@ -4570,20 +4576,32 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       }));
       gdRender();
     } catch (err) {
-      if (tbody) tbody.innerHTML = `<tr><td colspan="9" style="padding:1.5rem 0.75rem; color:var(--muted); font-size:0.82rem;">Could not load levels — ${err.message || 'unknown error'}</td></tr>`;
+      if (tbody) tbody.innerHTML = `<tr><td colspan="6" style="padding:1.5rem 0.75rem; color:var(--muted); font-size:0.82rem;">Could not load levels — ${err.message || 'unknown error'}</td></tr>`;
       console.error('Sheet load error:', err);
     }
   }
 
+  const GD_DEMON_TIERS = ['easy demon', 'medium demon', 'hard demon', 'insane demon', 'extreme demon'];
+  function gdIsNonDemon(diff) {
+    return !GD_DEMON_TIERS.includes((diff || '').toLowerCase().trim());
+  }
+  function gdMatchesDiffFilter(value, filterVal) {
+    if (!filterVal) return true;
+    if (filterVal === '__nondemon__') return gdIsNonDemon(value);
+    return value === filterVal;
+  }
+
   function gdFiltered() {
     const q       = (document.getElementById('gd-search')?.value || '').toLowerCase();
-    const diff    =  document.getElementById('gd-diff')?.value    || '';
+    const diffIn  =  document.getElementById('gd-diff-ingame')?.value || '';
+    const diffImo =  document.getElementById('gd-diff-imo')?.value    || '';
     const mode    =  document.getElementById('gd-mode')?.value    || '';
     const ratMin  =  parseFloat(document.getElementById('gd-rating')?.value || '');
     const ratSel  =  document.getElementById('gd-rating')?.value || '';
     return GD_LEVELS.filter(g =>
       (!q    || g.level.toLowerCase().includes(q) || g.creator.toLowerCase().includes(q) || g.notes.toLowerCase().includes(q)) &&
-      (!diff || g.inGameDiff === diff || g.myDiff === diff) &&
+      gdMatchesDiffFilter(g.inGameDiff, diffIn) &&
+      gdMatchesDiffFilter(g.myDiff, diffImo) &&
       (!mode || g.mode === mode) &&
       (ratSel === ''  ? true : ratSel === '0' ? g.rating < 60 : g.rating >= ratMin)
     );
@@ -4608,13 +4626,10 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
         <td style="color:var(--muted);">${g.creator || '—'}</td>
         <td>${g.inGameDiff ? `<span class="gd-diff-tag ${gdDiffClass(g.inGameDiff)}">${g.inGameDiff}</span>` : '—'}</td>
         <td>${g.myDiff ? `<span class="gd-diff-tag ${gdDiffClass(g.myDiff)}">${g.myDiff}</span>` : '—'}</td>
-        <td style="color:var(--muted);">${g.mode || '—'}</td>
-        <td style="color:var(--muted);">${g.attempts ? g.attempts.toLocaleString() : '—'}</td>
-        <td style="color:var(--muted);">${g.bestPct != null ? g.bestPct + '%' : '—'}</td>
         <td style="font-family:'DM Serif Display', serif; font-size:1rem;">${g.rating || '—'}${g.rating ? '/100' : ''}</td>
-        <td class="notes-cell">${g.notes ? `<button class="notes-btn" onclick="gdNotesOpen(${g.id})">Click for notes</button>` : '—'}</td>
+        <td class="notes-cell"><button class="notes-btn" onclick="gdNotesOpen(${g.id})">Click for more info</button></td>
       </tr>`).join('')
-    : `<tr><td colspan="9" style="padding:1.5rem 0.75rem; color:var(--muted); font-size:0.82rem;">No levels match.</td></tr>`;
+    : `<tr><td colspan="6" style="padding:1.5rem 0.75rem; color:var(--muted); font-size:0.82rem;">No levels match.</td></tr>`;
 
     // Info
     const info = document.getElementById('gd-info');
@@ -4654,6 +4669,12 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     const g = GD_LEVELS.find(l => l.id === id);
     const root = document.getElementById('gd-notes-modal-root');
     if (!g || !root) return;
+    const stat = (label, val) => val ? `<span class="player-track-stat"><strong>${val}</strong> ${label}</span>` : '';
+    const stats = [
+      stat('mode', g.mode),
+      stat('attempts', g.attempts ? g.attempts.toLocaleString() : ''),
+      stat('worst fail before completion', g.bestPct != null ? g.bestPct + '%' : ''),
+    ].filter(Boolean).join('');
     root.innerHTML = `
       <div class="notes-modal-backdrop" onclick="if(event.target===this) gdNotesClose()">
         <div class="notes-modal">
@@ -4664,7 +4685,10 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
             </div>
             <button class="notes-modal-close" onclick="gdNotesClose()" aria-label="Close">✕</button>
           </div>
-          <div class="notes-modal-body">${g.notes}</div>
+          <div class="notes-modal-body">
+            ${stats ? `<div class="player-track-stats" style="margin-bottom:1rem; padding-bottom:1rem; border-bottom:1px solid var(--border);">${stats}</div>` : ''}
+            ${g.notes || '<span style="color:var(--muted); font-style:italic;">No notes written.</span>'}
+          </div>
         </div>
       </div>`;
   }
