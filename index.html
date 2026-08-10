@@ -480,9 +480,11 @@
     }
     .gd-diff-easy    { background: #d4e8f7; color: #1a5a8a; }
     .gd-diff-medium  { background: #ddd4f7; color: #4a2a8a; }
-    .gd-diff-hard    { background: #f7e8d4; color: #8a5a1a; }
-    .gd-diff-insane  { background: #f7d4d4; color: #8a1a1a; }
+    .gd-diff-hard    { background: #f7d4d4; color: #8a1a1a; }
+    .gd-diff-insane  { background: #f7e8d4; color: #8a5a1a; }
     .gd-diff-extreme { background: #241414; color: #f0c8c8; }
+    .gd-diff-star    { background: #f7f0c4; color: #8a7a1a; }
+    .gd-diff-na      { background: #e5e3dc; color: #5a584f; }
     #gd-table th, #gd-table td {
       border: 1px solid var(--border);
       text-align: center;
@@ -4532,8 +4534,13 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     'insane demon':  'gd-diff-insane',
     'extreme demon': 'gd-diff-extreme',
   };
+  const GD_NA_VALUES = ['n/a', 'na', 'n.a.', 'n.a'];
   function gdDiffClass(diff) {
-    return GD_DIFF_CLASS[(diff || '').toLowerCase().trim()] || '';
+    const d = (diff || '').toLowerCase().trim();
+    if (GD_DIFF_CLASS[d]) return GD_DIFF_CLASS[d];
+    if (GD_NA_VALUES.includes(d)) return 'gd-diff-na';
+    if (d.includes('star')) return 'gd-diff-star';
+    return '';
   }
 
   async function loadDemonsFromSheet() {
