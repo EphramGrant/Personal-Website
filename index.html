@@ -473,6 +473,18 @@
     .map-album-info { flex: 1; min-width: 0; }
     .map-album-title { font-weight: 500; color: var(--text); font-size: 0.85rem; }
     .map-album-meta { font-size: 0.72rem; color: var(--muted); margin-top: 0.15rem; }
+    .gd-diff-tag {
+      display: inline-block; font-size: 0.68rem; letter-spacing: 0.02em;
+      padding: 0.2rem 0.55rem; border-radius: 3px; font-weight: 500;
+      white-space: nowrap;
+    }
+    .gd-diff-easy    { background: #d4e8f7; color: #1a5a8a; }
+    .gd-diff-medium  { background: #ddd4f7; color: #4a2a8a; }
+    .gd-diff-hard    { background: #f7e8d4; color: #8a5a1a; }
+    .gd-diff-insane  { background: #f7d4d4; color: #8a1a1a; }
+    .gd-diff-extreme { background: #241414; color: #f0c8c8; }
+    .gd-my-diff { margin-top: 0.3rem; font-size: 0.68rem; color: var(--muted); }
+    .gd-my-diff .gd-diff-tag { margin-left: 0.2rem; }
     .map-marker { cursor: pointer; }
     .del-btn {
       background: none; border: none; cursor: pointer;
@@ -1154,11 +1166,6 @@
         <h3>Music</h3>
         <p>Artists, playlists & what I'm listening to.</p>
       </a>
-      <a class="home-card" href="#" onclick="showPage('passport')">
-        <div class="home-card-icon">⊕</div>
-        <h3>Music Passport</h3>
-        <p>Album recommendation for every country at the World Cup</p>
-      </a>
       <a class="home-card" href="#" onclick="showPage('terrafiles')">
         <div class="home-card-icon">🌍</div>
         <h3>TerraFiles</h3>
@@ -1391,6 +1398,15 @@
       <div class="hobby-intro">
         <p>I have been playing videogames for the majority of my life and it is one of my most consistent pastimes. I primarily play on PC and Nintendo Consoles. I try to have a blend of singleplayer and multiplayer games.</p>
       </div>
+
+      <a href="#" onclick="showPage('gaming-demons'); return false;" class="item-card" style="display:flex; align-items:center; justify-content:space-between; gap:1rem; text-decoration:none; margin-bottom:2rem; transition:background 0.15s;" onmouseover="this.style.background='var(--tag-bg)'" onmouseout="this.style.background='var(--surface)'">
+        <div>
+          <h3 style="margin-bottom:0.35rem;">Geometry Dash Demon List</h3>
+          <p style="margin:0; font-size:0.82rem;">Every Demon level I've beaten, ranked and rated — creators, difficulty, attempts, and notes.</p>
+        </div>
+        <span style="font-size:1.3rem; color:var(--muted); flex-shrink:0;">→</span>
+      </a>
+
       <hr />
       <h2>All-Time Favorites</h2>
       <div class="item-grid" style="margin-top:1.5rem">
@@ -1425,6 +1441,76 @@
     </div>
     </div>
 
+  </div>
+
+  <!-- GEOMETRY DASH DEMON LIST -->
+  <div id="page-gaming-demons" class="page">
+    <div class="container">
+      <a href="#" onclick="showPage('gaming'); return false;" style="display:inline-block; margin-bottom:1rem; font-size:0.8rem; color:var(--muted); text-decoration:none;">← Back to Gaming</a>
+      <span class="eyebrow">Gaming · Geometry Dash</span>
+      <h1 class="page-title">Demon List.</h1>
+      <div class="hobby-intro">
+        <p>Every Demon-rated level I've beaten in Geometry Dash, tracked here with the in-game difficulty, my own opinion of how hard it actually felt, attempt counts, and my rating out of 100.</p>
+      </div>
+      <hr />
+      <h2>Demons Beaten</h2>
+
+      <!-- Controls -->
+      <div class="tbl-controls" style="margin-bottom:1rem; margin-top:1.5rem;">
+        <div style="display:flex; gap:0.5rem; width:100%; margin-bottom:0.5rem;">
+          <input id="gd-search" oninput="gdRender()" placeholder="Search levels, creators…"
+            style="flex:1; min-width:0; padding:0.55rem 0.65rem; border:1px solid var(--border); border-radius:4px; font-family:inherit; font-size:0.78rem; background:var(--surface); color:var(--text); outline:none;" />
+        </div>
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+          <select id="gd-diff" class="tbl-select" onchange="gdRender()">
+            <option value="">All in-game difficulties</option>
+            <option value="Easy Demon">Easy Demon</option>
+            <option value="Medium Demon">Medium Demon</option>
+            <option value="Hard Demon">Hard Demon</option>
+            <option value="Insane Demon">Insane Demon</option>
+            <option value="Extreme Demon">Extreme Demon</option>
+          </select>
+          <select id="gd-mode" class="tbl-select" onchange="gdRender()">
+            <option value="">All modes</option>
+            <option value="Classic">Classic</option>
+            <option value="Platformer">Platformer</option>
+          </select>
+          <select id="gd-rating" class="tbl-select" onchange="gdRender()">
+            <option value="">All ratings</option>
+            <option value="90">90+</option>
+            <option value="80">80+</option>
+            <option value="70">70+</option>
+            <option value="60">60+</option>
+            <option value="0">Below 60</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div style="overflow-x:auto;">
+        <table id="gd-table" style="width:100%; border-collapse:collapse; font-size:0.82rem;">
+          <thead>
+            <tr style="border-bottom:2px solid var(--border); text-align:left;">
+              <th class="tbl-th" style="width:24%;">Level</th>
+              <th class="tbl-th" style="width:20%;">Difficulty</th>
+              <th class="tbl-th" style="width:10%;">Mode</th>
+              <th class="tbl-th" style="width:18%;">Attempts / Best</th>
+              <th class="tbl-th" style="width:10%;">Rating</th>
+              <th class="tbl-th tbl-th-notes">Notes</th>
+            </tr>
+          </thead>
+          <tbody id="gd-tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1rem; font-size:0.75rem; color:var(--muted);">
+        <span id="gd-info"></span>
+        <div style="display:flex; gap:0.35rem; align-items:center;" id="gd-pages"></div>
+      </div>
+
+      <div id="gd-notes-modal-root"></div>
+    </div>
   </div>
 
   <!-- INDIVIDUAL GAME -->
@@ -2886,12 +2972,14 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     const navEl = document.getElementById('nav-' + id);
     if (navEl) navEl.classList.add('active');
     else if (id === 'game-detail') document.getElementById('nav-gaming').classList.add('active');
+    else if (id === 'gaming-demons') document.getElementById('nav-gaming').classList.add('active');
     else if (id.startsWith('coding-')) document.getElementById('nav-coding').classList.add('active');
     applyPalette(id);
     window.scrollTo(0, 0);
     if (id === 'sports')   { loadLiverpool(); loadEagles(); }
     if (id === 'music')    { loadAlbumsFromSheet(); }
     if (id === 'gaming')   { renderGamesGrid(); }
+    if (id === 'gaming-demons') { loadDemonsFromSheet(); }
     if (id === 'passport') { ppLoad(); }
     if (id === 'cubing')   { cubeInit(); }
     else if (window._cubeActive) { cubeTeardown(); }
@@ -4417,6 +4505,167 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       console.error('Sheet load error:', err);
     }
   }
+
+  // ── GEOMETRY DASH DEMON LIST ──
+  // Uses the same Google API key as the Albums sheet (a general-purpose read
+  // key, not tied to one spreadsheet) — just point GD_SHEET_ID at your own
+  // spreadsheet. Expected columns, in order: id, Level Name, Creator,
+  // In-Game Difficulty, My Difficulty, Attempts, Rating (formatted x/100),
+  // Mode (Classic/Platformer), Notes, Best % Before Completion (formatted x%).
+  const GD_SHEET_ID = '10UM4ftUW0w-FhEoJqK3zZpS6lByfNuzynQ_7LZyEU-s';
+
+  let GD_LEVELS = [];
+  const GD = { page: 1, perPage: 5 };
+
+  const GD_DIFF_CLASS = {
+    'easy demon':    'gd-diff-easy',
+    'medium demon':  'gd-diff-medium',
+    'hard demon':    'gd-diff-hard',
+    'insane demon':  'gd-diff-insane',
+    'extreme demon': 'gd-diff-extreme',
+  };
+  function gdDiffClass(diff) {
+    return GD_DIFF_CLASS[(diff || '').toLowerCase().trim()] || '';
+  }
+
+  async function loadDemonsFromSheet() {
+    const range = 'Sheet1!A2:J';
+    const url   = `https://sheets.googleapis.com/v4/spreadsheets/${GD_SHEET_ID}/values/${range}?key=${API_KEY}`;
+    const tbody = document.getElementById('gd-tbody');
+
+    if (tbody) tbody.innerHTML = `<tr><td colspan="6" style="padding:1.5rem 0.75rem; color:var(--muted); font-size:0.82rem;">Loading…</td></tr>`;
+
+    try {
+      const res  = await fetch(url);
+      const data = await res.json();
+      if (data.error) throw new Error(data.error.message);
+      GD_LEVELS = (data.values || []).reverse().map(row => ({
+        id:         parseInt(row[0]) || 0,
+        level:      row[1] || '',
+        creator:    row[2] || '',
+        inGameDiff: row[3] || '',
+        myDiff:     row[4] || '',
+        attempts:   parseInt(row[5]) || 0,
+        rating:     parseFloat(row[6]) || 0,
+        mode:       row[7] || '',
+        notes:      row[8] || '',
+        bestPct:    row[9] !== undefined && row[9] !== '' ? parseFloat(row[9]) : null,
+      }));
+      gdRender();
+    } catch (err) {
+      if (tbody) tbody.innerHTML = `<tr><td colspan="6" style="padding:1.5rem 0.75rem; color:var(--muted); font-size:0.82rem;">Could not load levels — check your API key and sheet permissions.</td></tr>`;
+      console.error('Sheet load error:', err);
+    }
+  }
+
+  function gdFiltered() {
+    const q       = (document.getElementById('gd-search')?.value || '').toLowerCase();
+    const diff    =  document.getElementById('gd-diff')?.value    || '';
+    const mode    =  document.getElementById('gd-mode')?.value    || '';
+    const ratMin  =  parseFloat(document.getElementById('gd-rating')?.value || '');
+    const ratSel  =  document.getElementById('gd-rating')?.value || '';
+    return GD_LEVELS.filter(g =>
+      (!q    || g.level.toLowerCase().includes(q) || g.creator.toLowerCase().includes(q) || g.notes.toLowerCase().includes(q)) &&
+      (!diff || g.inGameDiff === diff || g.myDiff === diff) &&
+      (!mode || g.mode === mode) &&
+      (ratSel === ''  ? true : ratSel === '0' ? g.rating < 60 : g.rating >= ratMin)
+    );
+  }
+
+  function gdRender() {
+    const tbody = document.getElementById('gd-tbody');
+    if (!tbody) return;
+
+    let rows = gdFiltered();
+
+    // Pagination
+    const total = rows.length;
+    const pages = Math.max(1, Math.ceil(total / GD.perPage));
+    GD.page = Math.min(GD.page, pages);
+    const start = (GD.page - 1) * GD.perPage;
+    const slice = rows.slice(start, start + GD.perPage);
+
+    const diffCell = (g) => {
+      const inGame = `<span class="gd-diff-tag ${gdDiffClass(g.inGameDiff)}">${g.inGameDiff || '—'}</span>`;
+      const mine = g.myDiff && g.myDiff !== g.inGameDiff
+        ? `<div class="gd-my-diff">felt like <span class="gd-diff-tag ${gdDiffClass(g.myDiff)}">${g.myDiff}</span></div>`
+        : '';
+      return inGame + mine;
+    };
+
+    tbody.innerHTML = slice.length ? slice.map(g => `
+      <tr>
+        <td style="font-weight:500;">
+          ${g.level}
+          <div class="map-album-meta">${g.creator}</div>
+        </td>
+        <td>${diffCell(g)}</td>
+        <td style="color:var(--muted);">${g.mode || '—'}</td>
+        <td style="color:var(--muted); font-size:0.78rem;">${g.attempts ? `${g.attempts} attempts` : '—'}${g.bestPct != null ? `<br>${g.bestPct}% best before` : ''}</td>
+        <td style="font-family:'DM Serif Display', serif; font-size:1rem;">${g.rating || '—'}${g.rating ? '/100' : ''}</td>
+        <td class="notes-cell">${g.notes ? `<button class="notes-btn" onclick="gdNotesOpen(${g.id})">Click for review</button>` : '—'}</td>
+      </tr>`).join('')
+    : `<tr><td colspan="6" style="padding:1.5rem 0.75rem; color:var(--muted); font-size:0.82rem;">No levels match.</td></tr>`;
+
+    // Info
+    const info = document.getElementById('gd-info');
+    if (info) info.textContent = total ? `${start+1}–${Math.min(start+GD.perPage, total)} of ${total}` : '';
+
+    // Page buttons
+    const pgEl = document.getElementById('gd-pages');
+    if (pgEl) {
+      if (pages <= 5) {
+        pgEl.innerHTML = Array.from({length: pages}, (_, i) => `
+          <button class="pg-btn${i+1 === GD.page ? ' active' : ''}" onclick="gdGoPage(${i+1})">${i+1}</button>
+        `).join('');
+      } else {
+        const prev = GD.page > 1     ? `<button class="pg-btn" onclick="gdGoPage(${GD.page - 1})">‹</button>` : '';
+        const next = GD.page < pages ? `<button class="pg-btn" onclick="gdGoPage(${GD.page + 1})">›</button>` : '';
+        const range = [];
+        for (let i = Math.max(1, GD.page - 1); i <= Math.min(pages, GD.page + 1); i++) range.push(i);
+        const btns = range.map(i => `
+          <button class="pg-btn${i === GD.page ? ' active' : ''}" onclick="gdGoPage(${i})">${i}</button>
+        `).join('');
+        const jump = `
+          <span style="color:var(--muted); font-size:0.72rem; margin-left:0.25rem;">of ${pages} &nbsp;</span>
+          <input type="number" min="1" max="${pages}" placeholder="pg"
+            onkeydown="if(event.key==='Enter'){const v=parseInt(this.value);if(v>=1&&v<=${pages})gdGoPage(v);}"
+            style="width:3rem; padding:0.3rem 0.4rem; border:1px solid var(--border); border-radius:4px;
+                   font-family:inherit; font-size:0.72rem; background:var(--surface); color:var(--text);
+                   outline:none; text-align:center;" />
+        `;
+        pgEl.innerHTML = prev + btns + next + jump;
+      }
+    }
+  }
+
+  function gdGoPage(n) { GD.page = n; gdRender(); }
+
+  function gdNotesOpen(id) {
+    const g = GD_LEVELS.find(l => l.id === id);
+    const root = document.getElementById('gd-notes-modal-root');
+    if (!g || !root) return;
+    root.innerHTML = `
+      <div class="notes-modal-backdrop" onclick="if(event.target===this) gdNotesClose()">
+        <div class="notes-modal">
+          <div class="notes-modal-header">
+            <div>
+              <div class="notes-modal-title">${g.level}</div>
+              <div class="notes-modal-artist">${g.creator}${g.inGameDiff ? ' · ' + g.inGameDiff : ''}</div>
+            </div>
+            <button class="notes-modal-close" onclick="gdNotesClose()" aria-label="Close">✕</button>
+          </div>
+          <div class="notes-modal-body">${g.notes}</div>
+        </div>
+      </div>`;
+  }
+  function gdNotesClose() {
+    const root = document.getElementById('gd-notes-modal-root');
+    if (root) root.innerHTML = '';
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') gdNotesClose();
+  });
 
   // ── ALBUM OF THE DAY ──
   function getDailyPick(pool) {
