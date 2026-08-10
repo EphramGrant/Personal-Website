@@ -1342,6 +1342,7 @@
       <div id="album-map" style="height:400px; border-radius:8px; border:1px solid var(--border); overflow:hidden; background:var(--tag-bg);">
         <div style="display:flex; align-items:center; justify-content:center; height:100%; color:var(--muted); font-size:0.82rem;">Loading map…</div>
       </div>
+      <div id="album-map-status" style="margin-top:0.5rem; font-size:0.75rem; color:var(--muted);"></div>
     </div>
   </div>
 
@@ -3274,16 +3275,30 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     } catch {}
     try {
       await new Promise(r => setTimeout(r, 1100)); // Nominatim rate limit
-      const res  = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(location)}&format=json&limit=1`, {
-        headers: { 'User-Agent': 'PersonalMusicSite/1.0' }
-      });
+      let res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(location)}&format=json&limit=1`);
+      if (res.status === 429 || res.status === 403) {
+        console.debug(`[map] "${location}" — got HTTP ${res.status}, backing off 3s and retrying once`);
+        await new Promise(r => setTimeout(r, 3000));
+        res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(location)}&format=json&limit=1`);
+      }
+      if (!res.ok) {
+        console.debug(`[map] "${location}" — HTTP ${res.status}, giving up`);
+        return null;
+      }
       const data = await res.json();
-      if (!data.length) return null;
+      if (!data.length) {
+        console.debug(`[map] "${location}" — Nominatim returned zero results`);
+        return null;
+      }
       const coords = { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+      console.debug(`[map] "${location}" — resolved to`, coords);
       _geoCache[key] = coords;
       try { sessionStorage.setItem('geo::' + key, JSON.stringify(coords)); } catch {}
       return coords;
-    } catch { return null; }
+    } catch (e) {
+      console.debug(`[map] "${location}" — fetch threw:`, e);
+      return null;
+    }
   }
 
   async function renderMap() {
@@ -3317,11 +3332,16 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     }
 
     const maxCount = Math.max(...locations.map(([, c]) => c));
+    const statusEl = document.getElementById('album-map-status');
+    const failed = [];
 
     // Geocode and plot — sequential to respect rate limit
+    let done = 0;
     for (const [location, count] of locations) {
+      if (statusEl) statusEl.textContent = `Placing locations on the map… (${done}/${locations.length})`;
       const coords = await geocode(location);
-      if (!coords) continue;
+      done++;
+      if (!coords) { failed.push(location); continue; }
       const radius = 6 + (count / maxCount) * 18;
       L.circleMarker([coords.lat, coords.lng], {
         radius,
@@ -3332,6 +3352,13 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       }).bindTooltip(`<strong>${location}</strong><br>${count} album${count !== 1 ? 's' : ''}`, {
         direction: 'top', offset: [0, -4]
       }).addTo(_map);
+    }
+
+    if (statusEl) {
+      statusEl.textContent = failed.length
+        ? `Couldn't place: ${failed.join(', ')} — check console for details.`
+        : '';
+      console.debug(`[map] done — ${locations.length - failed.length}/${locations.length} locations placed.`, failed.length ? { failed } : '');
     }
   }
 
