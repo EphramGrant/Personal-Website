@@ -485,6 +485,30 @@
     .gd-diff-extreme { background: #241414; color: #f0c8c8; }
     .gd-diff-star    { background: #f7f0c4; color: #8a7a1a; }
     .gd-diff-na      { background: #e5e3dc; color: #5a584f; }
+    .gd-fav-card {
+      position: relative;
+      min-height: 180px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+    .gd-fav-card-overlay {
+      background: linear-gradient(to top, rgba(0,0,0,0.8) 20%, rgba(0,0,0,0.15) 70%, transparent);
+      padding: 1.1rem 1rem 0.9rem;
+    }
+    .gd-fav-card-overlay .gd-diff-tag { display: inline-block; margin-bottom: 0.5rem; }
+    .gd-fav-card-overlay h3 {
+      color: #fff; margin: 0 0 0.25rem;
+      font-family: 'DM Serif Display', serif; font-size: 1.1rem;
+    }
+    .gd-fav-card-overlay p {
+      color: rgba(255,255,255,0.85); margin: 0; font-size: 0.78rem; line-height: 1.5;
+    }
     #gd-table th, #gd-table td {
       text-align: center;
       vertical-align: middle;
@@ -1238,7 +1262,7 @@
       <h2>Favorite Artists</h2>
       <div class="item-grid" style="margin-top:1.5rem">
         <div class="item-card">
-  <img src="radiohead-cover.jpg" alt="Radiohead" class="cover-img-sq">
+  <img src="/images/radiohead-cover.jpg" alt="Radiohead" class="cover-img-sq">
   <h3>Radiohead</h3>
   <div class="meta">Alt Rock · Active since 1993</div>
   <p>My favorite songs are How to Disappear Completely, Let Down, and Man of War. Discography ranked:</p>
@@ -1283,14 +1307,14 @@
   <div class="tags"><span class="tag">Experimental</span><span class="tag">Melancholic</span></div>
 </div>
         <div class="item-card">
-          <img src="willy-rodriguez-cover.jpg" alt="Willy Rodriguez" class="cover-img-sq">
+          <img src="/images/willy-rodriguez-cover.jpg" alt="Willy Rodriguez" class="cover-img-sq">
           <h3>Willy Rodriguez</h3>
           <div class="meta">Noise Pop · Active since 2021</div>
           <p>Critically underrated. Composed of anonymous duo Gabe and Alex. They have since disbanded, but Alex has continued making music under the moniker Drug Bug (The new album "Hell for a Basement" is great). Wetdream is a top 5 album and Revisited is a top 5 song.</p>
           <div class="tags"><span class="tag">Wall of Sound</span><span class="tag">Underground</span><span class="tag">Emotional</span></div>
         </div>
         <div class="item-card">
-          <img src="have-a-nice-life-cover.jpg" alt="Have a Nice Life" class="cover-img-sq">
+          <img src="/images/have-a-nice-life-cover.jpg" alt="Have a Nice Life" class="cover-img-sq">
           <h3>Have a Nice Life</h3>
           <div class="meta">Dark Shoegaze · Active since 2000</div>
           <p>Highly experimental and dark sound. Primarily known for their 2008 album Deathconsciousness which ranks in my top 5. They served as an entry point into shoegaze music for me.</p>
@@ -1801,7 +1825,7 @@
       <hr />
       <h2>Control Flow</h2>
       <p style="margin-top:0.5rem;">Control flow determines what code runs and when. Without it your program would run top to bottom and always do the same thing. The core tool is the conditional statement.<br><strong>If:</strong> Runs a block of code if a condition is true.<br><strong>Else:</strong> Runs if the condition is false.<br><strong>Else If:</strong> Checks another condition if the previous one was false. You can chain as many as needed.<br>Conditions use comparison operators: <code>==</code> (equal), <code>!=</code> (not equal), <code>&gt;</code>, <code>&lt;</code>, <code>&gt;=</code>, <code>&lt;=</code>. Combine them with <code>&&</code> (and), <code>||</code> (or), <code>!</code> (not).</p>
-      <img src="if-else-statements-flowcharts-insight.png" alt="If-Else Statements Flowchart" style="margin-top:1.25rem; width:100%; max-width:600px; border-radius:6px; border:1px solid var(--border); display:block;" />
+      <img src="/images/if-else-statements-flowcharts-insight.png" alt="If-Else Statements Flowchart" style="margin-top:1.25rem; width:100%; max-width:600px; border-radius:6px; border:1px solid var(--border); display:block;" />
       <hr />
       <h2>Loops</h2>
       <p style="margin-top:0.5rem;">Loops repeat a block of code multiple times without writing it out repeatedly. There are two main types found across most languages.<br><strong>For Loop:</strong> Repeats a set number of times. Used when you know how many iterations you need, such as going through every item in a list.<br><strong>While Loop:</strong> Runs as long as a condition is true. Used when you don't know how many iterations you need, such as waiting for user input. Be careful — if the condition never becomes false you'll create an infinite loop that freezes your program. For example, if I write a while loop that will continue looping until x > 10 and x never changes, the program will continue running until it crashes.</p>
@@ -4603,12 +4627,13 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
   // ── FAVORITE LEVELS (separate tab: "Favorite Levels") ──
   // Columns A–F hold the Top 10 ranking (Ranking, Level, Creator, Rating,
   // IMO Difficulty, Actual Difficulty). Columns H–I hold one favorite level
-  // per difficulty tier. Column K is a personal changelog — not displayed.
+  // per difficulty tier, J is an optional image URL, K is a short note/
+  // description. Column L is a personal changelog — not displayed.
   let GD_TOP10 = [];
   let GD_FAV_BY_DIFF = [];
 
   async function loadFavoriteLevelsFromSheet() {
-    const range = `'Favorite Levels'!A2:I11`;
+    const range = `'Favorite Levels'!A2:L11`;
     const url   = `https://sheets.googleapis.com/v4/spreadsheets/${GD_SHEET_ID}/values/${encodeURIComponent(range)}?key=${API_KEY}`;
     const top10Body = document.getElementById('gd-top10-tbody');
     const favGrid    = document.getElementById('gd-fav-diff-grid');
@@ -4642,7 +4667,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       GD_FAV_BY_DIFF = rows
         .filter(row => row[7] && row[8])
         .filter(row => row[7].toLowerCase().trim() !== 'top of each difficulty' && row[8].toLowerCase().trim() !== 'difficulty')
-        .map(row => ({ level: row[7], difficulty: row[8] }));
+        .map(row => ({ level: row[7], difficulty: row[8], imageUrl: row[9] || '', description: row[10] || '' }));
 
       gdRenderTop10();
       gdRenderFavByDiff();
@@ -4671,11 +4696,25 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
   function gdRenderFavByDiff() {
     const grid = document.getElementById('gd-fav-diff-grid');
     if (!grid) return;
-    grid.innerHTML = GD_FAV_BY_DIFF.length ? GD_FAV_BY_DIFF.map(f => `
-      <div class="item-card" style="text-align:center;">
-        <span class="gd-diff-tag ${gdDiffClass(f.difficulty)}" style="margin-bottom:0.6rem; display:inline-block;">${f.difficulty}</span>
-        <h3 style="margin:0;">${f.level}</h3>
-      </div>`).join('')
+    grid.innerHTML = GD_FAV_BY_DIFF.length ? GD_FAV_BY_DIFF.map(f => {
+      const badge = `<span class="gd-diff-tag ${gdDiffClass(f.difficulty)}">${f.difficulty}</span>`;
+      if (f.imageUrl) {
+        return `
+          <div class="gd-fav-card" style="background-image:url('${f.imageUrl}');">
+            <div class="gd-fav-card-overlay">
+              ${badge}
+              <h3>${f.level}</h3>
+              ${f.description ? `<p>${f.description}</p>` : ''}
+            </div>
+          </div>`;
+      }
+      return `
+        <div class="item-card" style="text-align:center;">
+          <div style="margin-bottom:0.6rem;">${badge}</div>
+          <h3 style="margin:0 0 0.3rem;">${f.level}</h3>
+          ${f.description ? `<p style="margin:0; font-size:0.82rem;">${f.description}</p>` : ''}
+        </div>`;
+    }).join('')
     : `<div style="color:var(--muted); font-size:0.82rem;">No favorites listed yet.</div>`;
   }
 
