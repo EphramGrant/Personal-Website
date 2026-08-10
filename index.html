@@ -1129,7 +1129,6 @@
 
     <a href="#" onclick="showPage('home')" id="nav-home" class="active">Home</a>
     <a href="#" onclick="showPage('music')" id="nav-music">Music</a>
-    <a href="#" onclick="showPage('passport')" id="nav-passport">Passport</a>
     <a href="#" onclick="showPage('terrafiles')" id="nav-terrafiles">TerraFiles</a>
     <a href="#" onclick="showPage('gaming')" id="nav-gaming">Gaming</a>
     <a href="#" onclick="showPage('cubing')" id="nav-cubing">Cubing</a>
@@ -1206,6 +1205,15 @@
       <div class="hobby-intro">
         <p>I maintained listening to an album a day for 10 months in order to hear more types of music. This has allowed me to step outside of my Alternative Rock bubble. Although, I don't maintain this daily album challenge anymore, I still frequently listen to multiple albums every week. I am also currently working on listening to a lot of international music through my music passport challenge.</p>
       </div>
+
+      <a href="#" onclick="showPage('passport'); return false;" class="item-card" style="display:flex; align-items:center; justify-content:space-between; gap:1rem; text-decoration:none; margin-bottom:2rem; transition:background 0.15s;" onmouseover="this.style.background='var(--tag-bg)'" onmouseout="this.style.background='var(--surface)'">
+        <div>
+          <h3 style="margin-bottom:0.35rem;">Music Passport</h3>
+          <p style="margin:0; font-size:0.82rem;">One album per country in the 2026 FIFA Men's World Cup — tracking my progress country by country.</p>
+        </div>
+        <span style="font-size:1.3rem; color:var(--muted); flex-shrink:0;">→</span>
+      </a>
+
       <hr />
 
       <!-- ALBUM OF THE DAY -->
@@ -1359,6 +1367,7 @@
   <!-- PASSPORT -->
   <div id="page-passport" class="page">
     <div class="container">
+      <a href="#" onclick="showPage('music'); return false;" style="display:inline-block; margin-bottom:1rem; font-size:0.8rem; color:var(--muted); text-decoration:none;">← Back to Music</a>
       <span class="eyebrow">Music · World Cup 2026</span>
       <h1 class="page-title">Music Passport.</h1>
       <div class="hobby-intro">
