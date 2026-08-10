@@ -4512,7 +4512,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
   // spreadsheet. Expected columns, in order: id, Level Name, Creator,
   // In-Game Difficulty, My Difficulty, Attempts, Rating (formatted x/100),
   // Mode (Classic/Platformer), Notes, Best % Before Completion (formatted x%).
-  const GD_SHEET_ID = '10UM4ftUW0w-FhEoJqK3zZpS6lByfNuzynQ_7LZyEU-s';
+  const GD_SHEET_ID = 'PASTE_YOUR_SPREADSHEET_ID_HERE';
 
   let GD_LEVELS = [];
   const GD = { page: 1, perPage: 5 };
@@ -4529,8 +4529,8 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
   }
 
   async function loadDemonsFromSheet() {
-    const range = 'Sheet1!A2:J';
-    const url   = `https://sheets.googleapis.com/v4/spreadsheets/${GD_SHEET_ID}/values/${range}?key=${API_KEY}`;
+    const range = `'Beaten Levels List'!A2:J`;
+    const url   = `https://sheets.googleapis.com/v4/spreadsheets/${GD_SHEET_ID}/values/${encodeURIComponent(range)}?key=${API_KEY}`;
     const tbody = document.getElementById('gd-tbody');
 
     if (tbody) tbody.innerHTML = `<tr><td colspan="6" style="padding:1.5rem 0.75rem; color:var(--muted); font-size:0.82rem;">Loading…</td></tr>`;
@@ -4553,7 +4553,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       }));
       gdRender();
     } catch (err) {
-      if (tbody) tbody.innerHTML = `<tr><td colspan="6" style="padding:1.5rem 0.75rem; color:var(--muted); font-size:0.82rem;">Could not load levels — check your API key and sheet permissions.</td></tr>`;
+      if (tbody) tbody.innerHTML = `<tr><td colspan="6" style="padding:1.5rem 0.75rem; color:var(--muted); font-size:0.82rem;">Could not load levels — ${err.message || 'unknown error'}</td></tr>`;
       console.error('Sheet load error:', err);
     }
   }
