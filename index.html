@@ -1556,6 +1556,16 @@
       <div id="gd-notes-modal-root"></div>
 
       <hr />
+      <h2>Demon Stats</h2>
+      <div class="stats-row" style="margin-top:1.5rem;">
+        <div class="stat-cell"><span class="val" id="gd-stat-total">—</span><span class="lbl">Demons Beaten</span></div>
+        <div class="stat-cell"><span class="val" id="gd-stat-avg-rating">—</span><span class="lbl">Average Rating</span></div>
+        <div class="stat-cell"><span class="val" id="gd-stat-total-attempts">—</span><span class="lbl">Total Attempts</span></div>
+        <div class="stat-cell"><span class="val" id="gd-stat-avg-attempts">—</span><span class="lbl">Avg Attempts</span></div>
+        <div class="stat-cell"><span class="val" id="gd-stat-mode-split">—</span><span class="lbl">Classic / Platformer</span></div>
+      </div>
+
+      <hr />
       <h2>Favorite Levels</h2>
 
       <h3 style="font-size:0.95rem; margin-top:1.5rem; margin-bottom:0.75rem;">Top 10</h3>
@@ -4622,6 +4632,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
         bestPct:    row[9] !== undefined && row[9] !== '' ? parseFloat((row[9] || '').toString().replace(/,/g, '')) : null,
       }));
       gdRender();
+      gdRenderStats();
     } catch (err) {
       if (tbody) tbody.innerHTML = `<tr><td colspan="6" style="padding:1.5rem 0.75rem; color:var(--muted); font-size:0.82rem;">Could not load levels — ${err.message || 'unknown error'}</td></tr>`;
       console.error('Sheet load error:', err);
@@ -4748,6 +4759,29 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       (!mode || g.mode === mode) &&
       (ratSel === ''  ? true : ratSel === '0' ? g.rating < 60 : g.rating >= ratMin)
     );
+  }
+
+  function gdRenderStats() {
+    if (!GD_LEVELS.length) return;
+    const setText = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+
+    setText('gd-stat-total', GD_LEVELS.length);
+
+    const rated = GD_LEVELS.filter(g => g.rating > 0);
+    const avgRating = rated.length ? (rated.reduce((sum, g) => sum + g.rating, 0) / rated.length).toFixed(1) : '—';
+    setText('gd-stat-avg-rating', avgRating === '—' ? '—' : `${avgRating}/100`);
+
+    const totalAttempts = GD_LEVELS.reduce((sum, g) => sum + (g.attempts || 0), 0);
+    setText('gd-stat-total-attempts', totalAttempts.toLocaleString());
+    setText('gd-stat-avg-attempts', Math.round(totalAttempts / GD_LEVELS.length).toLocaleString());
+
+    const classicCount    = GD_LEVELS.filter(g => (g.mode || '').toLowerCase() === 'classic').length;
+    const platformerCount = GD_LEVELS.filter(g => (g.mode || '').toLowerCase() === 'platformer').length;
+    const modeTotal = classicCount + platformerCount;
+    const modeSplit = modeTotal
+      ? `${Math.round((classicCount / modeTotal) * 100)}% / ${Math.round((platformerCount / modeTotal) * 100)}%`
+      : '—';
+    setText('gd-stat-mode-split', modeSplit);
   }
 
   function gdRender() {
