@@ -1562,7 +1562,16 @@
         <div class="stat-cell"><span class="val" id="gd-stat-avg-rating">—</span><span class="lbl">Average Rating</span></div>
         <div class="stat-cell"><span class="val" id="gd-stat-total-attempts">—</span><span class="lbl">Total Attempts</span></div>
         <div class="stat-cell"><span class="val" id="gd-stat-avg-attempts">—</span><span class="lbl">Avg Attempts</span></div>
-        <div class="stat-cell"><span class="val" id="gd-stat-mode-split">—</span><span class="lbl">Classic / Platformer</span></div>
+      </div>
+
+      <div style="margin-top:2rem;">
+        <span class="eyebrow">Difficulty Distribution</span>
+        <div id="gd-diff-dist" class="genre-bar-list"></div>
+      </div>
+
+      <div style="margin-top:2rem;">
+        <span class="eyebrow">Rating Distribution</span>
+        <div id="gd-rating-dist" style="margin-top:0.75rem; display:flex; align-items:flex-end; gap:0.35rem;"></div>
       </div>
 
       <hr />
@@ -4775,13 +4784,53 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     setText('gd-stat-total-attempts', totalAttempts.toLocaleString());
     setText('gd-stat-avg-attempts', Math.round(totalAttempts / GD_LEVELS.length).toLocaleString());
 
-    const classicCount    = GD_LEVELS.filter(g => (g.mode || '').toLowerCase() === 'classic').length;
-    const platformerCount = GD_LEVELS.filter(g => (g.mode || '').toLowerCase() === 'platformer').length;
-    const modeTotal = classicCount + platformerCount;
-    const modeSplit = modeTotal
-      ? `${Math.round((classicCount / modeTotal) * 100)}% / ${Math.round((platformerCount / modeTotal) * 100)}%`
-      : '—';
-    setText('gd-stat-mode-split', modeSplit);
+    // Difficulty Distribution — grouped by in-game tier, plus a Non-Demon catch-all
+    const diffEl = document.getElementById('gd-diff-dist');
+    if (diffEl) {
+      const tierLabels = ['Easy Demon', 'Medium Demon', 'Hard Demon', 'Insane Demon', 'Extreme Demon', 'Non-Demon'];
+      const diffCounts = {};
+      tierLabels.forEach(t => diffCounts[t] = 0);
+      GD_LEVELS.forEach(g => {
+        const tier = gdIsNonDemon(g.inGameDiff) ? 'Non-Demon' : g.inGameDiff;
+        if (diffCounts[tier] !== undefined) diffCounts[tier]++;
+      });
+      diffEl.innerHTML = tierLabels.map(tier => {
+        const count = diffCounts[tier];
+        const pct = Math.round((count / GD_LEVELS.length) * 100);
+        return `
+          <div class="genre-bar-row">
+            <div class="genre-bar-label">
+              <span><span class="gd-diff-tag ${gdDiffClass(tier === 'Non-Demon' ? 'unrated' : tier)}" style="margin-right:0.4rem;">${tier}</span></span>
+              <span>${pct}% (${count} level${count !== 1 ? 's' : ''})</span>
+            </div>
+            <div class="genre-bar-track">
+              <div class="genre-bar-fill" style="width:${pct}%"></div>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    // Rating Distribution — bucketed by tens, excluding unrated (0) levels
+    const ratingEl = document.getElementById('gd-rating-dist');
+    if (ratingEl) {
+      const buckets = Array.from({length: 10}, (_, i) => `${i * 10}-${i === 9 ? 100 : i * 10 + 9}`);
+      const bucketCounts = new Array(10).fill(0);
+      GD_LEVELS.filter(g => g.rating > 0).forEach(g => {
+        const idx = Math.min(9, Math.floor(g.rating / 10));
+        bucketCounts[idx]++;
+      });
+      const maxBucket = Math.max(...bucketCounts) || 1;
+      ratingEl.innerHTML = buckets.map((label, i) => {
+        const count = bucketCounts[i];
+        const pct = Math.round((count / maxBucket) * 100);
+        return `
+          <div style="display:flex; flex-direction:column; align-items:center; gap:0.25rem; flex:1;">
+            <div style="font-size:0.6rem; color:var(--muted); min-height:1rem; display:flex; align-items:flex-end;">${count || ''}</div>
+            <div style="width:100%; background:var(--text); border-radius:2px 2px 0 0; height:${pct}px; min-height:${count > 0 ? '3px' : '0'};"></div>
+            <div style="font-size:0.6rem; color:var(--muted); white-space:nowrap;">${label}</div>
+          </div>`;
+      }).join('');
+    }
   }
 
   function gdRender() {
