@@ -483,8 +483,6 @@
     .gd-diff-hard    { background: #f7e8d4; color: #8a5a1a; }
     .gd-diff-insane  { background: #f7d4d4; color: #8a1a1a; }
     .gd-diff-extreme { background: #241414; color: #f0c8c8; }
-    .gd-my-diff { margin-top: 0.3rem; font-size: 0.68rem; color: var(--muted); }
-    .gd-my-diff .gd-diff-tag { margin-left: 0.2rem; }
     #gd-table th, #gd-table td {
       border: 1px solid var(--border);
       text-align: center;
@@ -492,7 +490,6 @@
       padding: 0.65rem 0.6rem;
     }
     #gd-table .tbl-th { text-align: center; }
-    #gd-table .gd-my-diff { text-align: center; }
     .map-marker { cursor: pointer; }
     .del-btn {
       background: none; border: none; cursor: pointer;
@@ -1499,12 +1496,14 @@
         <table id="gd-table" style="width:100%; border-collapse:collapse; font-size:0.82rem;">
           <thead>
             <tr style="border-bottom:2px solid var(--border); text-align:center;">
-              <th class="tbl-th" style="width:18%;">Level</th>
-              <th class="tbl-th" style="width:14%;">Creator</th>
-              <th class="tbl-th" style="width:18%;">Difficulty</th>
-              <th class="tbl-th" style="width:9%;">Mode</th>
-              <th class="tbl-th" style="width:15%;">Attempts / Best</th>
-              <th class="tbl-th" style="width:9%;">Rating</th>
+              <th class="tbl-th" style="width:14%;">Level</th>
+              <th class="tbl-th" style="width:11%;">Creator</th>
+              <th class="tbl-th" style="width:12%;">In-Game Difficulty</th>
+              <th class="tbl-th" style="width:12%;">IMO Difficulty</th>
+              <th class="tbl-th" style="width:8%;">Mode</th>
+              <th class="tbl-th" style="width:9%;">Attempts</th>
+              <th class="tbl-th" style="width:8%;">Best %</th>
+              <th class="tbl-th" style="width:8%;">Rating</th>
               <th class="tbl-th tbl-th-notes">Notes</th>
             </tr>
           </thead>
@@ -4542,7 +4541,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     const url   = `https://sheets.googleapis.com/v4/spreadsheets/${GD_SHEET_ID}/values/${encodeURIComponent(range)}?key=${API_KEY}`;
     const tbody = document.getElementById('gd-tbody');
 
-    if (tbody) tbody.innerHTML = `<tr><td colspan="7" style="padding:1.5rem 0.75rem; color:var(--muted); font-size:0.82rem;">Loading…</td></tr>`;
+    if (tbody) tbody.innerHTML = `<tr><td colspan="9" style="padding:1.5rem 0.75rem; color:var(--muted); font-size:0.82rem;">Loading…</td></tr>`;
 
     try {
       const res  = await fetch(url);
@@ -4554,15 +4553,15 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
         creator:    row[2] || '',
         inGameDiff: row[3] || '',
         myDiff:     row[4] || '',
-        attempts:   parseInt(row[5]) || 0,
-        rating:     parseFloat(row[6]) || 0,
+        attempts:   parseInt((row[5] || '').toString().replace(/,/g, '')) || 0,
+        rating:     parseFloat((row[6] || '').toString().replace(/,/g, '')) || 0,
         mode:       row[7] || '',
         notes:      row[8] || '',
-        bestPct:    row[9] !== undefined && row[9] !== '' ? parseFloat(row[9]) : null,
+        bestPct:    row[9] !== undefined && row[9] !== '' ? parseFloat((row[9] || '').toString().replace(/,/g, '')) : null,
       }));
       gdRender();
     } catch (err) {
-      if (tbody) tbody.innerHTML = `<tr><td colspan="7" style="padding:1.5rem 0.75rem; color:var(--muted); font-size:0.82rem;">Could not load levels — ${err.message || 'unknown error'}</td></tr>`;
+      if (tbody) tbody.innerHTML = `<tr><td colspan="9" style="padding:1.5rem 0.75rem; color:var(--muted); font-size:0.82rem;">Could not load levels — ${err.message || 'unknown error'}</td></tr>`;
       console.error('Sheet load error:', err);
     }
   }
@@ -4594,25 +4593,19 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     const start = (GD.page - 1) * GD.perPage;
     const slice = rows.slice(start, start + GD.perPage);
 
-    const diffCell = (g) => {
-      const inGame = `<span class="gd-diff-tag ${gdDiffClass(g.inGameDiff)}">${g.inGameDiff || '—'}</span>`;
-      const mine = g.myDiff && g.myDiff !== g.inGameDiff
-        ? `<div class="gd-my-diff">felt like <span class="gd-diff-tag ${gdDiffClass(g.myDiff)}">${g.myDiff}</span></div>`
-        : '';
-      return inGame + mine;
-    };
-
     tbody.innerHTML = slice.length ? slice.map(g => `
       <tr>
         <td style="font-weight:500;">${g.level}</td>
         <td style="color:var(--muted);">${g.creator || '—'}</td>
-        <td>${diffCell(g)}</td>
+        <td>${g.inGameDiff ? `<span class="gd-diff-tag ${gdDiffClass(g.inGameDiff)}">${g.inGameDiff}</span>` : '—'}</td>
+        <td>${g.myDiff ? `<span class="gd-diff-tag ${gdDiffClass(g.myDiff)}">${g.myDiff}</span>` : '—'}</td>
         <td style="color:var(--muted);">${g.mode || '—'}</td>
-        <td style="color:var(--muted); font-size:0.78rem;">${g.attempts ? `${g.attempts} attempts` : '—'}${g.bestPct != null ? `<br>${g.bestPct}% best before` : ''}</td>
+        <td style="color:var(--muted);">${g.attempts ? g.attempts.toLocaleString() : '—'}</td>
+        <td style="color:var(--muted);">${g.bestPct != null ? g.bestPct + '%' : '—'}</td>
         <td style="font-family:'DM Serif Display', serif; font-size:1rem;">${g.rating || '—'}${g.rating ? '/100' : ''}</td>
-        <td class="notes-cell">${g.notes ? `<button class="notes-btn" onclick="gdNotesOpen(${g.id})">Click for review</button>` : '—'}</td>
+        <td class="notes-cell">${g.notes ? `<button class="notes-btn" onclick="gdNotesOpen(${g.id})">Click for notes</button>` : '—'}</td>
       </tr>`).join('')
-    : `<tr><td colspan="7" style="padding:1.5rem 0.75rem; color:var(--muted); font-size:0.82rem;">No levels match.</td></tr>`;
+    : `<tr><td colspan="9" style="padding:1.5rem 0.75rem; color:var(--muted); font-size:0.82rem;">No levels match.</td></tr>`;
 
     // Info
     const info = document.getElementById('gd-info');
