@@ -4620,7 +4620,12 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
       const res  = await fetch(url);
       const data = await res.json();
       if (data.error) throw new Error(data.error.message);
-      const rows = data.values || [];
+      // Guard against the header row leaking in (e.g. frozen rows, a shifted
+      // range) by filtering on content, not just trusting the row range.
+      const rows = (data.values || []).filter(row =>
+        (row[0] || '').toLowerCase().trim() !== 'ranking' &&
+        (row[7] || '').toLowerCase().trim() !== 'top of each difficulty'
+      );
 
       GD_TOP10 = rows
         .filter(row => row[0] && row[1])
@@ -4636,6 +4641,7 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
 
       GD_FAV_BY_DIFF = rows
         .filter(row => row[7] && row[8])
+        .filter(row => row[7].toLowerCase().trim() !== 'top of each difficulty' && row[8].toLowerCase().trim() !== 'difficulty')
         .map(row => ({ level: row[7], difficulty: row[8] }));
 
       gdRenderTop10();
