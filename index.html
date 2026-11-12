@@ -3537,9 +3537,13 @@ console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="s
     // Init map once
     if (!_map) {
       _map = L.map('album-map', { zoomControl: true, scrollWheelZoom: false }).setView([30, 10], 2);
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
-        subdomains: 'abcd', maxZoom: 19
+      // Esri Light Gray Canvas: free, no API key, similar look to CARTO light
+      const esriAttr = 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ';
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+        attribution: esriAttr, maxZoom: 16
+      }).addTo(_map);
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 16
       }).addTo(_map);
     } else {
       _map.eachLayer(l => { if (l instanceof L.CircleMarker) _map.removeLayer(l); });
